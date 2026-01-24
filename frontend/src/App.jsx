@@ -77,11 +77,11 @@ function AppContent() {
   };
 
   return (
-    <HelmetProvider>
-      <UserProvider>
-        <Cart 
-          isOpen={isCartOpen} 
-          onClose={() => setIsCartOpen(false)} 
+    <UserProvider>
+      <HelmetProvider>
+        <Cart
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
           cart={cart}
           removeFromCart={removeFromCart}
           calculateTotal={calculateTotal}
@@ -91,46 +91,46 @@ function AppContent() {
         />
         <Layout cartItemCount={cart.reduce((sum, item) => sum + item.quantity, 0)} setIsCartOpen={setIsCartOpen}>
           <Routes>
-            <Route path="/" element={<Home products={products} addToCart={addToCart} />} />
-            <Route path="/products" element={<Products products={products} addToCart={addToCart} />} />
-            <Route path="/products/:id" element={<ProductDetail products={products} addToCart={addToCart} />} />
-            <Route path="/cart" element={<CartPage 
-              cart={cart}
-              removeFromCart={removeFromCart}
-              calculateTotal={calculateTotal}
-              deliveryInfo={deliveryInfo}
-              setDeliveryInfo={setDeliveryInfo}
-              handleCheckout={handleCheckout}
-            />} />
-            <Route path="/checkout" element={<Checkout cart={cart} deliveryInfo={deliveryInfo} total={calculateTotal()} />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute adminOnly={true}>
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/order-history" element={<OrderHistory />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/search" element={<SearchResults products={products} />} />
-            <Route path="/addresses" element={<Addresses />} />
-            <Route path="/coupons" element={<Coupons />} />
-            <Route path="/credits" element={<Credits />} />
-            <Route path="/delivery" element={<Delivery />} />
-            <Route path="/legal" element={<Legal />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/routes" element={<RoutesPage />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-      </UserProvider>
-    </HelmetProvider>
+              <Route path="/" element={<Home products={products} addToCart={addToCart} />} />
+              <Route path="/products" element={<Products products={products} addToCart={addToCart} />} />
+              <Route path="/products/:id" element={<ProductDetail products={products} addToCart={addToCart} />} />
+              <Route path="/cart" element={<CartPage 
+                cart={cart}
+                removeFromCart={removeFromCart}
+                calculateTotal={calculateTotal}
+                deliveryInfo={deliveryInfo}
+                setDeliveryInfo={setDeliveryInfo}
+                handleCheckout={handleCheckout}
+              />} />
+              <Route path="/checkout" element={<Checkout cart={cart} deliveryInfo={deliveryInfo} total={calculateTotal()} />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/order-history" element={<OrderHistory />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/search" element={<SearchResults products={products} />} />
+              <Route path="/addresses" element={<Addresses />} />
+              <Route path="/coupons" element={<Coupons />} />
+              <Route path="/credits" element={<Credits />} />
+              <Route path="/delivery" element={<Delivery />} />
+              <Route path="/legal" element={<Legal />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/routes" element={<RoutesPage />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+      </HelmetProvider>
+    </UserProvider>
   );
 }
 

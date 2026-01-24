@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, Mail } from 'lucide-react';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });

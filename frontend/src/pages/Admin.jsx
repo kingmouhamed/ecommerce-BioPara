@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext.jsx';
 import '../../src/admin.css';
 
 const Admin = () => {
@@ -46,8 +46,8 @@ const Admin = () => {
     e.preventDefault();
     const method = editingProduct ? 'PUT' : 'POST';
     const url = editingProduct
-      ? `http://localhost:3001/api/products/${editingProduct.id}`
-      : 'http://localhost:3001/api/products';
+      ? `${import.meta.env.VITE_API_URL}/api/products/${editingProduct.id}`
+      : `${import.meta.env.VITE_API_URL}/api/products`;
 
     try {
       const response = await fetch(url, {
@@ -75,7 +75,7 @@ const Admin = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3001/api/products/${productId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products/${productId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -94,11 +94,11 @@ const Admin = () => {
     setLoading(true);
     try {
       if (activeTab === 'products') {
-        const response = await fetch('http://localhost:3001/api/products');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
         const data = await response.json();
         setProducts(data);
       } else if (activeTab === 'orders') {
-        const response = await fetch('http://localhost:3001/api/admin/orders', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/orders`, {
           headers: getAuthHeaders()
         });
         const data = await response.json();
@@ -118,7 +118,7 @@ const Admin = () => {
 
   const updateOrderStatus = async (orderId, status) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/admin/orders/${orderId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

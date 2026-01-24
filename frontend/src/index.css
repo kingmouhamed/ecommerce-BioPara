@@ -41,7 +41,7 @@ body {
 }
 
 .hero-banner {
-  background: linear-gradient(rgba(27, 67, 50, 0.8), rgba(45, 106, 79, 0.8)), url('https://images.unsplash.com/photo-1512061011237-581d767b0331?w=1200');
+  background: linear-gradient(rgba(27, 67, 50, 0.8), rgba(45, 106, 79, 0.8)), url('/hero7.png');
   background-size: cover;
   background-position: center;
   color: white;
