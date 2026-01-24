@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
   const { user, loading } = useUser();
