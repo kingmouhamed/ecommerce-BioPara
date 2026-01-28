@@ -44,8 +44,8 @@ export default function ProductsPage() {
   }, [sortBy, activeCategory]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Our Products</h1>
+    <div className="container mx-auto px-4 py-8" dir="rtl">
+      <h1 className="text-3xl font-bold mb-6 text-right">منتجاتنا</h1>
       <Categories activeCategory={activeCategory} onCategoryClick={setActiveCategory} />
       <div className="mt-8">
         <ProductList
