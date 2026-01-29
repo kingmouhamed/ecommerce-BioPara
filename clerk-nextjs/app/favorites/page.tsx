@@ -7,13 +7,20 @@ import { useCart } from '../../contexts/CartContext';
 
 export default function FavoritesPage() {
   const { addToCart } = useCart();
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   // In a real app, this would come from localStorage or a backend
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favorites');
     if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites);
+        if (Array.isArray(parsedFavorites) && parsedFavorites.every(id => typeof id === 'number')) {
+          setFavorites(parsedFavorites);
+        }
+      } catch (error) {
+        console.error('Failed to parse favorites from localStorage:', error);
+      }
     }
   }, []);
 
