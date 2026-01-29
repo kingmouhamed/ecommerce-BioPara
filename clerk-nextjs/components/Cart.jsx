@@ -25,8 +25,27 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
       alert("الرجاء إدخال جميع بيانات التوصيل.");
       return;
     }
+
+    // Build WhatsApp message
+    let message = "سلام، بغيت نطلب من المتجر 🛒\n\n📦 المنتجات:\n";
+    cart.forEach(item => {
+      const subtotal = item.price * item.quantity;
+      message += `- ${item.name} (x${item.quantity}) = ${subtotal} DH\n`;
+    });
+    message += `\n💰 المجموع: ${calculateTotal()} DH\n\n`;
+    message += `📍 بيانات التوصيل:\n`;
+    message += `الاسم: ${deliveryInfo.name}\n`;
+    message += `رقم الهاتف: ${deliveryInfo.phone}\n`;
+    message += `العنوان: ${deliveryInfo.address}\n\n`;
+    message += "شكرا 🙏";
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/212673020264?text=${encodedMessage}`;
+
+    // Open WhatsApp
+    window.open(whatsappUrl, '_blank');
+
     onClose();
-    router.push('/checkout');
   };
 
   const cartStyle = 'w-full min-h-screen flex';
@@ -105,7 +124,7 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
               onClick={handleCheckout}
               className="w-full text-lg bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700"
             >
-              تأكيد الطلب
+              إرسال الطلب عبر واتساب
             </button>
           </div>
         )}
