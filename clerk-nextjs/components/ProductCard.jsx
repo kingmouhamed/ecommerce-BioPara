@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const ProductCard = ({ product, onAddToCart }) => {
@@ -55,13 +55,26 @@ const ProductCard = ({ product, onAddToCart }) => {
           )}
         </div>
       </div>
-      <div className="p-4 pt-0">
+      <div className="p-4 pt-0 space-y-2">
         <button
           onClick={() => onAddToCart(product)}
           className="w-full flex items-center justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         >
           <ShoppingCart size={16} className="mr-2" />
           Ajouter au panier
+        </button>
+        <button
+          onClick={() => {
+            const productUrl = window.location.origin + `/products/${product.id}`;
+            const message = `سلام، بغيت نشري هاد المنتوج:\n📌 الاسم: ${product.name}\n💰 الثمن: ${product.price} DH\n🔗 الرابط: ${productUrl}\n🔢 الكمية: 1\nشكرا 🙏`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/212673020264?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+          }}
+          className="w-full flex items-center justify-center rounded-md border border-green-600 bg-white px-4 py-2 text-sm font-medium text-green-600 shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        >
+          <MessageCircle size={16} className="mr-2" />
+          اشري دابا عبر واتساب
         </button>
       </div>
     </div>
