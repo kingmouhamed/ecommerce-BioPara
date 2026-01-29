@@ -8,16 +8,16 @@
     "start": "next start",
     "lint": "next lint",
     "vercel-build": "next build"
-
   },
   "dependencies": {
-    "@clerk/nextjs": "^5.0.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.7",
+    "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.93.1",
     "@tailwindcss/postcss": "^4.1.18",
     "autoprefixer": "^10.4.23",
+    "dotenv": "^17.2.3",
     "lucide-react": "^0.562.0",
     "next": "14.2.4",
     "react": "18.3.1",

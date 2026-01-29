@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Hero from '../components/Hero';
 import CategoriesGrid from '../components/CategoriesGrid';
 import Categories from '../components/Categories';
@@ -9,22 +9,40 @@ import Brands from '../components/Brands';
 import Loyalty from '../components/Loyalty';
 import ProductList from '../components/ProductList';
 import Cart from '../components/Cart';
-import { products } from '../products';
 import { useCart } from '../contexts/CartContext';
 
+
+import { useAuth } from '../contexts/AuthContext';
+
+
 const Home = () => {
-  const { 
-    addToCart, 
-    isCartOpen, 
-    setIsCartOpen, 
-    cart, 
-    removeFromCart, 
-    calculateTotal 
+  const {
+    addToCart,
+    isCartOpen,
+    setIsCartOpen,
+    cart,
+    removeFromCart,
+    calculateTotal
   } = useCart();
+  const { supabase } = useAuth();
+  const [products, setProducts] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [sortBy, setSortBy] = useState('default');
   const [visibleProducts, setVisibleProducts] = useState(10);
   const [deliveryInfo, setDeliveryInfo] = useState({ name: '', phone: '', address: '' });
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const { data, error } = await supabase.from('products').select('*');
+      if (error) {
+        console.error('Error fetching products:', error);
+      } else {
+        setProducts(data);
+      }
+    };
+
+    fetchProducts();
+  }, [supabase]);
 
   const sortedProducts = useMemo(() => {
     let sortableProducts = Array.isArray(products) ? [...products] : [];
@@ -45,7 +63,7 @@ const Home = () => {
         break;
     }
     return sortableProducts;
-  }, [sortBy, activeCategory]);
+  }, [sortBy, activeCategory, products]);
 
   return (
     <>
