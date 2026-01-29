@@ -5,18 +5,20 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import Link from 'next/link';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const { supabase } = useAuth();
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccess(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -24,18 +26,26 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
     } else {
-      router.push('/'); // Redirect to home page on successful login
+        setSuccess("Veuillez vérifier votre e-mail pour confirmer votre inscription. Vous serez redirigé vers la page de connexion.");
+        setTimeout(() => {
+            router.push('/login');
+        }, 5000);
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Connectez-vous à votre compte</h2>
-        <form className="space-y-6" onSubmit={handleLogin}>
+        <h2 className="text-2xl font-bold text-center text-gray-900">Créer un nouveau compte</h2>
+        {success && (
+          <div className="p-3 text-sm text-green-700 bg-green-100 border border-green-400 rounded-md">
+            {success}
+          </div>
+        )}
+        <form className="space-y-6" onSubmit={handleSignup}>
           <div>
             <label htmlFor="email" className="text-sm font-medium text-gray-700">
-              Adresse e-mail
+            Adresse e-mail
             </label>
             <input
               id="email"
@@ -49,14 +59,17 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label htmlFor="password"className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-gray-700"
+            >
               Mot de passe
             </label>
             <input
               id="password"
               name="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -73,14 +86,14 @@ export default function LoginPage() {
               type="submit"
               className="w-full px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              Se connecter
+              S'inscrire
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-        Vous n'avez pas de compte?{' '}
-          <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
-          S'inscrire
+        Vous avez déjà un compte?{' '}
+          <Link href="/login" className="font-medium text-green-600 hover:text-green-500">
+          Se connecter
           </Link>
         </p>
       </div>

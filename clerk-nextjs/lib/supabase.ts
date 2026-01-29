@@ -1,19 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { auth } from '@clerk/nextjs/server';
+import { createBrowserClient } from '@supabase/ssr'
 
-export async function createClerkSupabaseClient(): Promise<SupabaseClient> {
-  const { getToken } = auth();
-  const token = await getToken({ template: 'supabase' });
-
-  return createClient(
+export function createSupabaseBrowserClient() {
+  return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    }
-  );
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 }
