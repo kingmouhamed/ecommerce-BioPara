@@ -98,9 +98,14 @@ function Header({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
         </button>
 
         {/* Logo */}
-        <Link href="/" className="text-3xl font-bold text-emerald-700 tracking-tight flex items-center gap-2">
-          <div className="w-8 h-8 bg-emerald-700 text-white rounded-full flex items-center justify-center text-lg">B</div>
-          BioPara<span className="text-gray-400 text-sm font-normal">.ma</span>
+        <Link href="/" className="shrink-0">
+          <Image
+            src="/parapharma-logo.svg"
+            alt="BioPara Logo"
+            width={160}
+            height={48}
+            className="h-12 w-auto"
+          />
         </Link>
 
         {/* Search Bar */}
