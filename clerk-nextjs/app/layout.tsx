@@ -5,8 +5,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import { AuthProvider } from '../contexts/AuthContext';
 import { CartProvider } from '../contexts/CartContext';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,9 +24,7 @@ export default function RootLayout({
         <body className={inter.className}>
           <AuthProvider>
             <CartProvider>
-              <Header />
               <main>{children}</main>
-              <Footer />
             </CartProvider>
           </AuthProvider>
         </body>
