@@ -260,7 +260,7 @@ const HeroSection = () => (
           sizes="100vw"
         />
         <div className="relative z-10 bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-lg text-center border-l-4 border-emerald-600">
-          <h2 className="text-3xl font-bold text-emerald-800 mb-2">Promotions d'Hiver</h2>
+          <h2 className="text-3xl font-bold text-emerald-800 mb-2">Promotions d&apos;Hiver</h2>
           <p className="text-gray-700 mb-4">Jusqu&apos;à -50% sur les soins visage</p>
           <button className="bg-emerald-700 text-white px-6 py-2 rounded font-medium hover:bg-emerald-800">J&apos;EN PROFITE</button>
         </div>
