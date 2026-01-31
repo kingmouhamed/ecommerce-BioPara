@@ -12,7 +12,8 @@ import Cart from '../components/Cart';
 import { useCart } from '../contexts/CartContext';
 
 
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '@clerk/nextjs';
+import { createSupabaseBrowserClient } from '../lib/supabase';
 
 
 const Home = () => {
@@ -24,7 +25,7 @@ const Home = () => {
     removeFromCart,
     calculateTotal
   } = useCart();
-  const { supabase } = useAuth();
+  const { isSignedIn } = useAuth(); // Correct usage of useAuth from Clerk
   const [products, setProducts] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState('Tous');
   const [sortBy, setSortBy] = useState('default');
@@ -32,6 +33,7 @@ const Home = () => {
   const [deliveryInfo, setDeliveryInfo] = useState({ name: '', phone: '', address: '' });
 
   useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
     const fetchProducts = async () => {
       const { data, error } = await supabase.from('products').select('*');
       if (error) {
@@ -42,7 +44,7 @@ const Home = () => {
     };
 
     fetchProducts();
-  }, [supabase]);
+  }, []);
 
   const sortedProducts = useMemo(() => {
     let sortableProducts = Array.isArray(products) ? [...products] : [];
