@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
+import { AuthProvider } from '../contexts/AuthContext';
 import { CartProvider } from '../contexts/CartContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -23,11 +24,13 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="fr">
         <body className={inter.className}>
-          <CartProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-          </CartProvider>
+          <AuthProvider>
+            <CartProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+            </CartProvider>
+          </AuthProvider>
         </body>
       </html>
     </ClerkProvider>
