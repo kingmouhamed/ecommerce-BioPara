@@ -1,64 +1,56 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Navigation } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+
+const brandLogos = [
+  'La Roche-Posay', 'Vichy', 'CeraVe', 'Nuxe', 'SVR', 'Uriage',
+  'Avène', 'Bioderma', 'Eucerin', 'Mustela', 'Filorga', 'Caudalie'
+];
 
 const Brands = () => {
-  const brandLogos = [
-    'La Roche-Posay',
-    'Vichy',
-    'CeraVe',
-    'Nuxe',
-    'SVR',
-    'Uriage',
-    'Avène',
-    'Bioderma',
-    'Eucerin',
-    'Mustela'
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerView = 5;
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex + itemsPerView >= brandLogos.length ? 0 : prevIndex + itemsPerView
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex - itemsPerView < 0 ? Math.max(0, brandLogos.length - itemsPerView) : prevIndex - itemsPerView
-    );
-  };
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % (brandLogos.length - itemsPerView + 1));
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [brandLogos.length]);
-
-  const visibleBrands = brandLogos.slice(currentIndex, currentIndex + itemsPerView);
-
   return (
-    <div className="brands-section">
-      <div className="container">
-        <h2 className="section-title">ماركاتنا الشريكة</h2>
-        <div className="brands-carousel">
-          <button className="carousel-control prev" onClick={prevSlide}>
-            <ChevronLeft />
-          </button>
-          <div className="brands-grid">
-            {visibleBrands.map((brand, index) => (
-              <div key={index} className="brand-logo">
-                {brand}
+    <div className="bg-white py-12">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">
+          أشهر الماركات العالمية
+        </h2>
+        <Swiper
+          modules={[Autoplay, Navigation]}
+          spaceBetween={30}
+          slidesPerView={2}
+          loop={true}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+          }}
+          navigation
+          breakpoints={{
+            640: {
+              slidesPerView: 3,
+            },
+            768: {
+              slidesPerView: 4,
+            },
+            1024: {
+              slidesPerView: 6,
+            },
+          }}
+          className="!pb-10"
+        >
+          {brandLogos.map((brand, index) => (
+            <SwiperSlide key={index} className="h-full">
+              <div className="flex items-center justify-center h-28 p-4 bg-gray-50 border border-gray-200 rounded-lg transition-colors duration-300 hover:border-green-300 hover:bg-green-50">
+                <span className="text-lg font-semibold text-gray-600 text-center">
+                  {brand}
+                </span>
               </div>
-            ))}
-          </div>
-          <button className="carousel-control next" onClick={nextSlide}>
-            <ChevronRight />
-          </button>
-        </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );

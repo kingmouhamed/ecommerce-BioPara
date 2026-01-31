@@ -36,7 +36,7 @@ export default function Delivery() {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Tracking Your Order</h2>
           <p>
-            Once your order is shipped, you'll receive a tracking number via email and SMS to monitor your delivery status.
+            Once your order is shipped, you&apos;ll receive a tracking number via email and SMS to monitor your delivery status.
           </p>
         </div>
       </div>

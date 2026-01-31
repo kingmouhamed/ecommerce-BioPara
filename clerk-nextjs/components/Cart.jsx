@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryInfo, setDeliveryInfo }) => {
   const router = useRouter();
@@ -68,7 +69,7 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
             <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
               {cart.map(item => (
                 <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-                  <img src={item.image ? `/${item.image}` : ''} alt={item.name} className="w-16 h-16 object-cover rounded" />
+                  <Image src={item.image ? `/${item.image}` : ''} alt={item.name} width={64} height={64} className="object-cover rounded" />
                   <div className="flex-1">
                     <h3 className="font-semibold">{item.name}</h3>
                     <p className="text-sm text-gray-600">{item.price}</p>
