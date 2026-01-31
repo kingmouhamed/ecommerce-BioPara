@@ -76,7 +76,7 @@ const TopBar = () => (
     </div>
     <div className="flex gap-4">
       <span>Livraison Gratuite à partir de 300 DHS</span>
-      <Link href="/contact" className="cursor-pointer hover:text-emerald-700">Contactez-nous</Link>
+      <Link href="/contact" className="hover:text-emerald-700">Contactez-nous</Link>
     </div>
   </div>
 );
@@ -117,17 +117,17 @@ function Header({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
 
         {/* Icons */}
         <div className="flex items-center gap-6 text-gray-600">
-          <Link href="/login" className="flex flex-col items-center cursor-pointer hover:text-emerald-700 group">
+          <Link href="/login" className="flex flex-col items-center hover:text-emerald-700 group">
             <User size={24} />
             <span className="text-xs mt-1 group-hover:underline">Compte</span>
           </Link>
 
-          <Link href="/favorites" className="flex flex-col items-center cursor-pointer hover:text-emerald-700 group">
+          <Link href="/favorites" className="flex flex-col items-center hover:text-emerald-700 group">
             <Heart size={24} />
             <span className="text-xs mt-1 group-hover:underline">Favoris</span>
           </Link>
 
-          <Link href="/cart" className="flex flex-col items-center cursor-pointer hover:text-emerald-700 group relative">
+          <Link href="/cart" className="flex flex-col items-center hover:text-emerald-700 group relative">
             <div className="relative">
               <ShoppingCart size={24} />
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
@@ -144,19 +144,19 @@ function Header({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
         <div className="container mx-auto px-4">
           <ul className="flex items-center gap-8 text-sm font-medium py-3">
             <li>
-              <Link href="/products" className="flex items-center gap-2 cursor-pointer hover:text-emerald-200">
+              <Link href="/products" className="flex items-center gap-2 hover:text-emerald-200">
                 <Menu size={18} /> TOUS LES RAYONS
               </Link>
             </li>
             {categories.slice(0, 6).map((cat) => (
               <li key={cat}>
-                <Link href={`/category/${cat.toLowerCase()}`} className="cursor-pointer hover:text-emerald-200 uppercase tracking-wide">
+                <Link href={`/category/${cat.toLowerCase()}`} className="hover:text-emerald-200 uppercase tracking-wide">
                   {cat}
                 </Link>
               </li>
             ))}
             <li className="ml-auto">
-              <Link href="/promotions" className="cursor-pointer text-orange-300 font-bold hover:text-white">PROMOTIONS</Link>
+              <Link href="/promotions" className="text-orange-300 font-bold hover:text-white">PROMOTIONS</Link>
             </li>
           </ul>
         </div>
@@ -218,7 +218,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
           <ul className="space-y-1 text-sm text-gray-700">
             {categories.map((cat) => (
               <li key={cat}>
-                <Link href={`/category/${cat.toLowerCase()}`} onClick={onClose} className="flex justify-between items-center p-2 rounded hover:bg-gray-50 cursor-pointer">
+                <Link href={`/category/${cat.toLowerCase()}`} onClick={onClose} className="flex justify-between items-center p-2 rounded hover:bg-gray-50">
                   {cat} <ChevronRight size={14} />
                 </Link>
               </li>
@@ -241,7 +241,7 @@ const HeroSection = () => (
             <li key={cat}>
               <Link
                 href={`/category/${cat.toLowerCase()}`}
-                className="flex justify-between items-center cursor-pointer hover:text-emerald-700 hover:bg-emerald-50 p-2 rounded transition"
+                className="flex justify-between items-center hover:text-emerald-700 hover:bg-emerald-50 p-2 rounded transition"
               >
                 {cat} <ChevronRight size={14} />
               </Link>
@@ -342,10 +342,10 @@ const Footer = () => (
       <div>
         <h4 className="font-bold mb-4">Informations</h4>
         <ul className="text-sm text-gray-400 space-y-2">
-          <li><Link href="/about" className="hover:text-white cursor-pointer">Qui sommes-nous ?</Link></li>
-          <li><Link href="/delivery" className="hover:text-white cursor-pointer">Livraison et retour</Link></li>
-          <li><Link href="/terms" className="hover:text-white cursor-pointer">Conditions générales</Link></li>
-          <li><Link href="/contact" className="hover:text-white cursor-pointer">Contact</Link></li>
+          <li><Link href="/about" className="hover:text-white">Qui sommes-nous ?</Link></li>
+          <li><Link href="/delivery" className="hover:text-white">Livraison et retour</Link></li>
+          <li><Link href="/terms" className="hover:text-white">Conditions générales</Link></li>
+          <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
         </ul>
       </div>
       <div>
@@ -353,7 +353,7 @@ const Footer = () => (
         <ul className="text-sm text-gray-400 space-y-2">
           {categories.slice(0, 4).map((cat) => (
             <li key={cat}>
-              <Link href={`/category/${cat.toLowerCase()}`} className="hover:text-white cursor-pointer">
+              <Link href={`/category/${cat.toLowerCase()}`} className="hover:text-white">
                 {cat}
               </Link>
             </li>
