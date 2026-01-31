@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShoppingCart, Search, User, Heart, Menu } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useUser, SignOutButton } from '@clerk/nextjs';
 import { useCart } from '../contexts/CartContext';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user } = useUser();
   const cartContext = useCart();
   
   if (!cartContext) {
@@ -59,8 +59,10 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-5 text-gray-600">
             {user ? (
               <>
-                <span className="text-sm">{user.email}</span>
-                <button onClick={signOut} className="hover:text-green-700">تسجيل الخروج</button>
+                <span className="text-sm">{user.emailAddresses[0].emailAddress}</span>
+                <SignOutButton>
+                  <button className="hover:text-green-700">تسجيل الخروج</button>
+                </SignOutButton>
               </>
             ) : (
               <Link href="/login" className="hover:text-green-700 flex items-center"><User size={24} /><span className="ml-1">الدخول</span></Link>

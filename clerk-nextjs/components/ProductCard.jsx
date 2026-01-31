@@ -23,7 +23,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       <Link href={`/products/${product.id}`} className="block">
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={product.image ? `/${product.image.replace(/^\/?public\//, '')}` : '/placeholder.png'}
+            src={product.image || '/placeholder.png'}
             alt={product.name}
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
           />

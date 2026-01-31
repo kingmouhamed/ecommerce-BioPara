@@ -1,40 +1,56 @@
+// scripts/seed.js
 
-const { createClient } = require('@supabase/supabase-js');
-const { products } = require('../products.js');
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" }); // ✅ يقرأ .env.local
 
-// WARNING: This script will delete all existing data in the 'products' table.
-// Make sure to backup your data before running this script.
+import { createClient } from "@supabase/supabase-js";
+import { products as localProducts } from "../products.js"; // ✅ تم ربط ملف المنتجات هنا
 
-// Supabase project credentials
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SECRET_KEY; // Use the secret key for admin operations
+// ✅ تحقق سريع من env
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Supabase URL or key is not defined. Make sure to have a .env.local file with NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY.");
+if (!SUPABASE_URL) throw new Error("NEXT_PUBLIC_SUPABASE_URL is missing");
+if (!SERVICE_ROLE) throw new Error("SUPABASE_SERVICE_ROLE_KEY is missing");
+
+// ✅ Supabase client (server-only)
+const supabase = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+function normalizeProducts(items) {
+  return items.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description ?? null,
+    category: p.category ?? null,
+    price: Number(p.price) || 0,
+    originalprice: p.originalPrice ?? null, // ✅ تم التعديل
+    image: p.image ? (p.image.startsWith("/") ? p.image : `/${p.image}`) : null, // ✅ ضمان تنسيق مسار الصورة بشكل صحيح
+    reviews: p.reviews ?? null,
+    rating: p.rating ?? null,
+    isnew: p.isNew ?? false, // ✅ تم التعديل
+  }));
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+async function seed() {
+  console.log("🌱 Seeding products from products.js ...");
 
-async function seedDatabase() {
-  try {
-    // 1. Delete all existing data from the 'products' table
-    const { error: deleteError } = await supabase.from('products').delete().gt('id', 0);
-    if (deleteError) {
-      throw deleteError;
-    }
-    console.log("✅ All existing products have been deleted.");
+  const dataToInsert = normalizeProducts(localProducts);
 
-    // 2. Insert new data
-    const { data, error } = await supabase.from('products').insert(products);
-
-    if (error) {
-      throw error;
-    }
-
-    console.log(`✅ Seeded ${products.length} products`);
-  } catch (error) {
-    console.error("Error seeding database:", error);
+  // ✅ (اختياري) مسح القديم
+  const del = await supabase.from("products").delete().neq("id", 0);
+  if (del.error) {
+    console.error("❌ Delete error:", del.error.message);
+    process.exit(1);
   }
+
+  // ✅ إدخال جديد
+  const ins = await supabase.from("products").insert(dataToInsert);
+  if (ins.error) {
+    console.error("❌ Insert error:", ins.error.message);
+    process.exit(1);
+  }
+
+  console.log(`✅ Inserted ${dataToInsert.length} products successfully!`);
 }
 
-seedDatabase();
+seed();

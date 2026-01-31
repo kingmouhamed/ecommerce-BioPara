@@ -10,6 +10,7 @@ export default function FavoritesPage() {
   const { addToCart } = useCart();
   const [favorites, setFavorites] = useState<number[]>([]);
 
+
   // Load favorites from localStorage on component mount
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favorites');
@@ -42,10 +43,10 @@ export default function FavoritesPage() {
   const favoriteProducts = products.filter(product => favorites.includes(product.id));
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">My Favorites</h1>
+    <div className="container mx-auto px-4 py-8" dir="rtl">
+      <h1 className="text-3xl font-bold mb-6 text-right">منتجاتي المفضلة</h1>
       {favoriteProducts.length === 0 ? (
-        <p className="text-gray-600">No favorite products yet.</p>
+        <p className="text-gray-600 text-right">لا توجد منتجات مفضلة حتى الآن.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {favoriteProducts.map(product => (
@@ -56,8 +57,8 @@ export default function FavoritesPage() {
               />
               <button
                 onClick={() => toggleFavorite(product.id)}
-                className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
-                aria-label="Remove from favorites"
+                className="absolute top-2 left-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                aria-label="إزالة من المفضلة"
               >
                 <Heart size={20} className="text-red-500 fill-current" />
               </button>
