@@ -5,6 +5,7 @@ import { products } from '../../../products';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Star, ShoppingCart, MessageCircle } from 'lucide-react';
 import { useCart } from '../../../contexts/CartContext';
+import Image from 'next/image';
 
 const ProductDetailsPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
@@ -40,9 +41,11 @@ const ProductDetailsPage = ({ params }: { params: { id: string } }) => {
       </button>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <img
+          <Image
             src={`/${product.image.replace(/^\/?public\//, '')}`}
             alt={product.name}
+            width={500}
+            height={500}
             className="w-full h-auto object-contain rounded-lg shadow-lg"
           />
         </div>
