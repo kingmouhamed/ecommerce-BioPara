@@ -24,9 +24,9 @@ export default function SignupPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError("حدث خطأ ما. قد يكون البريد الإلكتروني مستخدماً بالفعل.");
     } else {
-        setSuccess("Veuillez vérifier votre e-mail pour confirmer votre inscription. Vous serez redirigé vers la page de connexion.");
+        setSuccess("المرجو التحقق من بريدك الإلكتروني لتأكيد التسجيل. سيتم توجيهك إلى صفحة تسجيل الدخول.");
         setTimeout(() => {
             router.push('/login');
         }, 5000);
@@ -34,9 +34,9 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50" dir="rtl">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Créer un nouveau compte</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900">إنشاء حساب جديد</h2>
         {success && (
           <div className="p-3 text-sm text-green-700 bg-green-100 border border-green-400 rounded-md">
             {success}
@@ -44,8 +44,8 @@ export default function SignupPage() {
         )}
         <form className="space-y-6" onSubmit={handleSignup}>
           <div>
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
-            Adresse e-mail
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-right">
+              البريد الإلكتروني
             </label>
             <input
               id="email"
@@ -55,15 +55,15 @@ export default function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
             />
           </div>
           <div>
             <label
               htmlFor="password"
-              className="text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 text-right"
             >
-              Mot de passe
+              كلمة المرور
             </label>
             <input
               id="password"
@@ -73,7 +73,7 @@ export default function SignupPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
             />
           </div>
           {error && (
@@ -86,14 +86,14 @@ export default function SignupPage() {
               type="submit"
               className="w-full px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              S&apos;inscrire
+              إنشاء حساب
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-        Vous avez déjà un compte?{' '}
+          لديك حساب بالفعل؟{' '}
           <Link href="/login" className="font-medium text-green-600 hover:text-green-500">
-          Se connecter
+            تسجيل الدخول
           </Link>
         </p>
       </div>

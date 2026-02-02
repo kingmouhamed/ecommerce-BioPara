@@ -1,36 +1,41 @@
+import Link from 'next/link';
+
 export default function Routes() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Site Map</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 py-8" dir="rtl">
+      <h1 className="text-3xl font-bold mb-6 text-right">خريطة الموقع</h1>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 text-right">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Products</h2>
+          <h2 className="text-xl font-semibold mb-4">المنتجات</h2>
           <ul className="space-y-2">
-            <li><a href="/products" className="text-green-700 hover:underline">All Products</a></li>
-            <li><a href="/products?category=Visage" className="text-green-700 hover:underline">Facial Care</a></li>
-            <li><a href="/products?category=Parapharmacie" className="text-green-700 hover:underline">Parapharmacy</a></li>
-            <li><a href="/products?category=Hair" className="text-green-700 hover:underline">Hair Care</a></li>
+            <li><Link href="/products" className="text-green-700 hover:underline">كل المنتجات</Link></li>
+            <li><Link href="/products?category=Visage" className="text-green-700 hover:underline">العناية بالوجه</Link></li>
+            <li><Link href="/products?category=Parapharmacie" className="text-green-700 hover:underline">شبه صيدلية</Link></li>
+            <li><Link href="/products?category=Cheveux" className="text-green-700 hover:underline">العناية بالشعر</Link></li>
+            <li><Link href="/promotions" className="text-green-700 hover:underline">العروض</Link></li>
           </ul>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Account</h2>
+          <h2 className="text-xl font-semibold mb-4">الحساب</h2>
           <ul className="space-y-2">
-            <li><a href="/sign-in" className="text-green-700 hover:underline">Sign In</a></li>
-            <li><a href="/sign-up" className="text-green-700 hover:underline">Sign Up</a></li>
-            <li><a href="/cart" className="text-green-700 hover:underline">Cart</a></li>
-            <li><a href="/favorites" className="text-green-700 hover:underline">Favorites</a></li>
+            <li><Link href="/login" className="text-green-700 hover:underline">تسجيل الدخول</Link></li>
+            <li><Link href="/signup" className="text-green-700 hover:underline">إنشاء حساب</Link></li>
+            <li><Link href="/cart" className="text-green-700 hover:underline">عربة التسوق</Link></li>
+            <li><Link href="/favorites" className="text-green-700 hover:underline">المفضلة</Link></li>
+            <li><Link href="/addresses" className="text-green-700 hover:underline">العناوين</Link></li>
+            <li><Link href="/credits" className="text-green-700 hover:underline">الرصيد</Link></li>
           </ul>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Information</h2>
+          <h2 className="text-xl font-semibold mb-4">معلومات</h2>
           <ul className="space-y-2">
-            <li><a href="/about" className="text-green-700 hover:underline">About Us</a></li>
-            <li><a href="/contact" className="text-green-700 hover:underline">Contact</a></li>
-            <li><a href="/delivery" className="text-green-700 hover:underline">Delivery</a></li>
-            <li><a href="/payment" className="text-green-700 hover:underline">Payment</a></li>
-            <li><a href="/terms" className="text-green-700 hover:underline">Terms of Use</a></li>
+            <li><Link href="/about" className="text-green-700 hover:underline">من نحن</Link></li>
+            <li><Link href="/contact" className="text-green-700 hover:underline">اتصل بنا</Link></li>
+            <li><Link href="/delivery" className="text-green-700 hover:underline">التوصيل</Link></li>
+            <li><Link href="/payment" className="text-green-700 hover:underline">الدفع</Link></li>
+            <li><Link href="/terms" className="text-green-700 hover:underline">شروط الاستخدام</Link></li>
           </ul>
         </div>
       </div>

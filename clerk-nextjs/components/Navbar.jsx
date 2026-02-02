@@ -13,6 +13,7 @@ const Navbar = () => {
       <Link href="/products?category=Visage" className={pathname === '/products' ? 'active' : ''}>الاعشاب الطبية</Link>
       <Link href="/products?category=Corps" className={pathname === '/products' ? 'active' : ''}>الجسم</Link>
       <Link href="/about" className={pathname === '/about' ? 'active' : ''}>عن المتجر</Link>
+      <Link href="/brands" className={pathname === '/brands' ? 'active' : ''}>الماركات</Link>
       <Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>اتصل بنا</Link>
     </nav>
   );

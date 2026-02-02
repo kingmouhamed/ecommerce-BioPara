@@ -22,20 +22,20 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setError(error.message);
+      setError("البريد الإلكتروني أو كلمة المرور غير صحيحة."); // Custom error message
     } else {
       router.push('/'); // Redirect to home page on successful login
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50" dir="rtl">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-900">Connectez-vous à votre compte</h2>
+        <h2 className="text-2xl font-bold text-center text-gray-900">تسجيل الدخول إلى حسابك</h2>
         <form className="space-y-6" onSubmit={handleLogin}>
           <div>
-            <label htmlFor="email" className="text-sm font-medium text-gray-700">
-              Adresse e-mail
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-right">
+              البريد الإلكتروني
             </label>
             <input
               id="email"
@@ -45,12 +45,12 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
             />
           </div>
           <div>
-            <label htmlFor="password"className="text-sm font-medium text-gray-700">
-              Mot de passe
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 text-right">
+              كلمة المرور
             </label>
             <input
               id="password"
@@ -60,7 +60,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
+              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
             />
           </div>
           {error && (
@@ -73,14 +73,14 @@ export default function LoginPage() {
               type="submit"
               className="w-full px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
-              Se connecter
+              تسجيل الدخول
             </button>
           </div>
         </form>
         <p className="text-sm text-center text-gray-600">
-        Vous n&apos;avez pas de compte?{' '}
+          ليس لديك حساب؟{' '}
           <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
-          S&apos;inscrire
+            إنشاء حساب
           </Link>
         </p>
       </div>

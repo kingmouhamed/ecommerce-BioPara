@@ -21,18 +21,18 @@ const ProductCard = ({ product, onAddToCart }) => {
     return <div className="flex items-center">{stars}</div>;
   };
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0;
 
   return (
     <div className="group relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-xl">
       {/* Product Image and Badges */}
       <Link href={`/products/${product.id}`} className="block overflow-hidden">
-        <div className="relative aspect-w-1 aspect-h-1">
+        <div className="relative aspect-square">
           <Image
             src={product.image || '/placeholder.png'}
-            alt={product.name}
+            alt={product.title}
             fill
             className="object-contain transition-transform duration-300 group-hover:scale-105"
           />
@@ -63,9 +63,13 @@ const ProductCard = ({ product, onAddToCart }) => {
         <h3 className="flex-grow text-sm font-semibold text-gray-800 mb-2 h-10">
           <Link href={`/products/${product.id}`} className="hover:text-green-700">
             <span aria-hidden="true" className="absolute inset-0" />
-            {product.name}
+            {product.title}
           </Link>
         </h3>
+
+        <div className="text-xs text-gray-500 mb-3 h-8">
+          <p className="line-clamp-2">{product.description}</p>
+        </div>
 
         {/* Rating */}
         <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
@@ -76,8 +80,8 @@ const ProductCard = ({ product, onAddToCart }) => {
         {/* Price */}
         <div className="flex items-baseline gap-2">
           <p className="text-xl font-bold text-green-700">{product.price} DH</p>
-          {product.originalPrice && (
-            <p className="text-sm text-gray-400 line-through">{product.originalPrice} DH</p>
+          {product.oldPrice && (
+            <p className="text-sm text-gray-400 line-through">{product.oldPrice} DH</p>
           )}
         </div>
       </div>
