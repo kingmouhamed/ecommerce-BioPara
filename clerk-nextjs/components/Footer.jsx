@@ -14,7 +14,6 @@ const Footer = () => {
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <Image src="/parapharma-logo.svg" alt="BioPara Logo" width={50} height={50} className="bg-white rounded-full p-1" />
-              <h1 className="text-3xl font-bold text-white">BioPara</h1>
             </Link>
             <p className="text-gray-400 mb-6">
               متجركم الأول للمنتجات الطبيعية والعضوية في المغرب. نقدم لكم أفضل المنتجات لصحة وجمال مستدام.
@@ -102,6 +101,9 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="text-center text-gray-500 mt-12 border-t border-gray-700 pt-8">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Image src="/parapharma-logo.svg" alt="BioPara Logo" width={30} height={30} className="bg-white rounded-full p-1" />
+          </div>
           <p>&copy; {new Date().getFullYear()} BioPara. جميع الحقوق محفوظة.</p>
         </div>
       </div>

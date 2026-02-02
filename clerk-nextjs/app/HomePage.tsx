@@ -117,7 +117,6 @@ function Header({ onOpenMobileMenu, cartItemCount }: { onOpenMobileMenu: () => v
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-2">
           <Leaf className="w-8 h-8 text-emerald-700" />
-          <span className="text-2xl font-bold text-emerald-700">BioPara</span>
         </Link>
 
         {/* Search Bar */}
@@ -446,7 +445,12 @@ const Footer = () => (
         </div>
       </div>
     </div>
-    <div className="border-t border-gray-700 pt-6 text-center text-xs text-gray-500">© 2026 BioPara. جميع الحقوق محفوظة.</div>
+    <div className="border-t border-gray-700 pt-6 text-center text-xs text-gray-500">
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <Leaf className="w-5 h-5 text-emerald-400" />
+      </div>
+      © 2026 BioPara. جميع الحقوق محفوظة.
+    </div>
   </footer>
 );
 
