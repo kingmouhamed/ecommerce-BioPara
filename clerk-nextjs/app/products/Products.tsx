@@ -45,7 +45,12 @@ export default function Products() {
 
   return (
     <div className="container mx-auto px-4 py-8" dir="rtl">
-      <h1 className="text-3xl font-bold mb-6 text-right">منتجاتنا</h1>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">استكشف منتجاتنا</h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          مجموعة مختارة من أفضل المنتجات الطبيعية والعضوية للعناية بصحتك وجمالك.
+        </p>
+      </div>
       <Categories activeCategory={activeCategory} onCategoryClick={setActiveCategory} />
       <div className="mt-8">
         <ProductList

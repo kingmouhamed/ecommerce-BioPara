@@ -1,56 +1,45 @@
 # BioPara Ecommerce Platform
 
-A full-stack ecommerce application built with React, Vite, Tailwind CSS, and Node.js for selling natural and organic products.
+A modern ecommerce application built with Next.js 14, React 18, Tailwind CSS, and Clerk authentication for selling natural and organic parapharmacy products.
 
 ## 🚀 Features
 
-- **Modern Frontend**: React 19 with Vite, Tailwind CSS, and responsive design
-- **Backend API**: Node.js with Express and SQLite database
-- **User Authentication**: JWT-based authentication system
+- **Modern Frontend**: Next.js 14 with React 18, Tailwind CSS, and responsive design
+- **User Authentication**: Clerk-based authentication system
 - **Product Management**: Complete CRUD operations for products
 - **Shopping Cart**: Persistent cart with local storage
-- **Admin Panel**: Product and order management dashboard
-- **Payment Integration**: PayPal and Stripe payment gateways
-- **Multi-language**: Arabic/RTL support
-- **SEO Optimized**: React Helmet for meta tags
+- **Multi-language**: French/Arabic support with RTL
+- **SEO Optimized**: Next.js built-in SEO optimizations
 - **Mobile Responsive**: Optimized for all device sizes
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 19** - Modern React with hooks and concurrent features
-- **Vite** - Fast build tool and development server
+- **Next.js 14** - React framework with App Router
+- **React 18** - Modern React with hooks
 - **Tailwind CSS** - Utility-first CSS framework
-- **React Router** - Client-side routing
+- **Clerk** - Authentication and user management
 - **Lucide React** - Beautiful icons
-- **React Helmet Async** - Document head management
+- **TypeScript** - Type safety
 
-### Backend
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **SQLite** - Lightweight database
-- **JWT** - JSON Web Tokens for authentication
-- **bcrypt** - Password hashing
-- **CORS** - Cross-origin resource sharing
+### Additional Libraries
+- **Material-UI** - React components
+- **Supabase** - Database and backend services
+- **Swiper** - Carousel/slider components
+- **React Helmet Async** - Document head management
 
 ## 📁 Project Structure
 
 ```
 /
-├── frontend/                 # React frontend application
-│   ├── src/
-│   │   ├── components/       # Reusable UI components
-│   │   ├── pages/           # Page components
-│   │   ├── contexts/        # React contexts
-│   │   └── assets/          # Static assets
+├── clerk-nextjs/             # Next.js application
+│   ├── app/                 # App Router pages and layouts
+│   ├── components/          # Reusable UI components
+│   ├── contexts/            # React contexts
+│   ├── lib/                 # Utility functions
 │   ├── public/              # Public static files
 │   └── package.json
-├── backend/                  # Node.js backend API
-│   ├── server.js            # Main server file
-│   ├── database.js          # Database setup and queries
-│   ├── products.json        # Product data
-│   └── package.json
-├── package.json              # Root package.json with scripts
+├── package.json             # Root package.json with scripts
 └── README.md
 ```
 
@@ -65,130 +54,82 @@ A full-stack ecommerce application built with React, Vite, Tailwind CSS, and Nod
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd ecommerce-biomarket
+   cd ecommerce-biopara
    ```
 
-2. **Install root dependencies**
+2. **Install dependencies**
    ```bash
-   npm install
+   npm run install-deps
+   # or
+   cd clerk-nextjs && npm install
    ```
 
-3. **Setup the database**
+3. **Setup environment variables**
    ```bash
-   npm run setup
+   cd clerk-nextjs
+   cp .env.local.example .env.local
+   # Edit .env.local with your Clerk credentials
    ```
 
-4. **Start development servers**
+4. **Start development server**
    ```bash
    npm run dev
+   # or
+   cd clerk-nextjs && npm run dev
    ```
 
-   This will start both frontend (http://localhost:5173) and backend (http://localhost:3000) servers concurrently.
-
-### Alternative: Run separately
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-**Backend:**
-```bash
-cd backend
-npm install
-npm start
-```
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## 📋 Available Scripts
 
-### Root Scripts
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run build` - Build the frontend for production
-- `npm run start` - Start the backend server
-- `npm run setup` - Initialize the database
-
-### Frontend Scripts
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
-- `npm run preview` - Preview production build
-
-### Backend Scripts
-- `npm start` - Start the server
-- `npm run setup` - Setup database
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run install-deps` - Install dependencies
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-Create `.env` files in both frontend and backend directories:
+Create `.env.local` in the `clerk-nextjs` directory:
 
-**Backend (.env):**
-```
-PORT=3000
-JWT_SECRET=your-secret-key
-DATABASE_PATH=./db.sqlite
-```
-
-**Frontend (.env):**
-```
-VITE_API_URL=http://localhost:3000
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
 ```
 
 ## 🗄️ Database
 
-The application uses SQLite for data persistence. The database schema includes:
-
-- **Users**: User accounts and authentication
+The application uses Supabase for data persistence. The database schema includes:
+- **Users**: User accounts managed by Clerk
 - **Products**: Product catalog with categories
 - **Orders**: Order management and tracking
 - **Categories**: Product categorization
 
 ## 🔐 Authentication
 
-- JWT tokens for session management
-- Password hashing with bcrypt
-- Protected routes for admin functionality
-- User registration and login
-
-## 💳 Payment Integration
-
-- **PayPal**: PayPal React SDK integration
-- **Stripe**: Stripe Elements for secure payments
-- Support for multiple currencies
-
-## 🌐 API Endpoints
-
-### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get product by ID
-- `POST /api/products` - Create new product (Admin)
-- `PUT /api/products/:id` - Update product (Admin)
-- `DELETE /api/products/:id` - Delete product (Admin)
-
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
-
-### Orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders` - Get user orders
-- `GET /api/admin/orders` - Get all orders (Admin)
+- Clerk handles user authentication and session management
+- Protected routes for user-specific functionality
+- User registration and login through Clerk components
+- Social login providers supported
 
 ## 🎨 UI Components
 
 ### Key Components
 - **Cart**: Shopping cart with quantity management
 - **ProductCard**: Product display card
-- **Categories**: Product category navigation
-- **Hero**: Landing page hero section
-- **Admin Panel**: Product and order management
+- **Header**: Navigation with cart and user menu
+- **Footer**: Site information and links
+- **Carousel**: Product showcase slider
 
 ### Styling
 - **Tailwind CSS**: Utility-first styling
-- **Custom CSS**: Additional component styles
+- **Material-UI**: Additional React components
 - **Responsive Design**: Mobile-first approach
 - **RTL Support**: Arabic language support
 
@@ -196,48 +137,29 @@ The application uses SQLite for data persistence. The database schema includes:
 
 - **Home**: Landing page with featured products
 - **Products**: Product catalog with filtering
-- **Product Detail**: Individual product view
 - **Cart**: Shopping cart management
 - **Checkout**: Order completion process
-- **Login/Register**: User authentication
-- **Admin**: Administrative dashboard
+- **Login/Signup**: User authentication
 - **About**: Company information
 - **Contact**: Contact information
-
-## 🔍 SEO & Performance
-
-- **React Helmet**: Dynamic meta tags
-- **Lazy Loading**: Component code splitting
-- **Image Optimization**: Optimized product images
-- **Caching**: Efficient data caching
+- **Favorites**: User wishlist
 
 ## 🧪 Testing
 
 ```bash
-# Frontend testing
-cd frontend
+cd clerk-nextjs
 npm run test
-
-# Backend testing (if implemented)
-cd backend
-npm test
 ```
 
 ## 🚀 Deployment
 
-### Frontend Deployment
+### Build for Production
 ```bash
-cd frontend
 npm run build
-# Deploy the dist/ folder to your hosting service
 ```
 
-### Backend Deployment
-```bash
-cd backend
-npm start
-# Configure your server (Heroku, Vercel, etc.)
-```
+### Deploy on Vercel
+The easiest way to deploy is using the Vercel Platform from the creators of Next.js.
 
 ## 🤝 Contributing
 
@@ -254,9 +176,3 @@ This project is licensed under the ISC License.
 ## 📞 Support
 
 For support, email info@biopara.ma or contact us through the website.
-
-## 🙏 Acknowledgments
-
-- React and Vite communities
-- Open source contributors
-- Moroccan natural product suppliers

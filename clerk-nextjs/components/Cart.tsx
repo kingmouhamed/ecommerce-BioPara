@@ -4,7 +4,31 @@ import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryInfo, setDeliveryInfo }) => {
+interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+interface DeliveryInfo {
+  name: string;
+  phone: string;
+  address: string;
+}
+
+interface CartProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cart: CartItem[];
+  removeFromCart: (id: number) => void;
+  calculateTotal: () => string;
+  deliveryInfo: DeliveryInfo;
+  setDeliveryInfo: (info: DeliveryInfo) => void;
+}
+
+const Cart: React.FC<CartProps> = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryInfo, setDeliveryInfo }) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +55,7 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
     let message = "سلام، بغيت نطلب من المتجر 🛒\n\n📦 المنتجات:\n";
     cart.forEach(item => {
       const subtotal = item.price * item.quantity;
-      message += `- ${item.name} (x${item.quantity}) = ${subtotal} DH\n`;
+      message += `- ${item.title} (x${item.quantity}) = ${subtotal} DH\n`;
     });
     message += `\n💰 المجموع: ${calculateTotal()} DH\n\n`;
     message += `📍 بيانات التوصيل:\n`;
@@ -58,7 +82,7 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
         <div className="p-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">سلة التسوق</h2>
-            <button onClick={onClose} className="p-2 bg-none border-none cursor-pointer">
+            <button onClick={onClose} className="p-2 bg-none border-none cursor-pointer" aria-label="Close cart">
               <X size={24} />
             </button>
           </div>
@@ -69,13 +93,13 @@ const Cart = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryI
             <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
               {cart.map(item => (
                 <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-                  <Image src={item.image ? `/${item.image}` : ''} alt={item.name} width={64} height={64} className="object-cover rounded" />
+                  <Image src={item.image || ''} alt={item.title} width={64} height={64} className="object-cover rounded" />
                   <div className="flex-1">
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-600">{item.price}</p>
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.price} DH</p>
                     <p className="text-sm">الكمية: {item.quantity}</p>
                   </div>
-                  <button onClick={() => removeFromCart(item.id)} className="text-red-500 bg-none border-none cursor-pointer">
+                  <button onClick={() => removeFromCart(item.id)} className="text-red-500 bg-none border-none cursor-pointer" aria-label="Remove item">
                     <X size={20} />
                   </button>
                 </div>

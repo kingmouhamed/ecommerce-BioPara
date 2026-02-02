@@ -13,12 +13,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const { user } = useUser();
-  const cartContext = useCart();
-
-  if (!cartContext) {
-    return null;
-  }
-  const { cartItemCount, setIsCartOpen } = cartContext;
+  const { cartItemCount, setIsCartOpen } = useCart();
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -93,12 +88,12 @@ const Header = () => {
           {/* Header Actions */}
           <div className="hidden md:flex items-center space-x-6 text-gray-700">
             {user ? (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">مرحباً, {user.firstName || user.emailAddresses[0].emailAddress.split('@')[0]}</span>
-                <SignOutButton>
+              <SignOutButton>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">مرحباً, {user.firstName || user.emailAddresses[0].emailAddress.split('@')[0]}</span>
                   <button className="text-sm text-red-600 hover:text-red-800 font-medium">خروج</button>
-                </SignOutButton>
-              </div>
+                </div>
+              </SignOutButton>
             ) : (
               <Link href="/login" className="hover:text-green-700 flex items-center gap-1">
                 <User size={24} />

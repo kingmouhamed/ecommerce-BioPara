@@ -13,7 +13,7 @@ export default function Contact() {
           </div>
           <div>
             <h3 className="font-semibold text-right">الهاتف</h3>
-            <p className="text-right">+212 6XX XXX XXX</p>
+            <p className="text-right">+212 673 02 02 64</p>
           </div>
           <div>
             <h3 className="font-semibold text-right">العنوان</h3>

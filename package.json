@@ -1,6 +1,16 @@
 {
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "lucide-react": "^0.563.0"
-  }
+  "name": "ecommerce-biopara",
+  "version": "1.0.0",
+  "description": "BioPara Ecommerce Platform - Parapharmacie en ligne",
+  "private": true,
+  "scripts": {
+    "dev": "cd clerk-nextjs && npm run dev",
+    "build": "cd clerk-nextjs && npm run build",
+    "start": "cd clerk-nextjs && npm run start",
+    "lint": "cd clerk-nextjs && npm run lint",
+    "install-deps": "cd clerk-nextjs && npm install"
+  },
+  "keywords": ["ecommerce", "parapharmacie", "nextjs", "react", "tailwindcss"],
+  "author": "BioPara",
+  "license": "ISC"
 }
