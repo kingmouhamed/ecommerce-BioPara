@@ -10,6 +10,7 @@ import { useCart } from '../../contexts/CartContext';
 export default function Products() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
+  const searchParam = searchParams.get('search');
   const { addToCart } = useCart();
 
   const [activeCategory, setActiveCategory] = useState(categoryParam || 'Tous');
@@ -24,12 +25,24 @@ export default function Products() {
 
   const filteredProducts = useMemo(() => {
     let filtered = Array.isArray(products) ? [...products] : [];
+    
+    // Filter by search term
+    if (searchParam) {
+      filtered = filtered.filter((product) => 
+        product.name.toLowerCase().includes(searchParam.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchParam.toLowerCase())
+      );
+    }
+    
+    // Filter by category
     if (activeCategory !== 'Tous') {
       filtered = filtered.filter((product) => product.category === activeCategory);
     }
+    
+    // Sort products
     switch (sortBy) {
       case 'price_asc':
-        filtered.sort((a, b) => a.price - a.price);
+        filtered.sort((a, b) => a.price - b.price);
         break;
       case 'price_desc':
         filtered.sort((a, b) => b.price - a.price);
@@ -41,7 +54,7 @@ export default function Products() {
         break;
     }
     return filtered;
-  }, [sortBy, activeCategory]);
+  }, [sortBy, activeCategory, searchParam]);
 
   return (
     <div className="container mx-auto px-4 py-8" dir="rtl">

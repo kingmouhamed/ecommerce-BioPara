@@ -21,8 +21,8 @@ const ProductCard = ({ product, onAddToCart }) => {
     return <div className="flex items-center">{stars}</div>;
   };
 
-  const discountPercentage = product.oldPrice
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+  const discountPercentage = product.originalPrice
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
   return (
@@ -32,7 +32,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <div className="relative aspect-square">
           <Image
             src={product.image || '/placeholder.png'}
-            alt={product.title}
+            alt={product.name}
             fill
             className="object-contain transition-transform duration-300 group-hover:scale-105"
           />
@@ -63,7 +63,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <h3 className="flex-grow text-sm font-semibold text-gray-800 mb-2 h-10">
           <Link href={`/products/${product.id}`} className="hover:text-green-700">
             <span aria-hidden="true" className="absolute inset-0" />
-            {product.title}
+            {product.name}
           </Link>
         </h3>
 
@@ -80,8 +80,8 @@ const ProductCard = ({ product, onAddToCart }) => {
         {/* Price */}
         <div className="flex items-baseline gap-2">
           <p className="text-xl font-bold text-green-700">{product.price} DH</p>
-          {product.oldPrice && (
-            <p className="text-sm text-gray-400 line-through">{product.oldPrice} DH</p>
+          {product.originalPrice && (
+            <p className="text-sm text-gray-400 line-through">{product.originalPrice} DH</p>
           )}
         </div>
       </div>

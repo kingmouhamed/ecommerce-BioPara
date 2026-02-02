@@ -124,7 +124,6 @@ function Header({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
         <Link href="/" className="shrink-0 flex items-center gap-2">
            {/* استبدل المسار أدناه بمسار اللوجو الخاص بك إذا كان مختلفاً */}
            <div className="w-10 h-10 bg-emerald-700 text-white rounded-full flex items-center justify-center font-bold text-xl">B</div>
-           <span className="text-2xl font-bold text-emerald-700">BioPara</span>
         </Link>
 
         <div className="flex-1 max-w-2xl hidden md:flex relative">
@@ -268,7 +267,12 @@ const Footer = () => (
         </div>
       </div>
     </div>
-    <div className="border-t border-gray-700 pt-6 mt-8 text-center text-xs text-gray-500">© 2026 BioPara. Tous droits réservés.</div>
+    <div className="border-t border-gray-700 pt-6 mt-8 text-center text-xs text-gray-500">
+      <div className="flex items-center justify-center gap-2 mb-2">
+        <div className="w-6 h-6 bg-emerald-700 text-white rounded-full flex items-center justify-center font-bold text-xs">B</div>
+      </div>
+      © 2026 BioPara. Tous droits réservés.
+    </div>
   </footer>
 );
 

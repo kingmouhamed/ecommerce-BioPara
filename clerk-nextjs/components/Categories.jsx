@@ -3,17 +3,20 @@ import React from 'react';
 const Categories = ({ activeCategory, onCategoryClick }) => {
   const categories = {
     'Tous': 'الكل',
-    'Visage': 'الوجه',
-    'Corps': 'الجسم',
-    'Cheveux': 'الشعر'
+    'الأعشاب الطبية': 'الأعشاب الطبية',
+    'Parapharmacie': 'الصيدلية'
   };
 
   return (
-    <div className="categories-bar">
+    <div className="flex flex-wrap justify-center gap-2 mb-8">
       {Object.entries(categories).map(([key, value]) => (
         <button
           key={key}
-          className={activeCategory === key ? 'active' : ''}
+          className={`px-6 py-2 rounded-full font-medium transition ${
+            activeCategory === key 
+              ? 'bg-emerald-600 text-white' 
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
           onClick={() => onCategoryClick(key)}
         >
           {value}

@@ -15,20 +15,18 @@ const Header = () => {
   const { user } = useUser();
   const { cartItemCount, setIsCartOpen } = useCart();
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery('');
+      router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
   const navLinks = [
     { href: '/', label: 'الرئيسية' },
     { href: '/products', label: 'جميع المنتجات' },
-    { href: '/products?category=Visage', label: 'العناية بالبشرة' },
-    { href: '/products?category=Cheveux', label: 'العناية بالشعر' },
-    { href: '/products?category=Bio', label: 'منتجات عضوية' },
+    { href: '/products?category=الأعشاب الطبية', label: 'الأعشاب الطبية' },
+    { href: '/products?category=Parapharmacie', label: 'الصيدلية' },
     { href: '/about', label: 'من نحن' },
     { href: '/contact', label: 'اتصل بنا' },
   ];
@@ -65,7 +63,6 @@ const Header = () => {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <Image src="/parapharma-logo.svg" alt="BioPara Logo" width={50} height={50} />
-              <h1 className="text-3xl font-bold text-green-800 hidden sm:block">BioPara</h1>
             </Link>
           </div>
 
