@@ -47,7 +47,7 @@ const ProductList = ({
           <button
             onClick={loadMore}
             style={{
-              backgroundColor: 'var(--primary)',
+              backgroundColor: '#16a34a',
               color: 'white',
               fontWeight: 'bold',
               padding: '12px 30px',

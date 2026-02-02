@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -15,8 +15,25 @@ import {
   X 
 } from "lucide-react";
 
-// --- بيانات تجريبية (Mock Data) ---
-const categories = [
+// بيانات تجريبية محلية
+interface Category {
+  name: string;
+  count: number;
+}
+
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  oldPrice: number;
+  rating: number;
+  reviews: number;
+  image: string;
+  badge: string | null;
+  category: string;
+}
+
+const categories: Category[] = [
   { name: "Cosmétique", count: 120 },
   { name: "Compléments", count: 45 },
   { name: "Huiles Essentielles", count: 30 },
@@ -24,7 +41,7 @@ const categories = [
   { name: "Miel & Ruche", count: 20 },
 ];
 
-const products = Array.from({ length: 12 }).map((_, i) => ({
+const mockProducts: Product[] = Array.from({ length: 12 }).map((_, i) => ({
   id: i + 1,
   title: i % 2 === 0 ? "Huile d'Argan Bio Premium" : "Crème Hydratante Visage",
   price: (i + 1) * 50 + 99,
@@ -42,6 +59,67 @@ export default function ShopPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [priceRange, setPriceRange] = useState(500);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Simulate loading state for demonstration
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Filter products based on all filters
+  const filteredProducts = mockProducts.filter((product: Product) => {
+    // Search filter
+    if (searchQuery && !product.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    
+    // Price filter
+    if (product.price > priceRange) {
+      return false;
+    }
+    
+    // Category filter
+    if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) {
+      return false;
+    }
+    
+    // Rating filter
+    if (selectedRatings.length > 0 && !selectedRatings.some(rating => product.rating >= rating)) {
+      return false;
+    }
+    
+    return true;
+  });
+
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories(prev => [...prev, category]);
+    } else {
+      setSelectedCategories(prev => prev.filter(cat => cat !== category));
+    }
+  };
+
+  const handleRatingChange = (rating: number, checked: boolean) => {
+    if (checked) {
+      setSelectedRatings(prev => [...prev, rating]);
+    } else {
+      setSelectedRatings(prev => prev.filter(r => r !== rating));
+    }
+  };
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategories([]);
+    setSelectedRatings([]);
+    setPriceRange(500);
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans" dir="ltr">
@@ -69,8 +147,17 @@ export default function ShopPage() {
           <div className="mb-8">
             <label htmlFor="search-product" className="font-bold text-gray-900 mb-3">Recherche</label>
             <div className="relative">
-              <input id="search-product" type="text" placeholder="Chercher un produit..." className="w-full border border-gray-300 rounded-lg py-2 pl-3 pr-10 focus:outline-none focus:border-emerald-500" />
-              <Search className="absolute right-3 top-2.5 text-gray-400" size={18} />
+              <input 
+                id="search-product" 
+                type="text" 
+                placeholder="Chercher un produit..." 
+                className="w-full border border-gray-300 rounded-lg py-2 pl-3 pr-10 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-describedby="search-help"
+              />
+              <Search className="absolute right-3 top-2.5 text-gray-400" size={18} aria-hidden="true" />
+              <span id="search-help" className="sr-only">ابحث عن المنتجات بالاسم أو الوصف</span>
             </div>
           </div>
 
@@ -78,10 +165,16 @@ export default function ShopPage() {
           <div className="mb-8 border-b border-gray-100 pb-8">
             <h3 className="font-bold text-gray-900 mb-3 flex justify-between">Catégories <ChevronDown size={16} /></h3>
             <ul className="space-y-2">
-              {categories.map((cat, idx) => (
+              {categories.map((cat: Category, idx: number) => (
                 <li key={idx} className="flex justify-between items-center text-gray-600 hover:text-emerald-700 transition">
                   <label htmlFor={`category-${idx}`} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" id={`category-${idx}`} />
+                    <input 
+                      type="checkbox" 
+                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" 
+                      id={`category-${idx}`}
+                      checked={selectedCategories.includes(cat.name)}
+                      onChange={(e) => handleCategoryChange(cat.name, e.target.checked)}
+                    />
                     <span>{cat.name}</span>
                   </label>
                   <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{cat.count}</span>
@@ -100,11 +193,13 @@ export default function ShopPage() {
               max="2000" 
               value={priceRange} 
               onChange={(e) => setPriceRange(Number(e.target.value))} 
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              aria-describedby="price-help"
             />
             <div className="flex justify-between text-sm text-gray-600 mt-2">
               <span>0 DH</span>
-              <span className="font-bold text-emerald-700">{priceRange} DH</span>
+              <span className="font-bold text-emerald-700" aria-live="polite">{priceRange} DH</span>
+              <span id="price-help" className="sr-only">اختر أقصى سعر للمنتجات</span>
             </div>
           </div>
 
@@ -113,7 +208,13 @@ export default function ShopPage() {
              <h3 className="font-bold text-gray-900 mb-3">Avis Clients</h3>
              {[5, 4, 3, 2].map((stars) => (
                <label htmlFor={`rating-${stars}`} key={stars} className="flex items-center gap-2 mb-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
-                 <input type="checkbox" className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" id={`rating-${stars}`} />
+                 <input 
+                   type="checkbox" 
+                   className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" 
+                   id={`rating-${stars}`}
+                   checked={selectedRatings.includes(stars)}
+                   onChange={(e) => handleRatingChange(stars, e.target.checked)}
+                 />
                  <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
                         <Star key={i} size={14} fill={i < stars ? "currentColor" : "none"} className={i >= stars ? "text-gray-300" : ""} />
@@ -124,9 +225,18 @@ export default function ShopPage() {
              ))}
           </div>
 
-          <button className="w-full bg-emerald-700 text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition" aria-label="تطبيق الفلاتر">
-            Appliquer les filtres
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={clearFilters}
+              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition"
+              aria-label="مسح الفلاتر"
+            >
+              Effacer
+            </button>
+            <button className="flex-1 bg-emerald-700 text-white py-3 rounded-lg font-bold hover:bg-emerald-800 transition" aria-label="تطبيق الفلاتر">
+              Appliquer les filtres
+            </button>
+          </div>
         </aside>
 
         {/* --- Main Content (Products Grid) --- */}
@@ -142,11 +252,11 @@ export default function ShopPage() {
                 >
                     <Filter size={18} /> Filtres
                 </button>
-                <p className="text-gray-500 text-sm hidden sm:block">Affichage de <span className="font-bold text-gray-900">1-12</span> sur 200 résultats</p>
+                <p className="text-gray-500 text-sm hidden sm:block">Affichage de <span className="font-bold text-gray-900">{filteredProducts.length}</span> sur {mockProducts.length} résultats</p>
             </div>
 
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                <select className="border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-emerald-500 bg-white" aria-label="Sort by">
+                <select className="border border-gray-300 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 bg-white" aria-label="Sort by">
                     <option>Trier par: Pertinence</option>
                     <option>Prix: Croissant</option>
                     <option>Prix: Décroissant</option>
@@ -173,8 +283,26 @@ export default function ShopPage() {
           </div>
 
           {/* Products Grid */}
-          <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
-            {products.map((product) => (
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">Aucun produit trouvé</h3>
+              <p className="text-gray-500">Essayez d&apos;ajuster vos filtres ou votre recherche.</p>
+              <button 
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategories([]);
+                  setSelectedRatings([]);
+                  setPriceRange(500);
+                }}
+                className="mt-4 px-4 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition"
+              >
+                إعادة تعيين الفلاتر
+              </button>
+            </div>
+          ) : (
+            <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
+              {filteredProducts.map((product: any) => (
                 <div key={product.id} className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition group ${viewMode === "list" ? "flex flex-row h-48" : ""}`}>
                     
                     {/* Image Section */}
@@ -184,6 +312,11 @@ export default function ShopPage() {
                             alt={product.title} 
                             fill 
                             className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/placeholder-product.png'; // Fallback image
+                            }}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                         {product.badge && (
                             <span className={`absolute top-3 left-3 text-xs font-bold px-2 py-1 rounded text-white ${product.badge === "Nouveau" ? "bg-blue-500" : "bg-red-500"}`}>
@@ -202,7 +335,7 @@ export default function ShopPage() {
                         <div>
                             <span className="text-xs text-gray-400 uppercase tracking-wider">{product.category}</span>
                             <Link href={`/products/${product.id}`}>
-                                <h3 className="font-bold text-gray-800 mb-2 hover:text-emerald-700 transition line-clamp-2">{product.title}</h3>
+                                <h3 className="font-bold text-gray-800 mb-2 hover:text-emerald-700 transition line-clamp-2">{product.name}</h3>
                             </Link>
                             {/* Rating */}
                             <div className="flex items-center gap-1 mb-2">
@@ -227,15 +360,16 @@ export default function ShopPage() {
                     </div>
                 </div>
             ))}
-          </div>
+            </div>
+          )}
 
           {/* Pagination */}
           <div className="mt-12 flex justify-center gap-2">
-            <button className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50" aria-label="الصفحة السابقة">Précédent</button>
+            <button className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50" aria-label="الصفحة السابقة">السابق</button>
             <button className="px-4 py-2 bg-emerald-700 text-white rounded-lg font-bold" aria-label="الصفحة الحالية">1</button>
             <button className="px-4 py-2 border rounded-lg hover:bg-gray-50" aria-label="الصفحة 2">2</button>
             <button className="px-4 py-2 border rounded-lg hover:bg-gray-50" aria-label="الصفحة 3">3</button>
-            <button className="px-4 py-2 border rounded-lg hover:bg-gray-50" aria-label="الصفحة التالية">Suivant</button>
+            <button className="px-4 py-2 border rounded-lg hover:bg-gray-50" aria-label="الصفحة التالية">التالي</button>
           </div>
 
         </main>
