@@ -31,10 +31,11 @@ const ProductCard = ({ product, onAddToCart }) => {
       <Link href={`/products/${product.id}`} className="block overflow-hidden">
         <div className="relative aspect-square">
           <Image
-            src={product.image || '/placeholder.png'}
+            src={product.image || '/placeholder.png?v=2'}
             alt={product.name}
             fill
             className="object-contain transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         </div>
       </Link>
@@ -54,7 +55,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       </div>
       
       {/* Favorite Button */}
-      <button className="absolute top-3 right-3 p-2 rounded-full bg-white/70 text-gray-500 backdrop-blur-sm transition-all duration-300 hover:bg-red-500 hover:text-white focus:outline-none">
+      <button className="absolute top-3 right-3 p-2 rounded-full bg-white/70 text-gray-500 backdrop-blur-sm transition-all duration-300 hover:bg-red-500 hover:text-white focus:outline-none" aria-label="إضافة إلى المفضلة">
         <Heart size={20} />
       </button>
 

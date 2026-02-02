@@ -62,7 +62,7 @@ const Header = () => {
           {/* Brand Section */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/parapharma-logo.svg" alt="BioPara Logo" width={50} height={50} />
+              <Image src="/parapharma-logo.svg?v=2" alt="BioPara Logo" width={50} height={50} priority />
             </Link>
           </div>
 
@@ -87,7 +87,7 @@ const Header = () => {
             {user ? (
               <SignOutButton>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">مرحباً, {user.firstName || user.emailAddresses[0].emailAddress.split('@')[0]}</span>
+                  <span className="text-sm font-medium">مرحباً, {user.firstName || (user.emailAddresses?.[0]?.emailAddress?.split('@')[0] || 'مستخدم')}</span>
                   <button className="text-sm text-red-600 hover:text-red-800 font-medium">خروج</button>
                 </div>
               </SignOutButton>

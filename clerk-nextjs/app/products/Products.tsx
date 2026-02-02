@@ -26,11 +26,20 @@ export default function Products() {
   const filteredProducts = useMemo(() => {
     let filtered = Array.isArray(products) ? [...products] : [];
     
+    // Validate products have required fields
+    filtered = filtered.filter(product => 
+      product && 
+      typeof product.id === 'number' && 
+      typeof product.name === 'string' && 
+      typeof product.price === 'number' &&
+      typeof product.category === 'string'
+    );
+    
     // Filter by search term
     if (searchParam) {
       filtered = filtered.filter((product) => 
         product.name.toLowerCase().includes(searchParam.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchParam.toLowerCase())
+        (product.description && product.description.toLowerCase().includes(searchParam.toLowerCase()))
       );
     }
     
@@ -48,7 +57,7 @@ export default function Products() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating_desc':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       default:
         break;
@@ -66,14 +75,22 @@ export default function Products() {
       </div>
       <Categories activeCategory={activeCategory} onCategoryClick={setActiveCategory} />
       <div className="mt-8">
-        <ProductList
-          products={filteredProducts}
-          onAddToCart={addToCart}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          visibleProducts={visibleProducts}
-          loadMore={() => setVisibleProducts((prev) => prev + 10)}
-        />
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">لا توجد منتجات متاحة</h3>
+            <p className="text-gray-500">لم يتم العثور على منتجات تطابق معايير البحث الخاصة بك. حاول تعديل الفلاتر أو البحث.</p>
+          </div>
+        ) : (
+          <ProductList
+            products={filteredProducts}
+            onAddToCart={addToCart}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            visibleProducts={visibleProducts}
+            loadMore={() => setVisibleProducts((prev) => prev + 10)}
+          />
+        )}
       </div>
     </div>
   );

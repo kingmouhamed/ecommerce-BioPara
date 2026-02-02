@@ -1,6 +1,7 @@
 "use client"; // 👈 هذا السطر هو الحل السحري
 
 import React from 'react';
+import ErrorBoundary from './ErrorBoundary';
 // تأكد من مسار الاستدعاء حسب مكان ملفاتك
 import { CartProvider } from '../contexts/CartContext'; 
 // import { AuthProvider } from '../contexts/AuthContext'; // فعّل هذا السطر إذا كان لديك AuthContext
@@ -8,9 +9,11 @@ import { CartProvider } from '../contexts/CartContext';
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     // <AuthProvider>  <-- إذا كان لديك AuthProvider
-      <CartProvider>
-        {children}
-      </CartProvider>
+      <ErrorBoundary>
+        <CartProvider>
+          {children}
+        </CartProvider>
+      </ErrorBoundary>
     // </AuthProvider>
   );
 }

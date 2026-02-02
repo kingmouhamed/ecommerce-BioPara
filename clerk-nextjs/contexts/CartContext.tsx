@@ -49,23 +49,61 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     try {
       const storedCart = localStorage.getItem('cart');
       if (storedCart) {
-        setCart(JSON.parse(storedCart));
+        const parsedCart = JSON.parse(storedCart);
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        }
       }
     } catch (error) {
       console.error("Failed to parse cart from localStorage", error);
+      // Clear corrupted data
+      try {
+        localStorage.removeItem('cart');
+      } catch (clearError) {
+        console.error("Failed to clear corrupted cart data", clearError);
+      }
     }
   }, []);
 
+  // Debounced localStorage write for performance
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    const timeoutId = setTimeout(() => {
+      try {
+        if (cart.length > 0) {
+          localStorage.setItem('cart', JSON.stringify(cart));
+        } else {
+          localStorage.removeItem('cart');
+        }
+      } catch (error) {
+        console.error("Failed to save cart to localStorage", error);
+        // Handle quota exceeded error
+        if (error instanceof Error && error.name === 'QuotaExceededError') {
+          console.warn('Storage quota exceeded, cart data not saved');
+        }
+      }
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
   }, [cart]);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>, quantity = 1) => {
+    // Validate quantity
+    if (quantity <= 0 || quantity > 99) {
+      console.warn('Invalid quantity:', quantity);
+      return;
+    }
+
     setCart(prevCart => {
       const existingProduct = prevCart.find(item => item.id === product.id);
       if (existingProduct) {
+        const newQuantity = existingProduct.quantity + quantity;
+        // Check if new quantity exceeds limit
+        if (newQuantity > 99) {
+          console.warn('Quantity exceeds maximum limit:', newQuantity);
+          return prevCart;
+        }
         return prevCart.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+          item.id === product.id ? { ...item, quantity: newQuantity } : item
         );
       }
       return [...prevCart, { ...product, quantity }];
@@ -77,10 +115,16 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   };
 
   const updateQuantity = (productId: number, quantity: number) => {
+    // Validate quantity
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
+    if (quantity > 99) {
+      console.warn('Quantity exceeds maximum limit:', quantity);
+      return;
+    }
+    
     setCart(prevCart =>
       prevCart.map(item =>
         item.id === productId ? { ...item, quantity } : item
