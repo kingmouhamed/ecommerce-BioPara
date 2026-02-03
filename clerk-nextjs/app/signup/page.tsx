@@ -2,98 +2,42 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
+import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 
 export default function SignupPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const { supabase } = useAuth();
   const router = useRouter();
+  const { isSignedIn } = useUser();
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setSuccess(null);
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError("حدث خطأ ما. قد يكون البريد الإلكتروني مستخدماً بالفعل.");
-    } else {
-        setSuccess("المرجو التحقق من بريدك الإلكتروني لتأكيد التسجيل. سيتم توجيهك إلى صفحة تسجيل الدخول.");
-        setTimeout(() => {
-            router.push('/login');
-        }, 5000);
-    }
-  };
+  if (isSignedIn) {
+    router.push('/');
+    return null;
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50" dir="rtl">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-900">إنشاء حساب جديد</h2>
-        {success && (
-          <div className="p-3 text-sm text-green-700 bg-green-100 border border-green-400 rounded-md">
-            {success}
-          </div>
-        )}
-        <form className="space-y-6" onSubmit={handleSignup}>
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 text-right">
-              البريد الإلكتروني
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 text-right"
-            >
-              كلمة المرور
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 mt-1 text-gray-900 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 text-right"
-            />
-          </div>
-          {error && (
-            <div className="p-3 text-sm text-red-700 bg-red-100 border border-red-400 rounded-md">
-              {error}
-            </div>
-          )}
-          <div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              إنشاء حساب
+        
+        <div className="space-y-4">
+          <SignUpButton mode="modal">
+            <button className="w-full px-4 py-3 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition">
+              إنشاء حساب جديد
             </button>
-          </div>
-        </form>
+          </SignUpButton>
+          
+          <div className="text-center text-gray-500">أو</div>
+          
+          <SignInButton mode="modal">
+            <button className="w-full px-4 py-3 font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition">
+              تسجيل الدخول
+            </button>
+          </SignInButton>
+        </div>
+        
         <p className="text-sm text-center text-gray-600">
-          لديك حساب بالفعل؟{' '}
-          <Link href="/login" className="font-medium text-green-600 hover:text-green-500">
-            تسجيل الدخول
+          <Link href="/" className="font-medium text-green-600 hover:text-green-500">
+            العودة للصفحة الرئيسية
           </Link>
         </p>
       </div>
