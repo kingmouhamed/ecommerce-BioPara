@@ -1,0 +1,161 @@
+"use client";
+import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+
+interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
+interface DeliveryInfo {
+  name: string;
+  phone: string;
+  address: string;
+}
+
+interface CartProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cart: CartItem[];
+  removeFromCart: (id: number) => void;
+  calculateTotal: () => string;
+  deliveryInfo: DeliveryInfo;
+  setDeliveryInfo: (info: DeliveryInfo) => void;
+}
+
+const Cart: React.FC<CartProps> = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryInfo, setDeliveryInfo }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isOpen) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [isOpen]);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  const handleCheckout = () => {
+    if (cart.length === 0) {
+      alert("سلتك فارغة!");
+      return;
+    }
+    if (!deliveryInfo.name || !deliveryInfo.phone || !deliveryInfo.address) {
+      alert("الرجاء إدخال جميع بيانات التوصيل.");
+      return;
+    }
+
+    // Build WhatsApp message
+    let message = "سلام، بغيت نطلب من المتجر 🛒\n\n📦 المنتجات:\n";
+    cart.forEach(item => {
+      const subtotal = item.price * item.quantity;
+      message += `- ${item.title} (x${item.quantity}) = ${subtotal} DH\n`;
+    });
+    message += `\n💰 المجموع: ${calculateTotal()} DH\n\n`;
+    message += `📍 بيانات التوصيل:\n`;
+    message += `الاسم: ${deliveryInfo.name}\n`;
+    message += `رقم الهاتف: ${deliveryInfo.phone}\n`;
+    message += `العنوان: ${deliveryInfo.address}\n\n`;
+    message += "شكرا 🙏";
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/212673020264?text=${encodedMessage}`;
+
+    // Open WhatsApp
+    window.open(whatsappUrl, '_blank');
+
+    onClose();
+  };
+
+  const cartStyle = 'w-full min-h-screen flex';
+  const sidebarStyle = 'relative ml-auto w-full max-w-sm bg-white h-full flex flex-col shadow-lg';
+
+  return (
+    <div className={cartStyle}>
+      <div className={sidebarStyle}>
+        <div className="p-6 flex-shrink-0">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold">سلة التسوق</h2>
+            <button onClick={onClose} className="p-2 bg-none border-none cursor-pointer" aria-label="Close cart">
+              <X size={24} />
+            </button>
+          </div>
+
+          {cart.length === 0 ? (
+            <p className="text-center py-10 text-gray-600">السلة فارغة</p>
+          ) : (
+            <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
+              {cart.map(item => (
+                <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
+                  <Image src={item.image || ''} alt={item.title} width={64} height={64} className="object-cover rounded" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-600">{item.price} DH</p>
+                    <p className="text-sm">الكمية: {item.quantity}</p>
+                  </div>
+                  <button onClick={() => removeFromCart(item.id)} className="text-red-500 bg-none border-none cursor-pointer" aria-label="Remove item">
+                    <X size={20} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {cart.length > 0 && (
+          <div className="p-6 mt-auto border-t border-gray-300">
+            <div className="flex justify-between text-xl font-bold mb-4">
+              <span>المجموع:</span>
+              <span>{calculateTotal()} DH</span>
+            </div>
+            <div className="flex flex-col gap-4 mb-6">
+              <h3 className="text-lg font-semibold">بيانات التوصيل</h3>
+              <input
+                type="text"
+                placeholder="الاسم"
+                value={deliveryInfo.name}
+                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, name: e.target.value })}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              />
+              <input
+                type="tel"
+                placeholder="رقم الهاتف"
+                value={deliveryInfo.phone}
+                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, phone: e.target.value })}
+                className="w-full p-3 border border-gray-300 rounded-lg"
+              />
+              <textarea
+                placeholder="العنوان"
+                value={deliveryInfo.address}
+                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, address: e.target.value })}
+                className="w-full p-3 border border-gray-300 rounded-lg min-h-24"
+              ></textarea>
+            </div>
+            {deliveryInfo.name && deliveryInfo.phone && deliveryInfo.address && (
+              <div className="p-4 bg-gray-100 rounded-lg mb-6">
+                <h3 className="text-lg font-semibold mb-4">معلومات المشتري</h3>
+                <p><strong>الاسم:</strong> {deliveryInfo.name}</p>
+                <p><strong>رقم الهاتف:</strong> {deliveryInfo.phone}</p>
+                <p><strong>العنوان:</strong> {deliveryInfo.address}</p>
+              </div>
+            )}
+            <button
+              onClick={handleCheckout}
+              className="w-full text-lg bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700"
+            >
+              إرسال الطلب عبر واتساب
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Cart;

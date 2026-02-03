@@ -1,0 +1,29 @@
+export const products = [
+  // منتجات الأعشاب الطبية
+  { "id": 1, "name": "عشبة الخزامى (Lavande)", "title": "عشبة الخزامى (Lavande)", "category": "الأعشاب الطبية", "price": 25, "image": "/products1.png?v=3", "reviews": 120, "rating": 4.9, "description": "تهدئ وتريح الجهاز العصبي، مثالية للاسترخاء والنوم." },
+  { "id": 2, "name": "إكليل الجبل (Romarin)", "title": "إكليل الجبل (Romarin)", "category": "الأعشاب الطبية", "price": 18, "originalPrice": 25, "image": "/products2.png?v=3", "reviews": 95, "rating": 4.7, "description": "يحسن الذاكرة وينشط الدورة الدموية." },
+  { "id": 3, "name": "البابونج الطبيعي", "title": "البابونج الطبيعي", "category": "الأعشاب الطبية", "price": 30, "image": "/products3.png?v=3", "reviews": 85, "rating": 4.8, "description": "يساعد على الاسترخاء والنوم الهادئ." },
+  { "id": 4, "name": "زعتر جبل أطلس", "title": "زعتر جبل أطلس", "category": "الأعشاب الطبية", "price": 35, "image": "/products4.png?v=3", "reviews": 110, "rating": 4.6, "description": "مضاد حيوي طبيعي ومعالج للجهاز التنفسي." },
+  { "id": 5, "name": "عشبة القدسين", "title": "عشبة القدسين", "category": "الأعشاب الطبية", "price": 65, "originalPrice": 80, "image": "/products5.png?v=3", "reviews": 45, "rating": 4.8, "description": "تقوي جهاز المناعة وتعالج الالتهابات." },
+  { "id": 11, "name": "عشبة النافع", "title": "عشبة النافع", "category": "الأعشاب الطبية", "price": 60, "image": "/products11.png?v=3", "reviews": 32, "rating": 4.6, "description": "معروفة بخصائصها المضادة للأكسدة والمقوية للصحة." },
+  { "id": 13, "name": "عشبة المورينجا", "title": "عشبة المورينجا", "category": "الأعشاب الطبية", "price": 45, "image": "/products13.png?v=3", "reviews": 88, "rating": 4.5, "description": "غنية بالفيتامينات وتعزز الطاقة والحيوية." },
+  { "id": 14, "name": "الجينسنغ المغربي", "title": "الجينسنغ المغربي", "category": "الأعشاب الطبية", "price": 90, "image": "/products14.png?v=3", "reviews": 102, "rating": 4.8, "description": "يعزز القوة البدنية ويزيل التعب." },
+  { "id": 15, "name": "ورق الزيتون", "title": "ورق الزيتون", "category": "الأعشاب الطبية", "price": 20, "image": "/products15.png?v=3", "reviews": 75, "rating": 4.3, "description": "يخفض ضغط الدم وينظم سكر الدم." },
+  { "id": 19, "name": "مسحوق الكركم", "title": "مسحوق الكركم", "category": "الأعشاب الطبية", "price": 22, "originalPrice": 30, "image": "/products19.png?v=3", "reviews": 150, "rating": 4.8, "description": "مضاد قوي للالتهابات ويعزز صحة المفاصل." },
+  { "id": 20, "name": "بذور الشيا", "title": "بذور الشيا", "category": "الأعشاب الطبية", "price": 40, "image": "/products17.png?v=3", "reviews": 130, "rating": 4.7, "description": "غنية بأوميغا 3 وتحسن صحة القلب." },
+  { "id": 21, "name": "عرق السوس", "title": "عرق السوس", "category": "الأعشاب الطبية", "price": 30, "image": "/products21.png?v=3", "reviews": 90, "rating": 4.4, "description": "يساعد على علاج مشاكل الجهاز الهضمي." },
+  { "id": 24, "name": "زيت الزيتون البكر", "title": "زيت الزيتون البكر", "category": "الأعشاب الطبية", "price": 55, "originalPrice": 70, "image": "/products24.png?v=3", "reviews": 67, "rating": 4.6, "description": "زيت طبيعي غني بالفيتامينات ومضادات الأكسدة." },
+
+  // منتجات Parapharmacie
+  { "id": 6, "name": "زيت الأركان النقي", "title": "زيت الأركان النقي", "category": "Parapharmacie", "price": 150, "originalPrice": 180, "image": "/products6.png?v=3", "reviews": 200, "rating": 4.9, "isNew": true, "description": "يغذي ويرطب الشعر والبشرة بعمق." },
+  { "id": 7, "name": "سيروم فيتامين C", "title": "سيروم فيتامين C", "category": "Parapharmacie", "price": 220, "image": "/products7.png?v=3", "reviews": 150, "rating": 4.7, "description": "يعزز إشراقة البشرة ويحارب علامات التقدم في السن." },
+  { "id": 8, "name": "واقي شمس SPF50", "title": "واقي شمس SPF50", "category": "Parapharmacie", "price": 120, "originalPrice": 140, "image": "/products8.png?v=3", "reviews": 180, "rating": 4.8, "description": "حماية عالية من أشعة الشمس UVA/UVB." },
+  { "id": 9, "name": "صابون النيلة الزرقاء", "title": "صابون النيلة الزرقاء", "category": "Parapharmacie", "price": 45, "image": "/products9.png?v=3", "reviews": 90, "rating": 4.5, "description": "يفتح ويوحد لون البشرة بشكل طبيعي." },
+  { "id": 10, "name": "كريم الترطيب الليلي", "title": "كريم الترطيب الليلي", "category": "Parapharmacie", "price": 110, "image": "/products10.png?v=3", "reviews": 130, "rating": 4.6, "description": "يجدد ويرطب البشرة أثناء الليل." },
+  { "id": 12, "name": "علاج البشارة", "title": "علاج البشارة", "category": "Parapharmacie", "price": 270, "image": "/products12.png?v=3", "reviews": 75, "rating": 4.4, "description": "حل فعال لمشاكل البشرة الشائعة." },
+  { "id": 16, "name": "قناع الطين الأخضر", "title": "قناع الطين الأخضر", "category": "Parapharmacie", "price": 50, "originalPrice": 65, "image": "/products16.png?v=3", "reviews": 115, "rating": 4.6, "description": "ينقي البشرة الدهنية ويزيل الشوائب." },
+  { "id": 17, "name": "ماء الورد المقطر", "title": "ماء الورد المقطر", "category": "Parapharmacie", "price": 35, "image": "/products20.png?v=3", "reviews": 180, "rating": 4.9, "description": "ينعش ويهدئ البشرة، مثالي لجميع أنواع البشرة." },
+  { "id": 18, "name": "زبدة الشيا الخام", "title": "زبدة الشيا الخام", "category": "Parapharmacie", "price": 80, "image": "/products18.png?v=3", "reviews": 95, "rating": 4.7, "description": "ترطيب عميق للجسم والمناطق الجافة." },
+  { "id": 22, "name": "كريم النهار بفيتامين E", "title": "كريم النهار بفيتامين E", "category": "Parapharmacie", "price": 130, "image": "/products22.png?v=3", "reviews": 110, "rating": 4.5, "description": "يحمي البشرة من الأضرار اليومية ويرطبها." },
+  { "id": 23, "name": "مقشر الجسم بالملح البحري", "title": "مقشر الجسم بالملح البحري", "category": "Parapharmacie", "price": 70, "originalPrice": 85, "image": "/products23.png?v=3", "reviews": 140, "rating": 4.6, "description": "يزيل الجلد الميت وينعم البشرة." }
+]
