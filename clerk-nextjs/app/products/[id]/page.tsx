@@ -33,6 +33,15 @@ interface Product {
   category: string;
 }
 
+interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  date: string;
+  comment: string;
+  helpful: number;
+}
+
 const categories: Category[] = [
   { name: "Cosmétique", count: 120 },
   { name: "Compléments", count: 45 },
@@ -91,7 +100,7 @@ export default function ShopPage() {
     }
     
     // Rating filter
-    if (selectedRatings.length > 0 && !selectedRatings.some(rating => product.rating >= rating)) {
+    if (selectedRatings.length > 0 && !selectedRatings.some((rating: number) => product.rating >= rating)) {
       return false;
     }
     
@@ -100,17 +109,17 @@ export default function ShopPage() {
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     if (checked) {
-      setSelectedCategories(prev => [...prev, category]);
+      setSelectedCategories((prev: string[]) => [...prev, category]);
     } else {
-      setSelectedCategories(prev => prev.filter(cat => cat !== category));
+      setSelectedCategories((prev: string[]) => prev.filter((cat: string) => cat !== category));
     }
   };
 
   const handleRatingChange = (rating: number, checked: boolean) => {
     if (checked) {
-      setSelectedRatings(prev => [...prev, rating]);
+      setSelectedRatings((prev: number[]) => [...prev, rating]);
     } else {
-      setSelectedRatings(prev => prev.filter(r => r !== rating));
+      setSelectedRatings((prev: number[]) => prev.filter((r: number) => r !== rating));
     }
   };
 
@@ -153,7 +162,7 @@ export default function ShopPage() {
                 placeholder="Chercher un produit..." 
                 className="w-full border border-gray-300 rounded-lg py-2 pl-3 pr-10 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 aria-describedby="search-help"
               />
               <Search className="absolute right-3 top-2.5 text-gray-400" size={18} aria-hidden="true" />
@@ -173,7 +182,7 @@ export default function ShopPage() {
                       className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" 
                       id={`category-${idx}`}
                       checked={selectedCategories.includes(cat.name)}
-                      onChange={(e) => handleCategoryChange(cat.name, e.target.checked)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleCategoryChange(cat.name, e.target.checked)}
                     />
                     <span>{cat.name}</span>
                   </label>
@@ -192,7 +201,7 @@ export default function ShopPage() {
               min="0" 
               max="2000" 
               value={priceRange} 
-              onChange={(e) => setPriceRange(Number(e.target.value))} 
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPriceRange(Number(e.target.value))} 
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               aria-describedby="price-help"
             />
@@ -213,7 +222,7 @@ export default function ShopPage() {
                    className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" 
                    id={`rating-${stars}`}
                    checked={selectedRatings.includes(stars)}
-                   onChange={(e) => handleRatingChange(stars, e.target.checked)}
+                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleRatingChange(stars, e.target.checked)}
                  />
                  <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
@@ -302,7 +311,7 @@ export default function ShopPage() {
             </div>
           ) : (
             <div className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}>
-              {filteredProducts.map((product: any) => (
+              {filteredProducts.map((product: Product) => (
                 <div key={product.id} className={`bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition group ${viewMode === "list" ? "flex flex-row h-48" : ""}`}>
                     
                     {/* Image Section */}
@@ -312,7 +321,7 @@ export default function ShopPage() {
                             alt={product.title} 
                             fill 
                             className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                            onError={(e) => {
+                            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/placeholder-product.png'; // Fallback image
                             }}
@@ -335,7 +344,7 @@ export default function ShopPage() {
                         <div>
                             <span className="text-xs text-gray-400 uppercase tracking-wider">{product.category}</span>
                             <Link href={`/products/${product.id}`}>
-                                <h3 className="font-bold text-gray-800 mb-2 hover:text-emerald-700 transition line-clamp-2">{product.name}</h3>
+                                <h3 className="font-bold text-gray-800 mb-2 hover:text-emerald-700 transition line-clamp-2">{product.title}</h3>
                             </Link>
                             {/* Rating */}
                             <div className="flex items-center gap-1 mb-2">

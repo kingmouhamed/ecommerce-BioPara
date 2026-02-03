@@ -27,6 +27,7 @@ const Header = () => {
     { href: '/products', label: 'جميع المنتجات' },
     { href: '/products?category=الأعشاب الطبية', label: 'الأعشاب الطبية' },
     { href: '/products?category=Parapharmacie', label: 'الصيدلية' },
+    { href: '/promotions', label: 'العروض' },
     { href: '/about', label: 'من نحن' },
     { href: '/contact', label: 'اتصل بنا' },
   ];
@@ -62,7 +63,7 @@ const Header = () => {
           {/* Brand Section */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/parapharma-logo.svg?v=2" alt="BioPara Logo" width={50} height={50} priority />
+              <Image src="/biopara-logo.png?v=5" alt="BioPara Logo" width={150} height={60} priority />
             </Link>
           </div>
 

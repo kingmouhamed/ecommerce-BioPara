@@ -168,7 +168,7 @@ export default function CartPage() {
                 </div>
 
                 <Link href="/checkout" className="block w-full bg-emerald-700 text-white text-center py-4 rounded-lg font-bold hover:bg-emerald-800 transition shadow-lg shadow-emerald-200">
-                    Passer à la caisse
+                    إتمام الطلب
                 </Link>
 
                 {/* Trust Badges */}
