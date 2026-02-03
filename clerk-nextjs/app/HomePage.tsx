@@ -307,7 +307,7 @@ const HeroSection = () => (
       {/* Main Banner */}
       <div className="col-span-1 md:col-span-3 bg-emerald-100 rounded-md flex items-center justify-center min-h-[400px] relative overflow-hidden group cursor-pointer">
         <Image
-          src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1000&auto=format&fit=crop"
+          src="https://images.unsplash.com/photo-1543286986-312653bc9148?q=80&w=1000&auto=format&fit=crop"
           alt="Promo"
           fill
           className="object-cover opacity-90 transition transform group-hover:scale-105"
