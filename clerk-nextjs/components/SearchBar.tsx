@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Search, X, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -31,8 +31,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // بيانات تجريبية للاقتراحات
-  const mockSuggestions: Suggestion[] = [
+  // بيانات تجريبية للاقتراحات مع useMemo
+  const mockSuggestions = useMemo<Suggestion[]>(() => [
     { id: 1, text: "زيت الأركان", type: "product", url: "/products?search=زيت الأركان" },
     { id: 2, text: "عشبة الخزامى", type: "product", url: "/products?search=عشبة الخزامى" },
     { id: 3, text: "العناية بالبشرة", type: "category", url: "/category/visage" },
@@ -41,7 +41,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     { id: 6, text: "Parapharmacie", type: "category", url: "/products?category=Parapharmacie" },
     { id: 7, text: "سيروم فيتامين C", type: "product", url: "/products?search=سيروم فيتامين C" },
     { id: 8, text: "واقي شمس", type: "product", url: "/products?search=واقي شمس" },
-  ];
+  ], []);
 
   // تصفية الاقتراحات بناءً على البحث
   useEffect(() => {
@@ -64,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, mockSuggestions]);
 
   const handleSearch = (searchQuery: string = query) => {
     if (searchQuery.trim()) {
@@ -214,14 +214,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     onClick={() => handleSearch()}
                     className="w-full text-center text-sm text-emerald-600 hover:text-emerald-700 font-medium"
                   >
-                    عرض جميع نتائج البحث لـ "{query}"
+                    عرض جميع نتائج البحث لـ &quot;{query}&quot;
                   </button>
                 </div>
               </>
             ) : query ? (
               <div className="p-4 text-center text-gray-500">
                 <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                <p>لم يتم العثور على نتائج لـ "{query}"</p>
+                <p>لم يتم العثور على نتائج لـ &quot;{query}&quot;</p>
                 <p className="text-sm mt-1">جرب كلمات مفتاحية مختلفة</p>
               </div>
             ) : null}
