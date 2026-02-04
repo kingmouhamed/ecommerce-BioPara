@@ -31,10 +31,10 @@ const ProductRow = ({ title, subtitle, href, products, type, totalProducts }: Pr
            <p className="text-sm text-gray-500">{subtitle}</p>
         </div>
         <Link href={href} className={`${linkColor} font-bold text-sm hover:underline`}>
-          Voir tout ({totalProducts})
+          عرض الكل ({totalProducts})
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
         {products.map(product => <ProductCard key={product.id} product={product} />)}
       </div>
     </section>

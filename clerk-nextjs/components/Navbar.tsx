@@ -104,7 +104,7 @@ interface NavbarProps {
   cartItemCount: number;
 }
 
-function Header({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
+function Navbar({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
       <TopBar />
@@ -205,5 +205,5 @@ function Header({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
   );
 }
 
-export default Header;
+export default Navbar;
 export { MobileMenu };
