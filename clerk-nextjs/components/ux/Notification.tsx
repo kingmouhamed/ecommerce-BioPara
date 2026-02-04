@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { X, Check, AlertCircle, Info, AlertTriangle, XCircle, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -240,7 +241,11 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض السلة",
         onClick: () => {
-          window.location.href = "/cart";
+          // Use router instead of window.location to avoid SSR issues
+          const router = useRouter();
+          if (typeof window !== 'undefined') {
+            router.push('/cart');
+          }
         }
       }
     });
@@ -254,7 +259,10 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض المفضلة",
         onClick: () => {
-          window.location.href = "/favorites";
+          const router = useRouter();
+          if (typeof window !== 'undefined') {
+            router.push('/favorites');
+          }
         }
       }
     });
@@ -269,7 +277,10 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض الطلب",
         onClick: () => {
-          window.location.href = `/orders/${orderNumber}`;
+          const router = useRouter();
+          if (typeof window !== 'undefined') {
+            router.push(`/orders/${orderNumber}`);
+          }
         }
       }
     });
@@ -283,7 +294,10 @@ export const useNotificationHelpers = () => {
       action: {
         label: "تسجيل الدخول",
         onClick: () => {
-          window.location.href = "/login";
+          const router = useRouter();
+          if (typeof window !== 'undefined') {
+            router.push('/login');
+          }
         }
       }
     });
