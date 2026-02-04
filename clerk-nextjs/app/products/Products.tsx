@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductList from '../../components/ProductList';
-import Categories from '../../components/Categories';
+import CategoriesGrid from '../../components/CategoriesGrid';
 import { products } from '../../products';
 import { useCart } from '../../contexts/CartContext';
 
@@ -73,7 +73,6 @@ export default function Products() {
           مجموعة مختارة من أفضل المنتجات الطبيعية والعضوية للعناية بصحتك وجمالك.
         </p>
       </div>
-      <Categories activeCategory={activeCategory} onCategoryClick={setActiveCategory} />
       <div className="mt-8">
         {filteredProducts.length === 0 ? (
           <div className="text-center py-12">
@@ -83,12 +82,9 @@ export default function Products() {
           </div>
         ) : (
           <ProductList
+            title="المنتجات"
             products={filteredProducts}
-            onAddToCart={addToCart}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            visibleProducts={visibleProducts}
-            loadMore={() => setVisibleProducts((prev) => prev + 10)}
+            addToCart={addToCart}
           />
         )}
       </div>

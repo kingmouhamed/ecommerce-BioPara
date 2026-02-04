@@ -2,24 +2,30 @@
 "use client";
 
 import React from "react";
+import { useCart } from "../contexts/CartContext";
 import { mockProducts } from "../data/products";
 import type { Product } from "../data/products";
 
-// Import modular components
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import FeaturesStrip from "@/components/FeaturesStrip";
-import ProductRow from "@/components/ProductRow";
-import PromoBanner from "@/components/PromoBanner";
-import Footer from "@/components/Footer";
-import Brands from "@/components/Brands";
-import CategoriesGrid from "@/components/CategoriesGrid";
-import Newsletter from "@/components/Newsletter";
-import Loyalty from "@/components/Loyalty";
-import FeaturedTabs from "@/components/FeaturedTabs";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
+// Import main components
+import Navbar from "../components/Navbar";
+import Hero from "../components/Hero";
+import FeaturesStrip from "../components/FeaturesStrip";
+import ProductList from "../components/ProductList";
+import Footer from "../components/Footer";
+
+// Import additional components
+import CategoriesGrid from "../components/CategoriesGrid";
+import Brands from "../components/Brands";
+import FeaturedTabs from "../components/FeaturedTabs";
+import PromoBanner from "../components/PromoBanner";
+import Loyalty from "../components/Loyalty";
+import Newsletter from "../components/Newsletter";
+import WhatsAppWidget from "../components/WhatsAppWidget";
 
 export default function HomePage() {
+  const { addToCart, cartItemCount } = useCart();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+
   // Filter products for different sections
   const paraProducts = mockProducts.filter((p) => p.type === "para");
   const herbalProducts = mockProducts.filter((p) => p.type === "herbal");
@@ -30,20 +36,20 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
-      <Header />
+      <Navbar onOpenMobileMenu={() => setMobileMenuOpen(true)} cartItemCount={cartItemCount} />
       <main>
-        <HeroSection />
+        <Hero />
         <FeaturesStrip />
         <CategoriesGrid />
 
         {/* Parapharmacie Products */}
-        <ProductRow
-          title="عروض الصيدلية"
+        <ProductList
+          title="الأكثر مبيعاً في شبه الصيدلية"
           subtitle="أفضل الماركات العالمية للعناية بالبشرة"
-          href="/products?category=Parapharmacie"
-          products={paraProducts.slice(0, 10)}
+          products={paraProducts.slice(0, 8)}
+          addToCart={addToCart}
+          viewAllLink="/products?category=Parapharmacie"
           type="para"
-          totalProducts={paraProducts.length}
         />
 
         <Brands />
@@ -55,13 +61,13 @@ export default function HomePage() {
         <PromoBanner />
 
         {/* Herbalism Products */}
-        <ProductRow
-          title="قسم الأعشاب الطبيعية"
+        <ProductList
+          title="مختارات طبيعية وعضوية"
           subtitle="عودة إلى الطبيعة مع منتجاتنا العضوية"
-          href="/products?category=الأعشاب الطبية"
-          products={herbalProducts.slice(0, 10)}
+          products={herbalProducts.slice(0, 8)}
+          addToCart={addToCart}
+          viewAllLink="/products?category=الأعشاب الطبية"
           type="herbal"
-          totalProducts={herbalProducts.length}
         />
 
         <Loyalty />
