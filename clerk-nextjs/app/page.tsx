@@ -7,7 +7,7 @@ import { mockProducts } from "../data/products";
 import type { Product } from "../data/products";
 
 // Import main components
-import Navbar from "../components/Navbar";
+import Navbar, { MobileMenu } from "../components/Navbar";
 import Hero from "../components/Hero";
 import FeaturesStrip from "../components/FeaturesStrip";
 import ProductList from "../components/ProductList";
@@ -37,6 +37,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <Navbar onOpenMobileMenu={() => setMobileMenuOpen(true)} cartItemCount={cartItemCount} />
+      <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <main>
         <Hero />
         <FeaturesStrip />
@@ -62,8 +63,8 @@ export default function HomePage() {
 
         {/* Herbalism Products */}
         <ProductList
-          title="مختارات طبيعية وعضوية"
-          subtitle="عودة إلى الطبيعة مع منتجاتنا العضوية"
+          title="الأكثر مبيعاً في الأعشاب الطبية"
+          subtitle="منتجات طبيعية 100% للعناية بصحتك"
           products={herbalProducts.slice(0, 8)}
           addToCart={addToCart}
           viewAllLink="/products?category=الأعشاب الطبية"
