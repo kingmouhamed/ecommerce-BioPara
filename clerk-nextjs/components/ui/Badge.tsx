@@ -114,6 +114,7 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
           <button
             type="button"
             onClick={onRemove}
+            aria-label="إزالة"
             className={cn(
               "mr-1 rounded-full hover:bg-black/10 transition-colors",
               iconSizeClasses[size]

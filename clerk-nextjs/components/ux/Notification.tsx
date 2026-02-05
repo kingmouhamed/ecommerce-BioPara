@@ -42,10 +42,14 @@ export const useNotifications = () => {
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const removeNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  }, []);
+
   const addNotification = useCallback((notification: Omit<Notification, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newNotification = { ...notification, id };
-    
+
     setNotifications(prev => [...prev, newNotification]);
 
     // إزالة الإشعار تلقائياً إذا لم يكن مستمراً
@@ -55,11 +59,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         removeNotification(id);
       }, duration);
     }
-  }, []);
-
-  const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  }, []);
+  }, [removeNotification]);
 
   const clearAll = useCallback(() => {
     setNotifications([]);
@@ -201,6 +201,7 @@ const NotificationItem: React.FC<{
         {/* زر الإغلاق */}
         <button
           onClick={handleClose}
+          aria-label="إغلاق الإشعار"
           className={cn(
             "flex-shrink-0 p-1 rounded-md hover:bg-black/10 transition-colors",
             getTextClass()
@@ -216,6 +217,7 @@ const NotificationItem: React.FC<{
 // Hooks مساعدة للإشعارات الشائعة
 export const useNotificationHelpers = () => {
   const { addNotification } = useNotifications();
+  const router = useRouter();
 
   const showSuccess = useCallback((title: string, message?: string) => {
     addNotification({ type: "success", title, message });
@@ -241,15 +243,13 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض السلة",
         onClick: () => {
-          // Use router instead of window.location to avoid SSR issues
-          const router = useRouter();
           if (typeof window !== 'undefined') {
             router.push('/cart');
           }
         }
       }
     });
-  }, [addNotification]);
+  }, [addNotification, router]);
 
   const showWishlistAdded = useCallback((productName: string) => {
     addNotification({
@@ -259,14 +259,13 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض المفضلة",
         onClick: () => {
-          const router = useRouter();
           if (typeof window !== 'undefined') {
             router.push('/favorites');
           }
         }
       }
     });
-  }, [addNotification]);
+  }, [addNotification, router]);
 
   const showOrderSuccess = useCallback((orderNumber: string) => {
     addNotification({
@@ -277,14 +276,13 @@ export const useNotificationHelpers = () => {
       action: {
         label: "عرض الطلب",
         onClick: () => {
-          const router = useRouter();
           if (typeof window !== 'undefined') {
             router.push(`/orders/${orderNumber}`);
           }
         }
       }
     });
-  }, [addNotification]);
+  }, [addNotification, router]);
 
   const showLoginRequired = useCallback(() => {
     addNotification({
@@ -294,14 +292,13 @@ export const useNotificationHelpers = () => {
       action: {
         label: "تسجيل الدخول",
         onClick: () => {
-          const router = useRouter();
           if (typeof window !== 'undefined') {
             router.push('/login');
           }
         }
       }
     });
-  }, [addNotification]);
+  }, [addNotification, router]);
 
   const showNetworkError = useCallback(() => {
     addNotification({
@@ -381,6 +378,7 @@ export const Toast: React.FC<{
         </div>
         <button
           onClick={onClose}
+          aria-label="إغلاق"
           className="p-1 hover:bg-white/20 rounded transition-colors"
         >
           <X className="h-4 w-4" />
@@ -408,6 +406,7 @@ export const ProgressNotification: React.FC<{
           {onCancel && (
             <button
               onClick={onCancel}
+              aria-label="إلغاء"
               className="text-gray-400 hover:text-gray-600"
             >
               <X className="h-4 w-4" />
@@ -422,7 +421,7 @@ export const ProgressNotification: React.FC<{
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${progress}%` }} 
           />
         </div>
         

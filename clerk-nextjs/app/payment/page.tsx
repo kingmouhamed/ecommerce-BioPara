@@ -26,7 +26,7 @@ export default function CheckoutPage() {
         {/* Progress Bar */}
         <div className="mb-12 relative">
           <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 -z-0"></div>
-          <div className="absolute top-5 left-0 h-1 bg-emerald-600 transition-all duration-500 -z-0" style={{ width: step === 1 ? '16%' : step === 2 ? '50%' : '100%' }} aria-hidden="true"></div>
+          <div className={`absolute top-5 left-0 h-1 bg-emerald-600 transition-all duration-500 -z-0 ${step === 1 ? 'w-1/6' : step === 2 ? 'w-1/2' : 'w-full'}`} aria-hidden="true"></div>
           <div className="flex justify-between relative">
              <StepIndicator num={1} title="Information" current={step} />
              <StepIndicator num={2} title="Livraison" current={step} />

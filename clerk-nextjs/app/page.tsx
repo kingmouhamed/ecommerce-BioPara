@@ -20,7 +20,6 @@ import FeaturedTabs from "../components/FeaturedTabs";
 import PromoBanner from "../components/PromoBanner";
 import Loyalty from "../components/Loyalty";
 import Newsletter from "../components/Newsletter";
-import WhatsAppWidget from "../components/WhatsAppWidget";
 
 export default function HomePage() {
   const { addToCart, cartItemCount } = useCart();
@@ -75,7 +74,6 @@ export default function HomePage() {
         <Newsletter />
       </main>
       <Footer />
-      <WhatsAppWidget />
     </div>
   );
 }

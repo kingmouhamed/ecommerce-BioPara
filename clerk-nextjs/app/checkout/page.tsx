@@ -60,45 +60,53 @@ export default function CheckoutPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الاسم الأول</label>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">الاسم الأول</label>
                   <input
                     type="text"
+                    id="firstName"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
+                    placeholder="أدخل الاسم الأول"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الاسم الأخير</label>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">الاسم الأخير</label>
                   <input
                     type="text"
+                    id="lastName"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
+                    placeholder="أدخل الاسم الأخير"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
                   <input
                     type="email"
+                    id="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    placeholder="أدخل البريد الإلكتروني"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
                   <input
                     type="tel"
+                    id="phone"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
+                    placeholder="أدخل رقم الهاتف"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     required
                   />
@@ -112,35 +120,41 @@ export default function CheckoutPage() {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">العنوان التفصيلي</label>
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">العنوان التفصيلي</label>
                   <input
                     type="text"
+                    id="address"
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
+                    placeholder="أدخل العنوان التفصيلي"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     required
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">المدينة</label>
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">المدينة</label>
                     <input
                       type="text"
+                      id="city"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
+                      placeholder="أدخل المدينة"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">الرمز البريدي</label>
+                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-2">الرمز البريدي</label>
                     <input
                       type="text"
+                      id="postalCode"
                       name="postalCode"
                       value={formData.postalCode}
                       onChange={handleInputChange}
+                      placeholder="أدخل الرمز البريدي"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
                     />
                   </div>

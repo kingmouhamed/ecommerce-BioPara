@@ -10,7 +10,7 @@ export default function Credits() {
     return (
       <div className="container mx-auto px-4 py-8 text-center" dir="rtl">
         <h1 className="text-3xl font-bold mb-6">رصيدي</h1>
-        <p>المرجو <Link href="/login" className="text-green-700 hover:underline">تسجيل الدخول</Link> لعرض رصيدك.</p>
+        <p>المرجو <Link href="/auth/login" className="text-green-700 hover:underline">تسجيل الدخول</Link> لعرض رصيدك.</p>
       </div>
     );
   }

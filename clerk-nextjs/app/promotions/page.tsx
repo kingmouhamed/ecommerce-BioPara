@@ -108,7 +108,7 @@ export default function PromotionsPage() {
                      
                      <div className="mt-4 pt-3 border-t">
                         <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                           <div className="bg-red-500 h-1.5 rounded-full" style={{ width: `${Math.random() * 60 + 20}%` }}></div>
+                           <div className="bg-red-500 h-1.5 rounded-full w-1/2"></div>
                         </div>
                         <div className="text-xs text-gray-500 flex justify-between">
                            <span>Déjà vendus: {Math.floor(Math.random() * 50)}</span>

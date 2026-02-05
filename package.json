@@ -10,7 +10,17 @@
     "lint": "cd clerk-nextjs && npm run lint",
     "install-deps": "cd clerk-nextjs && npm install"
   },
-  "keywords": ["ecommerce", "parapharmacie", "nextjs", "react", "tailwindcss"],
+  "keywords": [
+    "ecommerce",
+    "parapharmacie",
+    "nextjs",
+    "react",
+    "tailwindcss"
+  ],
   "author": "BioPara",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3"
+  }
 }

@@ -10,7 +10,7 @@ export default function Addresses() {
     return (
       <div className="container mx-auto px-4 py-8 text-center" dir="rtl">
         <h1 className="text-3xl font-bold mb-6">عناويني</h1>
-        <p>المرجو <Link href="/login" className="text-green-700 hover:underline">تسجيل الدخول</Link> لإدارة عناوينك.</p>
+        <p>المرجو <Link href="/auth/login" className="text-green-700 hover:underline">تسجيل الدخول</Link> لإدارة عناوينك.</p>
       </div>
     );
   }
