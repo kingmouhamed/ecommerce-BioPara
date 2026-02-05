@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ProductList from '../../components/ProductList';
 import CategoriesGrid from '../../components/CategoriesGrid';
-import { products } from '../../products';
+import { mockProducts } from '../../data/products';
 import { useCart } from '../../contexts/CartContext';
 
 export default function Products() {
@@ -24,13 +24,13 @@ export default function Products() {
   }, [categoryParam]);
 
   const filteredProducts = useMemo(() => {
-    let filtered = Array.isArray(products) ? [...products] : [];
+    let filtered = Array.isArray(mockProducts) ? [...mockProducts] : [];
     
     // Validate products have required fields
     filtered = filtered.filter(product => 
       product && 
       typeof product.id === 'number' && 
-      typeof product.name === 'string' && 
+      typeof product.title === 'string' && 
       typeof product.price === 'number' &&
       typeof product.category === 'string'
     );
@@ -38,7 +38,7 @@ export default function Products() {
     // Filter by search term
     if (searchParam) {
       filtered = filtered.filter((product) => 
-        product.name.toLowerCase().includes(searchParam.toLowerCase()) ||
+        product.title?.toLowerCase().includes(searchParam.toLowerCase()) ||
         (product.description && product.description.toLowerCase().includes(searchParam.toLowerCase()))
       );
     }
@@ -57,7 +57,7 @@ export default function Products() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating_desc':
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        filtered.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
         break;
       default:
         break;

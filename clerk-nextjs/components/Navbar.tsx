@@ -139,12 +139,12 @@ function Navbar({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
 
         {/* Icons */}
         <div className="flex items-center gap-6 text-gray-600">
-          <Link href="/login" className="flex flex-col items-center hover:text-emerald-700 group">
+          <Link href="/auth/login" className="flex flex-col items-center hover:text-emerald-700 group">
             <User size={24} />
             <span className="text-xs mt-1 group-hover:underline">حسابي</span>
           </Link>
 
-          <Link href="/favorites" className="flex flex-col items-center hover:text-emerald-700 group">
+          <Link href="/dashboard/favorites" className="flex flex-col items-center hover:text-emerald-700 group">
             <Heart size={24} />
             <span className="text-xs mt-1 group-hover:underline">المفضلة</span>
           </Link>

@@ -29,16 +29,13 @@ const Pagination: React.FC<PaginationProps> = ({
     const halfVisible = Math.floor(maxVisiblePages / 2);
 
     if (totalPages <= maxVisiblePages) {
-      // عرض كل الصفحات إذا كان العدد الإجمالي صغيراً
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // عرض نطاق من الصفحات حول الصفحة الحالية
       let start = Math.max(1, currentPage - halfVisible);
       let end = Math.min(totalPages, start + maxVisiblePages - 1);
 
-      // تعديل البداية إذا كان النطاق قصيراً في النهاية
       if (end - start + 1 < maxVisiblePages) {
         start = Math.max(1, end - maxVisiblePages + 1);
       }
@@ -52,8 +49,10 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   const visiblePages = getVisiblePages();
-  const hasFirstEllipsis = visiblePages[0] > 2;
-  const hasLastEllipsis = visiblePages[visiblePages.length - 1] < totalPages - 1;
+
+  // التأكد من أن المصفوفة ليست فارغة قبل فحص العناصر
+  const hasFirstEllipsis = visiblePages.length > 0 && visiblePages[0] > 2;
+  const hasLastEllipsis = visiblePages.length > 0 && visiblePages[visiblePages.length - 1] < totalPages - 1;
 
   const handlePageClick = (page: number) => {
     if (!disabled && page !== currentPage && page >= 1 && page <= totalPages) {
@@ -66,6 +65,8 @@ const Pagination: React.FC<PaginationProps> = ({
       key={page}
       onClick={() => handlePageClick(page)}
       disabled={disabled || isCurrent}
+      title={`صفحة ${page}`}
+      aria-label={`صفحة ${page}`}
       className={`
         px-3 py-2 text-sm font-medium rounded-md transition-all duration-200
         ${isCurrent
@@ -84,8 +85,9 @@ const Pagination: React.FC<PaginationProps> = ({
     <span
       key={key}
       className="px-3 py-2 text-gray-500"
+      aria-hidden="true"
     >
-      <MoreHorizontal className="h-4 w-4" />
+      <MoreHorizontal size={16} />
     </span>
   );
 
@@ -99,11 +101,12 @@ const Pagination: React.FC<PaginationProps> = ({
       aria-label="Pagination"
       dir="rtl"
     >
-      {/* زر الصفحة الأولى */}
       {showFirstLast && (
         <button
           onClick={() => handlePageClick(1)}
           disabled={disabled || currentPage === 1}
+          aria-label="انتقل للصفحة الأولى"
+          title="الصفحة الأولى"
           className={`
             px-3 py-2 text-sm font-medium rounded-md transition-all duration-200
             ${currentPage === 1 || disabled
@@ -116,11 +119,12 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       )}
 
-      {/* زر السابق */}
       {showPrevNext && (
         <button
           onClick={() => handlePageClick(currentPage - 1)}
           disabled={disabled || currentPage === 1}
+          aria-label="الصفحة السابقة"
+          title="الصفحة السابقة"
           className={`
             p-2 text-sm font-medium rounded-md transition-all duration-200
             ${currentPage === 1 || disabled
@@ -129,24 +133,22 @@ const Pagination: React.FC<PaginationProps> = ({
             }
           `}
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight size={16} />
         </button>
       )}
 
-      {/* علامة الحذف الأول */}
       {hasFirstEllipsis && renderEllipsis("first-ellipsis")}
 
-      {/* أرقام الصفحات */}
       {visiblePages.map((page) => renderPageButton(page, page === currentPage))}
 
-      {/* علامة الحذف الأخير */}
       {hasLastEllipsis && renderEllipsis("last-ellipsis")}
 
-      {/* زر التالي */}
       {showPrevNext && (
         <button
           onClick={() => handlePageClick(currentPage + 1)}
           disabled={disabled || currentPage === totalPages}
+          aria-label="الصفحة التالية"
+          title="الصفحة التالية"
           className={`
             p-2 text-sm font-medium rounded-md transition-all duration-200
             ${currentPage === totalPages || disabled
@@ -155,15 +157,16 @@ const Pagination: React.FC<PaginationProps> = ({
             }
           `}
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft size={16} />
         </button>
       )}
 
-      {/* زر الصفحة الأخيرة */}
       {showFirstLast && (
         <button
           onClick={() => handlePageClick(totalPages)}
           disabled={disabled || currentPage === totalPages}
+          aria-label="انتقل للصفحة الأخيرة"
+          title="الصفحة الأخيرة"
           className={`
             px-3 py-2 text-sm font-medium rounded-md transition-all duration-200
             ${currentPage === totalPages || disabled
@@ -179,7 +182,6 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-// مكون مساعد لعرض معلومات الصفحة
 interface PaginationInfoProps {
   currentPage: number;
   totalPages: number;
@@ -210,8 +212,8 @@ export const PaginationInfo: React.FC<PaginationInfoProps> = ({
   );
 };
 
-// مكون شامل للصفحة مع معلومات
-interface FullPaginationProps extends PaginationProps {
+// استخدام Omit لحذف totalPages من الخصائص المطلوبة
+interface FullPaginationProps extends Omit<PaginationProps, 'totalPages'> {
   itemsPerPage: number;
   totalItems: number;
   showInfo?: boolean;
@@ -253,7 +255,6 @@ export const FullPagination: React.FC<FullPaginationProps> = ({
   );
 };
 
-// مكون للتنقل السريع
 interface QuickNavProps {
   currentPage: number;
   totalPages: number;
@@ -269,6 +270,10 @@ export const QuickNav: React.FC<QuickNavProps> = ({
 }) => {
   const [inputPage, setInputPage] = React.useState(String(currentPage));
 
+  React.useEffect(() => {
+    setInputPage(String(currentPage));
+  }, [currentPage]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const page = parseInt(inputPage);
@@ -279,19 +284,28 @@ export const QuickNav: React.FC<QuickNavProps> = ({
     }
   };
 
+  // تم تصحيح نوع الحدث هنا: React.ChangeEvent<HTMLInputElement>
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputPage(e.target.value);
+  };
+
   return (
     <form onSubmit={handleSubmit} className={`flex items-center space-x-reverse space-x-2 ${className}`} dir="rtl">
-      <span className="text-sm text-gray-600">اذهب إلى صفحة:</span>
+      <label htmlFor="quick-nav-input" className="text-sm text-gray-600">اذهب إلى صفحة:</label>
       <input
+        id="quick-nav-input"
         type="number"
         min={1}
         max={totalPages}
         value={inputPage}
-        onChange={(e) => setInputPage(e.target.value)}
+        onChange={handleInputChange}
+        placeholder="رقم الصفحة"
         className="w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-emerald-500 focus:border-emerald-500"
       />
       <button
         type="submit"
+        aria-label="تأكيد الذهاب للصفحة"
+        title="تأكيد"
         className="px-3 py-1 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors"
       >
         اذهب

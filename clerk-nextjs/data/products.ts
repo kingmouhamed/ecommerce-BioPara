@@ -4,12 +4,17 @@
 export interface Product {
   id: number;
   title: string;
+  name?: string;
   category: string;
   type: "para" | "herbal";
   price: number;
   oldPrice?: number;
+  originalPrice?: number;
   image: string;
   isNew?: boolean;
+  description?: string;
+  rating?: number;
+  reviews?: number;
 }
 
 const brands = ["La Roche-Posay", "Vichy", "CeraVe", "Bioderma", "Nuxe", "Avène", "Mustela", "Eucerin", "SVR", "Filorga"];

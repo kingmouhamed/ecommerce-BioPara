@@ -19,12 +19,12 @@ export default function Routes() {
         <div>
           <h2 className="text-xl font-semibold mb-4">الحساب</h2>
           <ul className="space-y-2">
-            <li><Link href="/login" className="text-green-700 hover:underline">تسجيل الدخول</Link></li>
-            <li><Link href="/signup" className="text-green-700 hover:underline">إنشاء حساب</Link></li>
+            <li><Link href="/auth/login" className="text-green-700 hover:underline">تسجيل الدخول</Link></li>
+            <li><Link href="/auth/signup" className="text-green-700 hover:underline">إنشاء حساب</Link></li>
             <li><Link href="/cart" className="text-green-700 hover:underline">عربة التسوق</Link></li>
-            <li><Link href="/favorites" className="text-green-700 hover:underline">المفضلة</Link></li>
-            <li><Link href="/addresses" className="text-green-700 hover:underline">العناوين</Link></li>
-            <li><Link href="/credits" className="text-green-700 hover:underline">الرصيد</Link></li>
+            <li><Link href="/dashboard/favorites" className="text-green-700 hover:underline">المفضلة</Link></li>
+            <li><Link href="/dashboard/addresses" className="text-green-700 hover:underline">العناوين</Link></li>
+            <li><Link href="/dashboard/credits" className="text-green-700 hover:underline">الرصيد</Link></li>
           </ul>
         </div>
 
