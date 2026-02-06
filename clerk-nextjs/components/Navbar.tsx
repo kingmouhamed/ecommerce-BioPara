@@ -28,7 +28,7 @@ const herbalCategories = [
 const TopBar = () => (
   <div className="bg-gray-100 text-gray-600 text-xs py-2 px-4 hidden md:flex justify-between items-center border-b" dir="rtl">
     <div className="flex gap-4">
-      <Link href="/routes" className="hover:text-emerald-700">خريطة الموقع</Link>
+      <Link href="/sitemap" className="hover:text-emerald-700">خريطة الموقع</Link>
       <span className="flex items-center gap-1">
         <Phone size={14} /> +212 600 000 000
       </span>
@@ -60,7 +60,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="mb-4">
           <input
             type="text"
-            placeholder="Rechercher..."
+            placeholder="ابحث عن منتجات..."
             className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -68,7 +68,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="mt-6">
           {/* قسم البارا في الموبايل */}
           <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 border-b pb-2">
-            <Droplets size={18} className="text-blue-500"/> Parapharmacie
+            <Droplets size={18} className="text-blue-500"/> شبه صيدلية
           </h3>
           <ul className="space-y-1 text-sm text-gray-700 mb-6 pl-4">
             {paraCategories.map((cat) => (
@@ -82,7 +82,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
 
           {/* قسم الأعشاب في الموبايل */}
           <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 border-b pb-2">
-             <Leaf size={18} className="text-green-600"/> Herboristerie & Bio
+             <Leaf size={18} className="text-green-600"/> الأعشاب الطبية
           </h3>
           <ul className="space-y-1 text-sm text-gray-700 pl-4">
             {herbalCategories.map((cat) => (
@@ -152,7 +152,7 @@ function Navbar({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
           <Link href="/cart" className="flex flex-col items-center hover:text-emerald-700 group relative">
             <div className="relative">
               <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center" suppressHydrationWarning>
                 {cartItemCount}
               </span>
             </div>

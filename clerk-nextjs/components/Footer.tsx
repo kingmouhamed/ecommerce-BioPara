@@ -28,7 +28,7 @@ const Footer = () => (
         <ul className="text-sm text-gray-400 space-y-2">
           <li><Link href="/about" className="hover:text-white">من نحن؟</Link></li>
           <li><Link href="/delivery" className="hover:text-white">التوصيل والإرجاع</Link></li>
-          <li><Link href="/terms" className="hover:text-white">الشروط العامة</Link></li>
+          <li><Link href="/auth/terms" className="hover:text-white">الشروط العامة</Link></li>
           <li><Link href="/contact" className="hover:text-white">اتصل بنا</Link></li>
         </ul>
       </div>

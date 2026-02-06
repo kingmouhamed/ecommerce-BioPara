@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { X, Check, AlertCircle, Info, AlertTriangle, XCircle, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -65,13 +65,15 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setNotifications([]);
   }, []);
 
+  const value = useMemo(() => ({
+    notifications,
+    addNotification,
+    removeNotification,
+    clearAll
+  }), [notifications, addNotification, removeNotification, clearAll]);
+
   return (
-    <NotificationContext.Provider value={{
-      notifications,
-      addNotification,
-      removeNotification,
-      clearAll
-    }}>
+    <NotificationContext.Provider value={value}>
       {children}
       <NotificationContainer />
     </NotificationContext.Provider>

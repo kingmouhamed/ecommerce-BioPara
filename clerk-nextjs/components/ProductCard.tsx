@@ -39,14 +39,15 @@ const ProductCard = ({ product }: { product: Product }) => {
         
         {/* ننتظر التحميل قبل إظهار البادجات المتغيرة */}
         {isMounted && product.isNew && (
-          <span className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10">
+          <span className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10" suppressHydrationWarning>
             جديد
           </span>
         )}
 
         {isMounted && product.oldPrice && (
-          <span 
+          <span
             className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10"
+            suppressHydrationWarning
           >
             -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
           </span>
@@ -80,7 +81,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         </h3>
 
         <div className="flex flex-wrap items-end gap-1 mt-auto">
-          <span className="text-sm font-bold text-emerald-700">
+          <span className="text-sm font-bold text-emerald-700" suppressHydrationWarning>
             {product.price.toFixed(0)} DH
           </span>
           
