@@ -11,29 +11,29 @@ const FeaturesStrip = () => (
         <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
           <Truck />
         </div>
-        <h4 className="font-bold text-gray-800 text-sm">Livraison Rapide</h4>
-        <p className="text-xs text-gray-500">Partout au Maroc en 24/48h</p>
+        <h4 className="font-bold text-gray-800 text-sm">توصيل سريع</h4>
+        <p className="text-xs text-gray-500">لكل أنحاء المغرب خلال 24/48 ساعة</p>
       </div>
       <div className="flex flex-col items-center gap-2">
         <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
           <ShieldCheck />
         </div>
-        <h4 className="font-bold text-gray-800 text-sm">Produits Authentiques</h4>
-        <p className="text-xs text-gray-500">100% garantis par nos labos</p>
+        <h4 className="font-bold text-gray-800 text-sm">منتجات أصلية</h4>
+        <p className="text-xs text-gray-500">مضمونة 100% من مختبراتنا</p>
       </div>
       <div className="flex flex-col items-center gap-2">
         <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
           <CreditCard />
         </div>
-        <h4 className="font-bold text-gray-800 text-sm">Paiement Sécurisé</h4>
-        <p className="text-xs text-gray-500">Carte bancaire ou à la livraison</p>
+        <h4 className="font-bold text-gray-800 text-sm">دفع آمن</h4>
+        <p className="text-xs text-gray-500">بطاقة بنكية أو عند الاستلام</p>
       </div>
       <div className="flex flex-col items-center gap-2">
         <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
           <Star />
         </div>
-        <h4 className="font-bold text-gray-800 text-sm">Service Client</h4>
-        <p className="text-xs text-gray-500">Disponible 7j/7 pour vous</p>
+        <h4 className="font-bold text-gray-800 text-sm">خدمة العملاء</h4>
+        <p className="text-xs text-gray-500">متاحة 7 أيام في الأسبوع</p>
       </div>
     </div>
   </div>

@@ -15,28 +15,28 @@ const promoProducts = [
 
 export default function PromotionsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans" dir="ltr">
+    <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       
       {/* Flash Sale Hero */}
       <div className="bg-red-600 text-white py-12 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="text-center md:text-left">
             <div className="inline-flex items-center gap-2 bg-red-800/50 px-4 py-1 rounded-full text-sm font-bold mb-4 border border-red-400">
-               <Timer size={16} className="animate-pulse"/> OFFRE LIMITÉE
+               <Timer size={16} className="animate-pulse"/> عرض محدود
             </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">SUPER SOLDES</h1>
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">تخفيضات ضخمة</h1>
             <p className="text-red-100 text-lg max-w-lg mb-6">
-              Jusqu&apos;à <span className="font-bold text-white bg-red-800 px-2"> -70% </span> sur une sélection de grandes marques. Stock limité !
+              حتى <span className="font-bold text-white bg-red-800 px-2"> -70% </span> على مختارات من أفضل الماركات. الكمية محدودة!
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
                <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  02 <span className="block text-[10px] text-gray-500 uppercase">Jours</span>
+                  02 <span className="block text-[10px] text-gray-500 uppercase">أيام</span>
                </div>
                <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  14 <span className="block text-[10px] text-gray-500 uppercase">Heures</span>
+                  14 <span className="block text-[10px] text-gray-500 uppercase">ساعات</span>
                </div>
                <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  35 <span className="block text-[10px] text-gray-500 uppercase">Min</span>
+                  35 <span className="block text-[10px] text-gray-500 uppercase">دقائق</span>
                </div>
             </div>
           </div>
@@ -58,11 +58,11 @@ export default function PromotionsPage() {
       {/* Filter Strip */}
       <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
          <div className="container mx-auto px-4 py-4 flex overflow-x-auto gap-4 no-scrollbar">
-            <button className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">Tout voir</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">-50% et plus</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">Coffrets</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">Soins Visage</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">Bébé</button>
+            <button className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">عرض الكل</button>
+            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">-50% وأكثر</button>
+            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">العبوات</button>
+            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">العناية بالوجه</button>
+            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">الأطفال</button>
          </div>
       </div>
 
@@ -85,7 +85,7 @@ export default function PromotionsPage() {
                      />
                      <div className="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0">
                         <button className="bg-gray-900 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg flex items-center justify-center gap-2 mx-auto hover:bg-black">
-                           <ShoppingCart size={16}/> Ajouter
+                           <ShoppingCart size={16}/> أضف للسلة
                         </button>
                      </div>
                   </div>
@@ -96,12 +96,12 @@ export default function PromotionsPage() {
                      
                      <div className="flex items-center gap-3">
                         <div className="flex flex-col">
-                           <span className="text-xs text-gray-400 line-through">Prix conseillé</span>
+                           <span className="text-xs text-gray-400 line-through">السعر الأصلي</span>
                            <span className="text-sm text-gray-400 font-medium line-through decoration-red-500">{product.oldPrice.toFixed(2)} DH</span>
                         </div>
                         <div className="h-8 w-px bg-gray-200"></div>
                         <div className="flex flex-col">
-                           <span className="text-xs text-red-600 font-bold">Prix Promo</span>
+                           <span className="text-xs text-red-600 font-bold">سعر الخصم</span>
                            <span className="text-xl font-bold text-red-600">{product.price.toFixed(2)} DH</span>
                         </div>
                      </div>
@@ -111,8 +111,8 @@ export default function PromotionsPage() {
                            <div className="bg-red-500 h-1.5 rounded-full w-1/2"></div>
                         </div>
                         <div className="text-xs text-gray-500 flex justify-between">
-                           <span>Déjà vendus: {Math.floor(Math.random() * 50)}</span>
-                           <span className="text-red-500 font-medium">Bientôt épuisé</span>
+                           <span>تم بيعه: {Math.floor(Math.random() * 50)}</span>
+                           <span className="text-red-500 font-medium">وشيك النفاد</span>
                         </div>
                      </div>
                   </div>
@@ -122,7 +122,7 @@ export default function PromotionsPage() {
          
          <div className="mt-12 text-center">
             <button className="border-2 border-gray-900 text-gray-900 px-8 py-3 rounded-full font-bold hover:bg-gray-900 hover:text-white transition flex items-center gap-2 mx-auto">
-               VOIR TOUTES LES OFFRES <ArrowRight size={18}/>
+               عرض كل العروض <ArrowRight size={18}/>
             </button>
          </div>
       </div>

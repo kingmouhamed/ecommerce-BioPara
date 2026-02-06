@@ -17,12 +17,12 @@ import {
 
 // تصنيفات البارافارماسيا
 const paraCategories = [
-  "Visage", "Corps", "Cheveux", "Hygiène", "Bébé & Maman", "Solaire", "Hommes"
+  "العناية بالوجه", "العناية بالجسم", "العناية بالشعر", "النظافة الشخصية", "الأم والطفل", "الحماية من الشمس", "رجال"
 ];
 
 // تصنيفات الأعشاب والبيو
 const herbalCategories = [
-  "Huiles Essentielles", "Tisanes & Infusions", "Miel & Ruche", "Compléments Bio", "Cosmétique Bio"
+  "الزيوت العطرية", "الأعشاب والمشروبات", "العسل ومنتجات النحل", "المكملات الغذائية", "مستحضرات التجميل العضوية"
 ];
 
 const TopBar = () => (
