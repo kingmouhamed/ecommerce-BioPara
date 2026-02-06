@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 
 // --- Type Definitions ---
 interface CartItem {
@@ -86,7 +86,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     return () => clearTimeout(timeoutId);
   }, [cart]);
 
-  const addToCart = (product: Omit<CartItem, 'quantity'>, quantity = 1) => {
+  const addToCart = useCallback((product: Omit<CartItem, 'quantity'>, quantity = 1) => {
     // Validate quantity
     if (quantity <= 0 || quantity > 99) {
       console.warn('Invalid quantity:', quantity);
@@ -108,13 +108,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       }
       return [...prevCart, { ...product, quantity }];
     });
-  };
+  }, []);
 
-  const removeFromCart = (productId: number | string) => {
+  const removeFromCart = useCallback((productId: number | string) => {
     setCart(prevCart => prevCart.filter(item => item.id !== productId));
-  };
+  }, []);
 
-  const updateQuantity = (productId: number | string, quantity: number) => {
+  const updateQuantity = useCallback((productId: number | string, quantity: number) => {
     // Validate quantity
     if (quantity <= 0) {
       removeFromCart(productId);
@@ -124,13 +124,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
       console.warn('Quantity exceeds maximum limit:', quantity);
       return;
     }
-    
+
     setCart(prevCart =>
       prevCart.map(item =>
         item.id === productId ? { ...item, quantity } : item
       )
     );
-  };
+  }, [removeFromCart]);
 
   const clearCart = () => {
     setCart([]);
@@ -138,11 +138,11 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
-  const calculateTotal = (): string => {
+  const calculateTotal = useCallback((): string => {
     return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
-  };
+  }, [cart]);
 
-  const value: CartContextType = {
+  const value = useMemo<CartContextType>(() => ({
     cart,
     addToCart,
     removeFromCart,
@@ -152,7 +152,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     isCartOpen,
     setIsCartOpen,
     calculateTotal,
-  };
+  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, cartItemCount, isCartOpen, setIsCartOpen, calculateTotal]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
