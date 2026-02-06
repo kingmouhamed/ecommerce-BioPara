@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { ShoppingCart, Plus, Minus, Trash2, Truck, Shield, RefreshCw } from "lucide-react";
 import { useCart } from "../../contexts/CartContext";
 import Button from "../ui/Button";
@@ -83,11 +84,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <div key={item.id} className="px-6 py-4 border-b border-gray-100 last:border-b-0">
             <div className="flex gap-4">
               {/* Product Image */}
-              <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                <img
+              <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                <Image
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
 
@@ -113,6 +115,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                       onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
                       className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors"
                       disabled={item.quantity <= 1}
+                      aria-label="إنقاص الكمية"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
@@ -122,6 +125,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                     <button
                       onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
                       className="w-8 h-8 rounded-full border border-gray-300 hover:bg-gray-50 flex items-center justify-center transition-colors"
+                      aria-label="زيادة الكمية"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -132,6 +136,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                   <button
                     onClick={() => removeFromCart(item.id)}
                     className="text-red-500 hover:text-red-700 transition-colors"
+                    aria-label="إزالة المنتج"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

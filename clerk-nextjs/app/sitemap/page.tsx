@@ -9,9 +9,9 @@ export default function Routes() {
           <h2 className="text-xl font-semibold mb-4">المنتجات</h2>
           <ul className="space-y-2">
             <li><Link href="/products" className="text-green-700 hover:underline">كل المنتجات</Link></li>
-            <li><Link href="/products?category=Visage" className="text-green-700 hover:underline">العناية بالوجه</Link></li>
+            <li><Link href="/products?category=العناية بالوجه" className="text-green-700 hover:underline">العناية بالوجه</Link></li>
             <li><Link href="/products?category=Parapharmacie" className="text-green-700 hover:underline">شبه صيدلية</Link></li>
-            <li><Link href="/products?category=Cheveux" className="text-green-700 hover:underline">العناية بالشعر</Link></li>
+            <li><Link href="/products?category=العناية بالشعر" className="text-green-700 hover:underline">العناية بالشعر</Link></li>
             <li><Link href="/promotions" className="text-green-700 hover:underline">العروض</Link></li>
           </ul>
         </div>

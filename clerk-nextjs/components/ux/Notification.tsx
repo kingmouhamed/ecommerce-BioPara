@@ -398,6 +398,10 @@ export const ProgressNotification: React.FC<{
 }> = ({ show, title, progress, message, onCancel }) => {
   if (!show) return null;
 
+  const progressStyle = {
+    width: `${progress}%`,
+  };
+
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-80">
@@ -421,7 +425,7 @@ export const ProgressNotification: React.FC<{
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
             className="bg-emerald-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${progress}%` }} 
+            style={progressStyle}
           />
         </div>
         

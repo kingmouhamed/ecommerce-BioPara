@@ -201,6 +201,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
                         onClearGroup(group.id);
                       }}
                       className="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors"
+                      aria-label="مسح فلاتر المجموعة"
                     >
                       <X className="h-4 w-4" />
                     </button>

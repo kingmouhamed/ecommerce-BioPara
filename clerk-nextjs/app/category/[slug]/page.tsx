@@ -50,16 +50,16 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans" dir="ltr">
+    <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       
       {/* Header Banner */}
       <div className="bg-emerald-800 text-white py-12 relative overflow-hidden">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-sm text-emerald-200 mb-2">Accueil / Boutique / {categoryName}</div>
+          <div className="text-sm text-emerald-200 mb-2">الرئيسية / المتجر / {categoryName}</div>
           <h1 className="text-4xl font-bold mb-4">{categoryName}</h1>
           <p className="max-w-2xl text-emerald-100 text-lg">
-            Découvrez notre sélection exclusive de produits {categoryName.toLowerCase()}. 
-            Des soins de qualité, certifiés authentiques et au meilleur prix au Maroc.
+            اكتشف مختاراتنا الحصرية من منتجات {categoryName.toLowerCase()}. 
+            منتجات عالية الجودة، معتمدة أصيلة وبأفضل سعر في المغرب.
           </p>
         </div>
         {/* Background Pattern */}
@@ -74,9 +74,9 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             
             {/* Filter: Categories */}
             <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">Sous-catégories</h3>
+              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">التصنيفات الفرعية</h3>
               <ul className="space-y-2 text-sm text-gray-600">
-                {["Nettoyants", "Hydratants", "Sérums", "Protections solaires", "Contour des yeux"].map(sub => (
+                {["منظفات", "مرطبات", "سيرومات", "واقيات الشمس", "العناية بالعين"].map(sub => (
                   <li key={sub} className="flex items-center justify-between cursor-pointer hover:text-emerald-700">
                     <span>{sub}</span>
                     <span className="bg-gray-100 text-gray-500 text-xs py-0.5 px-2 rounded-full">{(Math.random()*50).toFixed(0)}</span>
@@ -87,7 +87,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
             {/* Filter: Prix */}
             <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">Filtrer par prix</h3>
+              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">فلتر حسب السعر</h3>
               <div className="px-2">
                 <input
                   type="range"
@@ -96,7 +96,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   value={priceRange}
                   onChange={(e) => setPriceRange(Number(e.target.value))}
                   className="w-full accent-emerald-700 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  aria-label="Filtrer par prix"
+                  aria-label="فلتر حسب السعر"
                 />
                 <div className="flex justify-between text-sm font-medium mt-3 text-gray-600">
                   <span>0 DH</span>
@@ -108,7 +108,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
             {/* Filter: Marques */}
             <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">Marques</h3>
+              <h3 className="font-bold text-gray-800 mb-4 pb-2 border-b">الماركات</h3>
               <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
                 {mockBrands.map(brand => (
                   <label key={brand} className="flex items-center gap-3 cursor-pointer group">
@@ -129,9 +129,9 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
             {/* Banner Pub Sidebar */}
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 text-center">
-              <h4 className="font-bold text-orange-800 text-lg mb-2">Offre Spéciale</h4>
-              <p className="text-sm text-orange-700 mb-4">-20% sur votre première commande avec le code <span className="font-bold">BIO20</span></p>
-              <button className="bg-orange-500 text-white px-4 py-2 rounded text-sm font-bold hover:bg-orange-600 w-full">En profiter</button>
+              <h4 className="font-bold text-orange-800 text-lg mb-2">عرض خاص</h4>
+              <p className="text-sm text-orange-700 mb-4">-20% على طلبك الأولى باستخدام كود <span className="font-bold">BIO20</span></p>
+              <button className="bg-orange-500 text-white px-4 py-2 rounded text-sm font-bold hover:bg-orange-600 w-full">استفد الآن</button>
             </div>
 
           </aside>
@@ -142,22 +142,22 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
             {/* Toolbar */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div className="text-sm text-gray-500">
-                Affichage de <span className="font-bold text-gray-800">1-12</span> sur <span className="font-bold text-gray-800">45</span> produits
+                عرض <span className="font-bold text-gray-800">1-12</span> من <span className="font-bold text-gray-800">45</span> منتج
               </div>
               
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600 hidden sm:inline">Trier par:</span>
+                  <span className="text-sm text-gray-600 hidden sm:inline">ترتيب حسب:</span>
                   <select
                     className="border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-emerald-500"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    aria-label="Trier par"
+                    aria-label="ترتيب حسب"
                   >
-                    <option value="popular">Popularité</option>
-                    <option value="price_asc">Prix croissant</option>
-                    <option value="price_desc">Prix décroissant</option>
-                    <option value="newest">Nouveautés</option>
+                    <option value="popular">الأكثر شعبية</option>
+                    <option value="price_asc">السعر تصاعدي</option>
+                    <option value="price_desc">السعر تنازلي</option>
+                    <option value="newest">الأحدث</option>
                   </select>
                 </div>
 
@@ -165,14 +165,14 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`p-2 ${viewMode === "grid" ? "bg-emerald-50 text-emerald-700" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                    aria-label="Vue en grille"
+                    aria-label="عرض شبكي"
                   >
                     <Grid size={20}/>
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     className={`p-2 ${viewMode === "list" ? "bg-emerald-50 text-emerald-700" : "bg-white text-gray-500 hover:bg-gray-50"}`}
-                    aria-label="Vue en liste"
+                    aria-label="عرض قائمة"
                   >
                     <List size={20}/>
                   </button>
@@ -188,11 +188,11 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                   {/* Image Area */}
                   <div className={`relative bg-white overflow-hidden ${viewMode === "list" ? "w-48 h-48 shrink-0" : "h-64 flex items-center justify-center p-6"}`}>
                     {product.isNew && (
-                      <span className="absolute top-3 left-3 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10">NOUVEAU</span>
+                      <span className="absolute top-3 right-3 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10">جديد</span>
                     )}
                     {!product.inStock && (
                       <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center">
-                        <span className="bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded">RUPTURE</span>
+                        <span className="bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded">نفد المخزون</span>
                       </div>
                     )}
                     
@@ -207,13 +207,13 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                     {viewMode === "grid" && product.inStock && (
                       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition duration-300">
                         <button className="w-full bg-emerald-700 text-white py-2.5 rounded font-bold shadow-lg hover:bg-emerald-800 flex items-center justify-center gap-2">
-                          <ShoppingCart size={18}/> Ajouter
+                          <ShoppingCart size={18}/> أضف إلى السلة
                         </button>
                       </div>
                     )}
                     
                     {/* Wishlist Button */}
-                    <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition" aria-label="Ajouter aux favoris">
+                    <button className="absolute top-3 left-3 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition" aria-label="إضافة للمفضلة">
                       <Heart size={16}/>
                     </button>
                   </div>
@@ -238,7 +238,7 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
                       <div className="font-bold text-xl text-emerald-700">{Number(product.price).toFixed(2)} DH</div>
                       {viewMode === "list" && product.inStock && (
                         <button className="bg-emerald-700 text-white px-6 py-2 rounded font-bold hover:bg-emerald-800 transition flex items-center gap-2">
-                          <ShoppingCart size={18}/> Ajouter au panier
+                          <ShoppingCart size={18}/> أضف إلى السلة
                         </button>
                       )}
                     </div>
@@ -272,13 +272,9 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
             {/* SEO Description (Bottom) */}
             <div className="mt-16 bg-gray-100 p-8 rounded-xl text-gray-600 text-sm leading-relaxed">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Tout savoir sur {categoryName}</h2>
-              <p className="mb-4">
-                Chez BioPara, nous nous engageons à vous fournir une large gamme de produits pour {categoryName.toLowerCase()}, sélectionnés auprès des plus grandes marques mondiales. Que vous cherchiez des soins quotidiens, des traitements spécifiques ou des produits bio, vous trouverez votre bonheur ici.
-              </p>
-              <p>
-                Profitez de la livraison rapide partout au Maroc (Casablanca, Rabat, Marrakech, Tanger...) et d&apos;un service client à votre écoute. Tous nos produits sont garantis 100% authentiques.
-              </p>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">كل شيء عن {categoryName}</h2>
+              في بيوبارا، نلتزم بتزويدك بمجموعة واسعة من منتجات {categoryName.toLowerCase()}. منتجات عالية الجودة، معتمدة أصيلة وبأفضل سعر في المغرب.
+              استمتع بالتوصيل السريع في جميع أنحاء المغرب (الدار البيضاء، الرباط، مراكش، طنجة...) وخدمة عملاء تستمع إليك. جميع منتجاتنا مضمونة أصيلة 100%.
             </div>
 
           </main>

@@ -100,6 +100,7 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
             <button
               onClick={onClose}
               className="text-white hover:bg-emerald-700 p-2 rounded-lg transition-colors"
+              aria-label="إغلاق"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>

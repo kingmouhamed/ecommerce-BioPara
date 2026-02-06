@@ -72,13 +72,13 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-20 font-sans" dir="ltr">
+    <div className="bg-gray-50 min-h-screen pb-20 font-sans" dir="rtl">
       {/* --- Breadcrumb (مسار الصفحة) --- */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-3 text-sm text-gray-500 flex items-center gap-2">
-          <Link href="/" className="hover:text-emerald-700 transition">Accueil</Link>
+          <Link href="/" className="hover:text-emerald-700 transition">الرئيسية</Link>
           <ChevronRight size={14} />
-          <Link href="/products" className="hover:text-emerald-700 transition">Produits</Link>
+          <Link href="/products" className="hover:text-emerald-700 transition">المنتجات</Link>
           <ChevronRight size={14} />
           <span className="text-gray-900 font-medium truncate">{productData.title}</span>
         </div>
@@ -97,7 +97,7 @@ export default function ProductPage() {
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                -30% PROMO
+                -30% خصم
               </div>
             </div>
             
@@ -126,7 +126,7 @@ export default function ProductPage() {
               <div className="flex items-center gap-1 text-yellow-400 text-sm">
                 <Star size={14} fill="currentColor" />
                 <span className="text-gray-700 font-bold">{productData.rating}</span>
-                <span className="text-gray-400">({productData.reviewsCount} avis)</span>
+                <span className="text-gray-400">({productData.reviewsCount} تقييم)</span>
               </div>
             </div>
 
@@ -176,7 +176,7 @@ export default function ProductPage() {
               {/* زر الإضافة للسلة */}
               <button className="flex-1 bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-emerald-800 transition shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
                 <ShoppingCart size={20} />
-                Ajouter au Panier
+                أضف للسلة
               </button>
               
               {/* زر المفضلة */}
@@ -189,15 +189,15 @@ export default function ProductPage() {
             <div className="space-y-3 text-sm text-gray-500 bg-gray-50 p-4 rounded-xl">
               <div className="flex items-center gap-3">
                 <Truck size={18} className="text-gray-700" />
-                <span>Livraison Gratuite à partir de 300 DHS</span>
+                شحن مجاني للطلبات فوق 300 درهم
               </div>
               <div className="flex items-center gap-3">
                 <ShieldCheck size={18} className="text-gray-700" />
-                <span>Garantie Authenticité 100%</span>
+                ضمان أصالة المنتج 100%
               </div>
               <div className="flex items-center gap-3">
                 <RotateCcw size={18} className="text-gray-700" />
-                <span>Retour gratuit sous 7 jours</span>
+                إرجاع مجاني خلال 7 أيام
               </div>
             </div>
           </div>
@@ -210,19 +210,19 @@ export default function ProductPage() {
               onClick={() => setActiveTab("desc")}
               className={`px-8 py-4 font-bold text-sm md:text-base transition ${activeTab === "desc" ? "border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50" : "text-gray-500 hover:bg-gray-50"}`}
             >
-              Description & Détails
+              الوصف والتفاصيل
             </button>
             <button
               onClick={() => setActiveTab("ingredients")}
               className={`px-8 py-4 font-bold text-sm md:text-base transition ${activeTab === "ingredients" ? "border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50" : "text-gray-500 hover:bg-gray-50"}`}
             >
-              Ingrédients
+              المكونات
             </button>
             <button
               onClick={() => setActiveTab("reviews")}
               className={`px-8 py-4 font-bold text-sm md:text-base transition ${activeTab === "reviews" ? "border-b-2 border-emerald-600 text-emerald-700 bg-emerald-50" : "text-gray-500 hover:bg-gray-50"}`}
             >
-              Avis Clients ({productData.reviewsCount})
+              آراء العملاء ({productData.reviewsCount})
             </button>
           </div>
 
@@ -253,7 +253,7 @@ export default function ProductPage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold">ماذا يقول عملاؤنا؟</h3>
-                  <button className="text-emerald-700 font-bold hover:underline" aria-label="كتابة مراجعة">Écrire un avis</button>
+                  <button className="text-emerald-700 font-bold hover:underline" aria-label="كتابة مراجعة">كتابة مراجعة</button>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   {reviews.map((review) => (
@@ -280,7 +280,7 @@ export default function ProductPage() {
 
         {/* --- قسم منتجات ذات صلة --- */}
         <div className="mt-20">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 border-l-4 border-emerald-600 pl-4">Vous aimerez aussi</h2>
+          <h2 className="text-2xl font-bold mb-6 text-gray-900 border-l-4 border-emerald-600 pl-4">قد يعجبك أيضاً</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((item) => (
               <div key={item.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden border border-gray-100 group">
@@ -291,7 +291,7 @@ export default function ProductPage() {
                   <h3 className="font-bold text-gray-800 truncate mb-1">{item.title}</h3>
                   <p className="text-emerald-700 font-bold">{item.price} MAD</p>
                   <button className="mt-3 w-full border border-emerald-600 text-emerald-700 text-sm font-bold py-2 rounded hover:bg-emerald-50 transition" aria-label="عرض التفاصيل">
-                    Voir détails
+                    عرض التفاصيل
                   </button>
                 </div>
               </div>

@@ -155,7 +155,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="text"
                 label="الاسم الكامل"
                 value={shippingAddress.fullName}
-                onChange={(e) => handleShippingChange("fullName", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("fullName", e.target.value)}
                 error={!!fieldErrors.fullName}
                 helperText={fieldErrors.fullName}
                 required
@@ -170,7 +170,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="email"
                 label="البريد الإلكتروني"
                 value={shippingAddress.email}
-                onChange={(e) => handleShippingChange("email", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("email", e.target.value)}
                 error={!!fieldErrors.email}
                 helperText={fieldErrors.email}
                 required
@@ -185,7 +185,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="tel"
                 label="رقم الهاتف"
                 value={shippingAddress.phone}
-                onChange={(e) => handleShippingChange("phone", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("phone", e.target.value)}
                 error={!!fieldErrors.phone}
                 helperText={fieldErrors.phone}
                 required
@@ -200,7 +200,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="text"
                 label="المدينة"
                 value={shippingAddress.city}
-                onChange={(e) => handleShippingChange("city", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("city", e.target.value)}
                 error={!!fieldErrors.city}
                 helperText={fieldErrors.city}
                 required
@@ -215,7 +215,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="text"
                 label="العنوان التفصيلي"
                 value={shippingAddress.address}
-                onChange={(e) => handleShippingChange("address", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("address", e.target.value)}
                 error={!!fieldErrors.address}
                 helperText={fieldErrors.address}
                 required
@@ -230,7 +230,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="text"
                 label="الرمز البريدي"
                 value={shippingAddress.postalCode}
-                onChange={(e) => handleShippingChange("postalCode", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("postalCode", e.target.value)}
                 error={!!fieldErrors.postalCode}
                 helperText={fieldErrors.postalCode}
                 required
@@ -244,7 +244,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 type="text"
                 label="البلد"
                 value={shippingAddress.country}
-                onChange={(e) => handleShippingChange("country", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleShippingChange("country", e.target.value)}
                 required
                 className="text-right"
               />
@@ -328,7 +328,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     type="text"
                     label="رقم البطاقة"
                     value={paymentMethod.cardNumber || ""}
-                    onChange={(e) => handlePaymentChange("cardNumber", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePaymentChange("cardNumber", e.target.value)}
                     error={!!fieldErrors.cardNumber}
                     helperText={fieldErrors.cardNumber}
                     required
@@ -343,7 +343,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     type="text"
                     label="تاريخ الانتهاء"
                     value={paymentMethod.cardExpiry || ""}
-                    onChange={(e) => handlePaymentChange("cardExpiry", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePaymentChange("cardExpiry", e.target.value)}
                     error={!!fieldErrors.cardExpiry}
                     helperText={fieldErrors.cardExpiry}
                     required
@@ -357,7 +357,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     type="text"
                     label="CVV"
                     value={paymentMethod.cardCVV || ""}
-                    onChange={(e) => handlePaymentChange("cardCVV", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePaymentChange("cardCVV", e.target.value)}
                     error={!!fieldErrors.cardCVV}
                     helperText={fieldErrors.cardCVV}
                     required
@@ -371,7 +371,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     type="text"
                     label="الاسم على البطاقة"
                     value={paymentMethod.cardName || ""}
-                    onChange={(e) => handlePaymentChange("cardName", e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePaymentChange("cardName", e.target.value)}
                     error={!!fieldErrors.cardName}
                     helperText={fieldErrors.cardName}
                     required
