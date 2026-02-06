@@ -3,16 +3,11 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      // أضفت لك هذا أيضاً تحسباً لو استخدمت صوراً من placeshold.co
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
+        protocol: "https",
+        hostname: "images.unsplash.com",
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

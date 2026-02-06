@@ -34,7 +34,7 @@ export const mockProducts: Product[] = Array.from({ length: 12 }).map((_, i) => 
   reviews: 12 + i,
   image: i % 2 === 0 
     ? "https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?q=80&w=600" 
-    : "https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=600",
+    : "/products2.png",
   badge: i === 0 ? "Nouveau" : i === 3 ? "-20%" : null,
   category: "Cosmétique"
 }));
