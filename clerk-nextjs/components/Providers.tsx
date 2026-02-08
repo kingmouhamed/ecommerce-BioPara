@@ -1,22 +1,22 @@
-"use client"; // 👈 هذا السطر هو الحل السحري
+"use client";
 
 import React from 'react';
+import { CartProvider } from '../contexts/CartContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import ErrorBoundary from './ErrorBoundary';
-// تأكد من مسار الاستدعاء حسب مكان ملفاتك
-import { CartProvider } from '../contexts/CartContext'; 
-import { NotificationProvider } from './ux/Notification';
-// import { AuthProvider } from '../contexts/AuthContext'; // فعّل هذا السطر إذا كان لديك AuthContext
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode;
+}
+
+export default function Providers({ children }: ProvidersProps) {
   return (
-    // <AuthProvider>  <-- إذا كان لديك AuthProvider
-      <ErrorBoundary>
-        <NotificationProvider>
-          <CartProvider>
-            {children}
-          </CartProvider>
-        </NotificationProvider>
-      </ErrorBoundary>
-    // </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <CartProvider>
+          {children}
+        </CartProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

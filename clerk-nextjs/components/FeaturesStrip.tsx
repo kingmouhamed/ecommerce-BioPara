@@ -1,42 +1,53 @@
-
 "use client";
 
-import React from "react";
-import { Truck, ShieldCheck, CreditCard, Star } from "lucide-react";
+import React from 'react';
+import { Truck, Shield, Headphones, Award } from 'lucide-react';
 
-const FeaturesStrip = () => (
-  <div className="bg-white border-b py-6">
-    <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-center divide-x divide-gray-100">
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
-          <Truck />
+interface Feature {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+const features: Feature[] = [
+  {
+    icon: <Truck className="w-6 h-6" />,
+    title: 'توصيل سريع',
+    description: 'لجميع أنحاء المغرب خلال 24-48 ساعة'
+  },
+  {
+    icon: <Shield className="w-6 h-6" />,
+    title: 'منتجات أصلية',
+    description: 'ضمان 100% على جميع المنتجات'
+  },
+  {
+    icon: <Headphones className="w-6 h-6" />,
+    title: 'دعم فني',
+    description: 'فريق متخصص جاهز لمساعدتك'
+  },
+  {
+    icon: <Award className="w-6 h-6" />,
+    title: 'جودة عالية',
+    description: 'أفضل الماركات العالمية والمحلية'
+  }
+];
+
+export default function FeaturesStrip() {
+  return (
+    <div className="bg-emerald-700 text-white py-12" dir="rtl">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <div key={index} className="flex flex-col items-center text-center group">
+              <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-white/20 transition-colors">
+                {feature.icon}
+              </div>
+              <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
+              <p className="text-emerald-100 text-sm leading-relaxed">{feature.description}</p>
+            </div>
+          ))}
         </div>
-        <h4 className="font-bold text-gray-800 text-sm">توصيل سريع</h4>
-        <p className="text-xs text-gray-500">لكل أنحاء المغرب خلال 24/48 ساعة</p>
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
-          <ShieldCheck />
-        </div>
-        <h4 className="font-bold text-gray-800 text-sm">منتجات أصلية</h4>
-        <p className="text-xs text-gray-500">مضمونة 100% من مختبراتنا</p>
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
-          <CreditCard />
-        </div>
-        <h4 className="font-bold text-gray-800 text-sm">دفع آمن</h4>
-        <p className="text-xs text-gray-500">بطاقة بنكية أو عند الاستلام</p>
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700">
-          <Star />
-        </div>
-        <h4 className="font-bold text-gray-800 text-sm">خدمة العملاء</h4>
-        <p className="text-xs text-gray-500">متاحة 7 أيام في الأسبوع</p>
       </div>
     </div>
-  </div>
-);
-
-export default FeaturesStrip;
+  );
+}

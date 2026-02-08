@@ -1,130 +1,237 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { Timer, Tag, Percent, ShoppingCart, ArrowRight } from "lucide-react";
-
-const promoProducts = [
-  { id: 1, title: "Pack Routine Visage Eclat", brand: "Vichy", price: 350.0, oldPrice: 580.0, discount: 40, image: "https://images.unsplash.com/photo-1556228720-19634e23387e?w=300" },
-  { id: 2, title: "Duo Solaire Familial", brand: "La Roche-Posay", price: 280.0, oldPrice: 420.0, discount: 33, image: "https://images.unsplash.com/photo-1556228578-8d85f5280b09?w=300" },
-  { id: 3, title: "Coffret Naissance Bio", brand: "Mustela", price: 199.0, oldPrice: 299.0, discount: 35, image: "https://images.unsplash.com/photo-1519681393784-d8e5b5a4570e?w=300" },
-  { id: 4, title: "Cure Anti-Chute 3 mois", brand: "Phyto", price: 450.0, oldPrice: 900.0, discount: 50, image: "https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?w=300" },
-  { id: 5, title: "Eau Micellaire Lot de 2", brand: "Bioderma", price: 180.0, oldPrice: 260.0, discount: 30, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=300" },
-  { id: 6, title: "Crème Mains Reparation", brand: "CeraVe", price: 45.0, oldPrice: 85.0, discount: 45, image: "https://images.unsplash.com/photo-1571781926291-28b46c54908d?w=300" },
-];
+import React, { useState } from "react";
+import { Search, Clock, Tag, Gift, Star } from "lucide-react";
 
 export default function PromotionsPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const promotions = [
+    {
+      id: 1,
+      title: "خصم 20% على منتجات العناية بالبشرة",
+      description: "احصل على خصم 20% على جميع منتجات العناية بالبشرة من ماركات La Roche-Posay و Vichy",
+      discount: "20%",
+      category: "العناية بالبشرة",
+      validUntil: "2026-03-31",
+      code: "SKIN20",
+      image: "/products1.png",
+      type: "percentage"
+    },
+    {
+      id: 2,
+      title: "شحن مجاني للطلبات فوق 300 درهم",
+      description: "استمتع بالتوصيل المجاني لجميع الطلبات التي تتجاوز 300 درهم",
+      discount: "مجاني",
+      category: "جميع المنتجات",
+      validUntil: "2026-12-31",
+      code: "FREESHIP",
+      image: "/products2.png",
+      type: "shipping"
+    },
+    {
+      id: 3,
+      title: "عرض 2 + 1 على الزيوت العطرية",
+      description: "اشتر زيتين واحصل على الثالث مجاناً من مجموعة الزيوت العطرية",
+      discount: "3x2",
+      category: "الزيوت العطرية",
+      validUntil: "2026-02-28",
+      code: "OILS3X2",
+      image: "/products3.png",
+      type: "bogo"
+    },
+    {
+      id: 4,
+      title: "خصم 15% للأعضاء الجدد",
+      description: "خصم خاص 15% على أول طلب للأعضاء الجدد في BioPara",
+      discount: "15%",
+      category: "جميع المنتجات",
+      validUntil: "2026-12-31",
+      code: "NEW15",
+      image: "/products4.png",
+      type: "newuser"
+    },
+    {
+      id: 5,
+      title: "خصم 50 درهم على طلبك الأول",
+      description: "خصم 50 درهم على أول طلب بقيمة 200 درهم أو أكثر",
+      discount: "50 درهم",
+      category: "جميع المنتجات",
+      validUntil: "2026-02-15",
+      code: "FIRST50",
+      image: "/products5.png",
+      type: "fixed"
+    },
+    {
+      id: 6,
+      title: "عروض الأعشاب الطبية",
+      description: "خصم يصل إلى 30% على مجموعة الأعشاب الطبية والمكملات الغذائية",
+      discount: "30%",
+      category: "الأعشاب الطبية",
+      validUntil: "2026-03-15",
+      code: "HERBS30",
+      image: "/products6.png",
+      type: "percentage"
+    }
+  ];
+
+  const filteredPromotions = promotions.filter(promo =>
+    promo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    promo.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    promo.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getDaysLeft = (validUntil: string) => {
+    const today = new Date();
+    const expiryDate = new Date(validUntil);
+    const diffTime = expiryDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
-      
-      {/* Flash Sale Hero */}
-      <div className="bg-red-600 text-white py-12 relative overflow-hidden">
-        <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="text-center md:text-left">
-            <div className="inline-flex items-center gap-2 bg-red-800/50 px-4 py-1 rounded-full text-sm font-bold mb-4 border border-red-400">
-               <Timer size={16} className="animate-pulse"/> عرض محدود
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight">تخفيضات ضخمة</h1>
-            <p className="text-red-100 text-lg max-w-lg mb-6">
-              حتى <span className="font-bold text-white bg-red-800 px-2"> -70% </span> على مختارات من أفضل الماركات. الكمية محدودة!
-            </p>
-            <div className="flex gap-4 justify-center md:justify-start">
-               <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  02 <span className="block text-[10px] text-gray-500 uppercase">أيام</span>
-               </div>
-               <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  14 <span className="block text-[10px] text-gray-500 uppercase">ساعات</span>
-               </div>
-               <div className="bg-white text-red-600 px-4 py-2 rounded-lg font-mono font-bold text-xl text-center">
-                  35 <span className="block text-[10px] text-gray-500 uppercase">دقائق</span>
-               </div>
-            </div>
-          </div>
-          
-          <div className="hidden md:block relative w-80 h-80">
-             {/* Decorative element resembling a gift or product explosion */}
-             <div className="absolute inset-0 bg-white/10 rounded-full animate-pulse"></div>
-             <div className="absolute inset-4 bg-white/20 rounded-full"></div>
-             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-9xl opacity-20 rotate-12">
-                <Percent />
-             </div>
+      {/* Header */}
+      <div className="bg-gradient-to-r from-emerald-700 to-green-600 text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl font-bold mb-4">العروض والخصومات</h1>
+          <p className="text-lg text-emerald-100 max-w-2xl mx-auto">
+            استمتع بأفضل العروض الحصرية على منتجاتنا المميزة
+          </p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12">
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="ابحث عن عرض..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pr-12 pl-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-right"
+              dir="rtl"
+            />
           </div>
         </div>
-        
-        {/* Abstract shapes */}
-        <div className="absolute top-0 right-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-      </div>
 
-      {/* Filter Strip */}
-      <div className="bg-white border-b sticky top-0 z-40 shadow-sm">
-         <div className="container mx-auto px-4 py-4 flex overflow-x-auto gap-4 no-scrollbar">
-            <button className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">عرض الكل</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">-50% وأكثر</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">العبوات</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">العناية بالوجه</button>
-            <button className="bg-gray-100 text-gray-700 hover:bg-gray-200 px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap">الأطفال</button>
-         </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="container mx-auto px-4 py-12">
-         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {promoProducts.map((product) => (
-               <div key={product.id} className="bg-white border rounded-xl overflow-hidden hover:shadow-xl transition group relative">
-                  {/* Discount Badge */}
-                  <div className="absolute top-0 right-0 bg-red-600 text-white font-bold px-3 py-2 rounded-bl-xl z-10 shadow-md">
-                     -{product.discount}%
+        {/* Active Promotions */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">العروض النشطة</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPromotions.map((promo) => {
+              const daysLeft = getDaysLeft(promo.validUntil);
+              
+              return (
+                <div key={promo.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition">
+                  {/* Promotion Image */}
+                  <div className="relative h-48 bg-gray-100">
+                    <img
+                      src={promo.image}
+                      alt={promo.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+                      {promo.discount}
+                    </div>
                   </div>
-
-                  <div className="relative h-64 p-6 flex items-center justify-center bg-gray-50">
-                     <Image 
-                        src={product.image} 
-                        alt={product.title} 
-                        fill 
-                        className="object-contain group-hover:scale-105 transition duration-500"
-                     />
-                     <div className="absolute bottom-4 left-0 right-0 text-center opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0">
-                        <button className="bg-gray-900 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg flex items-center justify-center gap-2 mx-auto hover:bg-black">
-                           <ShoppingCart size={16}/> أضف للسلة
-                        </button>
-                     </div>
+                  
+                  {/* Promotion Content */}
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Tag className="w-4 h-4 text-emerald-700" />
+                      <span className="text-sm text-emerald-700 font-medium">{promo.category}</span>
+                    </div>
+                    
+                    <h3 className="font-bold text-gray-800 mb-2">{promo.title}</h3>
+                    <p className="text-gray-600 text-sm mb-4">{promo.description}</p>
+                    
+                    {/* Promotion Code */}
+                    <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">كود الخصم:</span>
+                        <span className="font-bold text-emerald-700">{promo.code}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Validity */}
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1 text-gray-500">
+                        <Clock className="w-4 h-4" />
+                        <span>صالح لـ {daysLeft} يوم</span>
+                      </div>
+                      <button className="text-emerald-700 hover:text-emerald-800 font-medium">
+                        استخدم العرض
+                      </button>
+                    </div>
                   </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-                  <div className="p-4">
-                     <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
-                     <h3 className="font-bold text-gray-800 mb-2 truncate">{product.title}</h3>
-                     
-                     <div className="flex items-center gap-3">
-                        <div className="flex flex-col">
-                           <span className="text-xs text-gray-400 line-through">السعر الأصلي</span>
-                           <span className="text-sm text-gray-400 font-medium line-through decoration-red-500">{product.oldPrice.toFixed(2)} DH</span>
-                        </div>
-                        <div className="h-8 w-px bg-gray-200"></div>
-                        <div className="flex flex-col">
-                           <span className="text-xs text-red-600 font-bold">سعر الخصم</span>
-                           <span className="text-xl font-bold text-red-600">{product.price.toFixed(2)} DH</span>
-                        </div>
-                     </div>
-                     
-                     <div className="mt-4 pt-3 border-t">
-                        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                           <div className="bg-red-500 h-1.5 rounded-full w-1/2"></div>
-                        </div>
-                        <div className="text-xs text-gray-500 flex justify-between">
-                           <span>تم بيعه: {Math.floor(Math.random() * 50)}</span>
-                           <span className="text-red-500 font-medium">وشيك النفاد</span>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            ))}
-         </div>
-         
-         <div className="mt-12 text-center">
-            <button className="border-2 border-gray-900 text-gray-900 px-8 py-3 rounded-full font-bold hover:bg-gray-900 hover:text-white transition flex items-center gap-2 mx-auto">
-               عرض كل العروض <ArrowRight size={18}/>
-            </button>
-         </div>
+        {/* Special Offers */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">عروض خاصة</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Gift className="w-8 h-8" />
+                <h3 className="text-xl font-bold">هدية الأعضاء</h3>
+              </div>
+              <p className="mb-4">
+                انضم إلى برنامج الولاء واحصل على هدية خاصة بمناسبة عيد ميلادك
+              </p>
+              <button className="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition">
+                انضم الآن
+              </button>
+            </div>
+            
+            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Star className="w-8 h-8" />
+                <h3 className="text-xl font-bold">عرض الأسبوع</h3>
+              </div>
+              <p className="mb-4">
+                خصم 25% على منتج مختار كل أسبوع. تابعنا على وسائل التواصل الاجتماعي!
+              </p>
+              <button className="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">
+                عرض هذا الأسبوع
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Terms */}
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6">
+          <h3 className="text-lg font-bold text-emerald-800 mb-4">شروط العروض</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-semibold text-emerald-700 mb-2">شروط عامة:</h4>
+              <ul className="space-y-1 text-emerald-700 text-sm">
+                <li>• العروض صالحة حتى تاريخ الانتهاء المحدد</li>
+                <li>• لا يمكن الجمع بين أكثر من عرض في نفس الطلب</li>
+                <li>• العروض لا تشمل تكاليف الشحن</li>
+                <li>• يحق لـ BioPara تعديل العروض دون إشعار مسبق</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold text-emerald-700 mb-2">كيفية الاستخدام:</h4>
+              <ul className="space-y-1 text-emerald-700 text-sm">
+                <li>• أضف المنتجات إلى سلة التسوق</li>
+                <li>• أدخل كود الخصم في صفحة الدفع</li>
+                <li>• سيتم تطبيق الخصم تلقائياً</li>
+                <li>• تأكد من صلاحية العرض قبل الاستخدام</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

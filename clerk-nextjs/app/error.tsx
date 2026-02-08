@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import React from "react";
+import Link from "next/link";
+import { AlertCircle, RefreshCw, Home } from "lucide-react";
 
 export default function Error({
   error,
@@ -10,85 +11,43 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    // Log error to console for debugging
-    console.error("Application Error:", error);
-  }, [error]);
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4" dir="rtl">
-      <div className="text-center max-w-lg mx-auto">
-        {/* Error Icon */}
-        <div className="mb-8">
-          <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-10 h-10 text-red-600" />
-          </div>
+    <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
+      <div className="text-center max-w-md mx-auto p-8">
+        <div className="bg-red-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+          <AlertCircle className="w-10 h-10 text-red-600" />
         </div>
-
-        {/* Error Message */}
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">حدث خطأ ما</h1>
-        <h2 className="text-2xl font-semibold text-red-600 mb-4">
-          {error.message || "حدث خطأ غير متوقع"}
-        </h2>
         
-        <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          نعتذر عن هذا الإزعاج. يرجى المحاولة مرة أخرى أو 
-          <span className="font-medium">التواصل مع فريق الدعم</span> إذا استمرت المشكلة.
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">حدث خطأ ما</h1>
+        
+        <p className="text-gray-600 mb-8">
+          عذراً، حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى أو العودة للصفحة الرئيسية.
         </p>
 
-        {/* Error Details (for development) */}
-        {process.env.NODE_ENV === "development" && error.digest && (
-          <details className="mb-8 text-right">
-            <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
-              تفاصيل الخطأ التقنية
-            </summary>
-            <pre className="mt-2 p-4 bg-gray-100 rounded-lg text-xs text-gray-800 overflow-auto text-right">
-              <code>{error.digest}</code>
-            </pre>
-          </details>
+        {process.env.NODE_ENV === "development" && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-right">
+            <p className="text-sm text-red-800 font-mono">
+              {error.message}
+            </p>
+          </div>
         )}
-
-        {/* Action Buttons */}
+        
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+            className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition flex items-center justify-center gap-2"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw className="w-4 h-4" />
             إعادة المحاولة
           </button>
           
-          <button
-            onClick={() => window.location.href = "/"}
-            className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+          <Link
+            href="/"
+            className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-2"
           >
-            <Home className="w-5 h-5" />
-            العودة للرئيسية
-          </button>
-        </div>
-
-        {/* Help Section */}
-        <div className="mt-12 p-6 bg-blue-50 rounded-lg border border-blue-200">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">تحتاج مساعدة؟</h3>
-          <div className="space-y-2 text-sm text-blue-800">
-            <p>• تحقق من اتصالك بالإنترنت</p>
-            <p>• أعد تحميل الصفحة (Ctrl+F5)</p>
-            <p>• إذا استمرت المشكلة، تواصل معنا عبر:</p>
-            <div className="flex justify-center gap-4 mt-3">
-              <a
-                href="mailto:support@biopara.ma"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                البريد الإلكتروني
-              </a>
-              <a
-                href="tel:+212600000000"
-                className="text-blue-600 hover:underline font-medium"
-              >
-                الهاتف
-              </a>
-            </div>
-          </div>
+            <Home className="w-4 h-4" />
+            الصفحة الرئيسية
+          </Link>
         </div>
       </div>
     </div>

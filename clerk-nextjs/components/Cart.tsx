@@ -1,161 +1,97 @@
 "use client";
-import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
-interface CartItem {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import React from 'react';
+import { useCart } from '../contexts/CartContext';
+import { ShoppingCart, X, Plus, Minus, Trash2 } from 'lucide-react';
 
-interface DeliveryInfo {
-  name: string;
-  phone: string;
-  address: string;
-}
+export default function Cart() {
+  const { cart, removeFromCart, updateQuantity, calculateTotal, cartItemCount, isCartOpen, setIsCartOpen } = useCart();
 
-interface CartProps {
-  isOpen: boolean;
-  onClose: () => void;
-  cart: CartItem[];
-  removeFromCart: (id: number) => void;
-  calculateTotal: () => string;
-  deliveryInfo: DeliveryInfo;
-  setDeliveryInfo: (info: DeliveryInfo) => void;
-}
-
-const Cart: React.FC<CartProps> = ({ isOpen, onClose, cart, removeFromCart, calculateTotal, deliveryInfo, setDeliveryInfo }) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isOpen) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [isOpen]);
-
-  if (!isOpen) {
-    return null;
-  }
-
-  const handleCheckout = () => {
-    if (cart.length === 0) {
-      alert("سلتك فارغة!");
-      return;
-    }
-    if (!deliveryInfo.name || !deliveryInfo.phone || !deliveryInfo.address) {
-      alert("الرجاء إدخال جميع بيانات التوصيل.");
-      return;
-    }
-
-    // Build WhatsApp message
-    let message = "سلام، بغيت نطلب من المتجر 🛒\n\n📦 المنتجات:\n";
-    cart.forEach(item => {
-      const subtotal = item.price * item.quantity;
-      message += `- ${item.title} (x${item.quantity}) = ${subtotal} DH\n`;
-    });
-    message += `\n💰 المجموع: ${calculateTotal()} DH\n\n`;
-    message += `📍 بيانات التوصيل:\n`;
-    message += `الاسم: ${deliveryInfo.name}\n`;
-    message += `رقم الهاتف: ${deliveryInfo.phone}\n`;
-    message += `العنوان: ${deliveryInfo.address}\n\n`;
-    message += "شكرا 🙏";
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/212673020264?text=${encodedMessage}`;
-
-    // Open WhatsApp
-    window.open(whatsappUrl, '_blank');
-
-    onClose();
-  };
-
-  const cartStyle = 'w-full min-h-screen flex';
-  const sidebarStyle = 'relative ml-auto w-full max-w-sm bg-white h-full flex flex-col shadow-lg';
+  if (!isCartOpen) return null;
 
   return (
-    <div className={cartStyle}>
-      <div className={sidebarStyle}>
-        <div className="p-6 flex-shrink-0">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">سلة التسوق</h2>
-            <button onClick={onClose} className="p-2 bg-none border-none cursor-pointer" aria-label="Close cart">
-              <X size={24} />
+    <div className="fixed inset-0 z-50 overflow-hidden">
+      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setIsCartOpen(false)} />
+      <div className="absolute left-0 top-0 h-full w-full max-w-md bg-white shadow-xl" dir="rtl">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" />
+              <h2 className="text-lg font-semibold">عربة التسوق</h2>
+              <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full">
+                {cartItemCount}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsCartOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          {cart.length === 0 ? (
-            <p className="text-center py-10 text-gray-600">السلة فارغة</p>
-          ) : (
-            <div className="flex flex-col gap-4 max-h-96 overflow-y-auto">
-              {cart.map(item => (
-                <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-100 rounded-lg">
-                  <Image src={item.image || ''} alt={item.title} width={64} height={64} className="object-cover rounded" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <p className="text-sm text-gray-600">{item.price} DH</p>
-                    <p className="text-sm">الكمية: {item.quantity}</p>
+          {/* Cart Items */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {cart.length === 0 ? (
+              <div className="text-center py-8">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">عربة التسوق فارغة</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-sm mb-1">{item.title}</h4>
+                      <p className="text-emerald-600 font-semibold mb-2">{item.price} درهم</p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="p-1 hover:bg-gray-200 rounded"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="w-8 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="p-1 hover:bg-gray-200 rounded"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="p-1 hover:bg-red-100 text-red-600 rounded mr-auto"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <button onClick={() => removeFromCart(item.id)} className="text-red-500 bg-none border-none cursor-pointer" aria-label="Remove item">
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {cart.length > 0 && (
+            <div className="border-t p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">المجموع:</span>
+                <span className="text-xl font-bold text-emerald-600">{calculateTotal()} درهم</span>
+              </div>
+              <button className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+                إتمام الطلب
+              </button>
             </div>
           )}
         </div>
-
-        {cart.length > 0 && (
-          <div className="p-6 mt-auto border-t border-gray-300">
-            <div className="flex justify-between text-xl font-bold mb-4">
-              <span>المجموع:</span>
-              <span>{calculateTotal()} DH</span>
-            </div>
-            <div className="flex flex-col gap-4 mb-6">
-              <h3 className="text-lg font-semibold">بيانات التوصيل</h3>
-              <input
-                type="text"
-                placeholder="الاسم"
-                value={deliveryInfo.name}
-                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, name: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg"
-              />
-              <input
-                type="tel"
-                placeholder="رقم الهاتف"
-                value={deliveryInfo.phone}
-                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, phone: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg"
-              />
-              <textarea
-                placeholder="العنوان"
-                value={deliveryInfo.address}
-                onChange={(e) => setDeliveryInfo({ ...deliveryInfo, address: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg min-h-24"
-              ></textarea>
-            </div>
-            {deliveryInfo.name && deliveryInfo.phone && deliveryInfo.address && (
-              <div className="p-4 bg-gray-100 rounded-lg mb-6">
-                <h3 className="text-lg font-semibold mb-4">معلومات المشتري</h3>
-                <p><strong>الاسم:</strong> {deliveryInfo.name}</p>
-                <p><strong>رقم الهاتف:</strong> {deliveryInfo.phone}</p>
-                <p><strong>العنوان:</strong> {deliveryInfo.address}</p>
-              </div>
-            )}
-            <button
-              onClick={handleCheckout}
-              className="w-full text-lg bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700"
-            >
-              إرسال الطلب عبر واتساب
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
-};
-
-export default Cart;
+}

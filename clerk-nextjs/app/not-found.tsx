@@ -1,52 +1,58 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
-import { Home, Search } from "lucide-react";
+import { Search, Home, Package } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4" dir="rtl">
-      <div className="text-center">
-        {/* Icon */}
-        <div className="mb-8">
-          <div className="mx-auto w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-            <Search className="w-12 h-12 text-gray-400" />
-          </div>
+    <div className="min-h-screen bg-gray-50 font-sans flex items-center justify-center" dir="rtl">
+      <div className="text-center max-w-md mx-auto p-8">
+        <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Package className="w-12 h-12 text-gray-400" />
         </div>
-
-        {/* Error Message */}
-        <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
+        
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">404</h1>
         <h2 className="text-2xl font-semibold text-gray-700 mb-4">الصفحة غير موجودة</h2>
-        <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+        
+        <p className="text-gray-600 mb-8">
           عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.
-          يرجى التحقق من الرابط أو العودة إلى الصفحة الرئيسية.
         </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
-          >
-            <Home className="w-5 h-5" />
-            العودة للرئيسية
-          </Link>
+        
+        <div className="space-y-4">
+          <div className="bg-white rounded-lg p-4 border border-gray-200">
+            <p className="text-sm text-gray-600 mb-3">هل تبحث عن:</p>
+            <div className="flex flex-col gap-2">
+              <Link href="/products" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
+                <Package className="w-4 h-4" />
+                المنتجات
+              </Link>
+              <Link href="/brands" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
+                <Search className="w-4 h-4" />
+                الماركات
+              </Link>
+              <Link href="/promotions" className="text-emerald-700 hover:text-emerald-800 text-sm">
+                العروض والخصومات
+              </Link>
+            </div>
+          </div>
           
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-          >
-            <Search className="w-5 h-5" />
-            تصفح المنتجات
-          </Link>
-        </div>
-
-        {/* Help Text */}
-        <div className="mt-12 text-sm text-gray-500">
-          إذا كنت تعتقد أن هناك خطأ، يرجى 
-          <Link href="/contact" className="text-emerald-600 hover:underline">
-            التواصل معنا
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/"
+              className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition flex items-center justify-center gap-2"
+            >
+              <Home className="w-4 h-4" />
+              الصفحة الرئيسية
+            </Link>
+            
+            <button
+              onClick={() => window.history.back()}
+              className="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition"
+            >
+              العودة للخلف
+            </button>
+          </div>
         </div>
       </div>
     </div>

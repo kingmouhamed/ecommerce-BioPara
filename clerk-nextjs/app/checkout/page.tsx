@@ -1,261 +1,259 @@
 "use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { 
-  CreditCard, 
-  Truck, 
-  ShieldCheck, 
-  ArrowLeft,
-  CheckCircle,
-  AlertCircle
-} from "lucide-react";
+import React, { useState } from "react";
+import { useCart } from "../../contexts/CartContext";
+import Link from "next/link";
+import { Truck, Shield, CreditCard, MapPin } from "lucide-react";
 
 export default function CheckoutPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    postalCode: '',
-    paymentMethod: 'cod'
-  });
+  const { cart, calculateTotal, cartItemCount } = useCart();
+  const [shippingMethod, setShippingMethod] = useState("standard");
+  const [paymentMethod, setPaymentMethod] = useState("cod");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">سلة التسوق فارغة</h1>
+            <p className="text-gray-600 mb-8">
+              أضف منتجات إلى سلة التسوق للمتابعة
+            </p>
+            <Link
+              href="/products"
+              className="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition"
+            >
+              استكشف المنتجات
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle checkout logic here
-    alert('تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.');
-  };
+  const shippingCost = shippingMethod === "express" ? 30 : 0;
+  const total = parseFloat(calculateTotal()) + shippingCost;
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10 font-sans" dir="rtl">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">إتمام الطلب</h1>
         
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/cart" className="flex items-center gap-2 text-gray-600 hover:text-emerald-700">
-            <ArrowLeft size={18} />
-            العودة للسلة
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900">إتمام الطلب</h1>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* --- نموذج الطلب --- */}
-          <div className="lg:w-2/3">
-            
-            {/* معلومات العملاء */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-              <h2 className="text-xl font-bold mb-6 pb-4 border-b">معلومات العميل</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Checkout Form */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Shipping Information */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-emerald-700" />
+                معلومات الشحن
+              </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">الاسم الأول</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    الاسم الكامل *
+                  </label>
                   <input
                     type="text"
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    placeholder="أدخل الاسم الأول"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="أدخل اسمك الكامل"
                   />
                 </div>
+                
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">الاسم الأخير</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="أدخل الاسم الأخير"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="أدخل البريد الإلكتروني"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">رقم الهاتف</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    رقم الهاتف *
+                  </label>
                   <input
                     type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="أدخل رقم الهاتف"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="+212 6XX XXX XXX"
                   />
                 </div>
-              </div>
-            </div>
-
-            {/* عنوان التوصيل */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-              <h2 className="text-xl font-bold mb-6 pb-4 border-b">عنوان التوصيل</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">العنوان التفصيلي</label>
+                
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    العنوان *
+                  </label>
                   <input
                     type="text"
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    placeholder="أدخل العنوان التفصيلي"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="الشارع، المدينة، الرمز البريدي"
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">المدينة</label>
-                    <input
-                      type="text"
-                      id="city"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      placeholder="أدخل المدينة"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="postalCode" className="block text-sm font-medium text-gray-700 mb-2">الرمز البريدي</label>
-                    <input
-                      type="text"
-                      id="postalCode"
-                      name="postalCode"
-                      value={formData.postalCode}
-                      onChange={handleInputChange}
-                      placeholder="أدخل الرمز البريدي"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
+                
+                <div>
+                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                    المدينة *
+                  </label>
+                  <select id="city" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="">اختر المدينة</option>
+                    <option value="casablanca">الدار البيضاء</option>
+                    <option value="rabat">الرباط</option>
+                    <option value="marrakech">مراكش</option>
+                    <option value="fes">فاس</option>
+                    <option value="tangier">طنجة</option>
+                    <option value="agadir">أكادير</option>
+                    <option value="meknes">مكناس</option>
+                    <option value="oujda">وجدة</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    الرمز البريدي *
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="XXXXX"
+                  />
                 </div>
               </div>
             </div>
 
-            {/* طريقة الدفع */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold mb-6 pb-4 border-b">طريقة الدفع</h2>
+            {/* Shipping Method */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Truck className="w-5 h-5 text-emerald-700" />
+                طريقة الشحن
+              </h2>
               
               <div className="space-y-3">
-                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="cod"
-                    checked={formData.paymentMethod === 'cod'}
-                    onChange={handleInputChange}
-                    className="text-emerald-600"
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">الدفع عند الاستلام (COD)</div>
-                    <div className="text-sm text-gray-500">الدفع نقداً عند استلام الطلب</div>
+                <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="standard"
+                      checked={shippingMethod === "standard"}
+                      onChange={(e) => setShippingMethod(e.target.value)}
+                      className="text-emerald-700"
+                    />
+                    <div>
+                      <div className="font-medium">التوصيل القياسي</div>
+                      <div className="text-sm text-gray-500">3-5 أيام عمل</div>
+                    </div>
                   </div>
-                  <CreditCard size={20} className="text-gray-400" />
+                  <span className="font-bold text-emerald-600">مجاني</span>
                 </label>
                 
-                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                <label className="flex items-center justify-between p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="radio"
+                      name="shipping"
+                      value="express"
+                      checked={shippingMethod === "express"}
+                      onChange={(e) => setShippingMethod(e.target.value)}
+                      className="text-emerald-700"
+                    />
+                    <div>
+                      <div className="font-medium">التوصيل السريع</div>
+                      <div className="text-sm text-gray-500">1-2 أيام عمل</div>
+                    </div>
+                  </div>
+                  <span className="font-bold">30.00 درهم</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Payment Method */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <CreditCard className="w-5 h-5 text-emerald-700" />
+                طريقة الدفع
+              </h2>
+              
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
                   <input
                     type="radio"
-                    name="paymentMethod"
-                    value="card"
-                    checked={formData.paymentMethod === 'card'}
-                    onChange={handleInputChange}
-                    className="text-emerald-600"
+                    name="payment"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="text-emerald-700"
                   />
-                  <div className="flex-1">
-                    <div className="font-medium">بطاقة الائتمان</div>
-                    <div className="text-sm text-gray-500">دفع آمن بالبطاقة</div>
+                  <div>
+                    <div className="font-medium">الدفع عند الاستلام</div>
+                    <div className="text-sm text-gray-500">الدفع نقداً عند استلام الطلب</div>
                   </div>
-                  <CreditCard size={20} className="text-gray-400" />
+                </label>
+                
+                <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="card"
+                    checked={paymentMethod === "card"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="text-emerald-700"
+                  />
+                  <div>
+                    <div className="font-medium">بطاقة ائتمانية</div>
+                    <div className="text-sm text-gray-500">دفع آمن عبر البطاقة البنكية</div>
+                  </div>
                 </label>
               </div>
             </div>
           </div>
 
-          {/* --- ملخص الطلب --- */}
-          <div className="lg:w-1/3">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-24">
-              <h2 className="text-xl font-bold mb-6 pb-4 border-b">ملخص الطلب</h2>
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-4">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">ملخص الطلب</h2>
               
-              <div className="space-y-3 text-sm text-gray-600 mb-6">
-                <div className="flex justify-between">
-                  <span>المجموع الفرعي</span>
-                  <span className="font-bold">545 DH</span>
+              {/* Order Items */}
+              <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex justify-between items-center">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{item.title}</div>
+                      <div className="text-gray-500 text-xs">الكمية: {item.quantity}</div>
+                    </div>
+                    <span className="font-medium">
+                      {(item.price * item.quantity).toFixed(2)} درهم
+                    </span>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Price Breakdown */}
+              <div className="border-t pt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">المجموع الفرعي</span>
+                  <span>{calculateTotal()} درهم</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>التوصيل</span>
-                  <span className="text-emerald-600 font-bold">مجاني</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">الشحن</span>
+                  <span>{shippingCost === 0 ? "مجاني" : shippingCost + ".00 درهم"}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>ضريبة القيمة المضافة (20%)</span>
-                  <span>شاملة</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">الضريبة</span>
+                  <span>شامل</span>
+                </div>
+                <div className="border-t pt-2">
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>المجموع</span>
+                    <span className="text-emerald-700">{total.toFixed(2)} درهم</span>
+                  </div>
                 </div>
               </div>
-
-              <div className="border-t pt-4 mb-6">
-                <div className="flex justify-between text-xl font-bold text-gray-900">
-                  <span>المجموع الإجمالي</span>
-                  <span>545 DH</span>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                <button
-                  type="submit"
-                  className="block w-full bg-emerald-700 text-white text-center py-4 rounded-lg font-bold hover:bg-emerald-800 transition shadow-lg shadow-emerald-200 mb-6"
-                >
-                  تأكيد الطلب
-                </button>
-              </form>
-
-              {/* Trust Badges */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <ShieldCheck size={18} className="text-emerald-600" />
-                  <span>دفع آمن 100% (COD / بطاقة)</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <Truck size={18} className="text-emerald-600" />
-                  <span>توصيل في جميع أنحاء المغرب خلال 48 ساعة</span>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <CheckCircle size={18} className="text-emerald-600" />
-                  <span>منتجات أصلية مضمونة</span>
-                </div>
+              
+              {/* Place Order Button */}
+              <button className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition mt-6">
+                تأكيد الطلب
+              </button>
+              
+              {/* Security Badge */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+                <Shield className="w-4 h-4" />
+                <span>شراء آمن ومضمون</span>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

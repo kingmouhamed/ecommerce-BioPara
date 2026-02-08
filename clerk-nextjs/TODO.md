@@ -1,7 +1,0 @@
-- [x] Import useCart hook in HomePage.tsx
-- [x] Update ProductCard component to accept addToCart prop
-- [x] Add onClick handler to "Add to Cart" button in ProductCard
-- [x] Update cart count display in Header component
-- [x] Test cart functionality
-- [x] Link HeroSection buttons to corresponding pages
-- [x] Fix "عرض الكل" links to point to /products

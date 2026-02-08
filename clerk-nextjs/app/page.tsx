@@ -1,78 +1,72 @@
-
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useCart } from "../contexts/CartContext";
-import { mockProducts } from "../data/products";
-import type { Product } from "../data/products";
-
-// Import main components
-import Navbar, { MobileMenu } from "../components/Navbar";
 import Hero from "../components/Hero";
-import FeaturesStrip from "../components/FeaturesStrip";
 import ProductList from "../components/ProductList";
-import Footer from "../components/Footer";
-
-// Import additional components
-import CategoriesGrid from "../components/CategoriesGrid";
 import Brands from "../components/Brands";
 import FeaturedTabs from "../components/FeaturedTabs";
 import PromoBanner from "../components/PromoBanner";
 import Loyalty from "../components/Loyalty";
 import Newsletter from "../components/Newsletter";
+import Footer from "../components/Footer";
+import CategoriesGrid from "../components/CategoriesGrid";
+import { mockProducts, Product, allProducts, parapharmacieProducts, herbalProducts } from "../data/index";
 
 export default function HomePage() {
   const { addToCart, cartItemCount } = useCart();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   // Filter products for different sections
-  const paraProducts = mockProducts.filter((p) => p.type === "para");
-  const herbalProducts = mockProducts.filter((p) => p.type === "herbal");
-  const newArrivals = mockProducts.filter((p) => p.isNew).slice(0, 10);
+  const paraProducts = parapharmacieProducts;
+  const herbalProductsList = herbalProducts;
+  const newArrivals = mockProducts.filter((p: Product) => p && p.isNew).slice(0, 10);
   const bestSellers = mockProducts
-    .sort((a, b) => (b.oldPrice || 0) - (a.oldPrice || 0))
+    .filter((p: Product) => p)
+    .sort((a: Product, b: Product) => (b.oldPrice || 0) - (a.oldPrice || 0))
     .slice(0, 10);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
-      <Navbar onOpenMobileMenu={() => setMobileMenuOpen(true)} cartItemCount={cartItemCount} />
-      <MobileMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       <main>
         <Hero />
-        <FeaturesStrip />
-        <CategoriesGrid />
+        
+        <div className="container mx-auto px-4 py-12">
+          <CategoriesGrid />
+        </div>
 
         {/* Parapharmacie Products */}
-        <ProductList
-          title="الأكثر مبيعاً في شبه الصيدلية"
-          subtitle="أفضل الماركات العالمية للعناية بالبشرة"
-          products={paraProducts.slice(0, 8)}
-          addToCart={addToCart}
-          viewAllLink="/products?category=Parapharmacie"
-          type="para"
-        />
+        <div className="container mx-auto px-4 py-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في شبه الصيدلية</h2>
+          <p className="text-gray-600 mb-8">أفضل الماركات العالمية للعناية بالبشرة</p>
+          <ProductList products={paraProducts.slice(0, 8)} />
+        </div>
 
         <Brands />
 
         {/* Featured Products Tabs */}
-        <FeaturedTabs newArrivals={newArrivals} bestSellers={bestSellers} />
+        <div className="container mx-auto px-4 py-12">
+          <FeaturedTabs />
+        </div>
 
         {/* Promotional Banner */}
         <PromoBanner />
 
         {/* Herbalism Products */}
-        <ProductList
-          title="الأكثر مبيعاً في الأعشاب الطبية"
-          subtitle="منتجات طبيعية 100% للعناية بصحتك"
-          products={herbalProducts.slice(0, 8)}
-          addToCart={addToCart}
-          viewAllLink="/products?category=الأعشاب الطبية"
-          type="herbal"
-        />
+        <div className="container mx-auto px-4 py-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في الأعشاب الطبية</h2>
+          <p className="text-gray-600 mb-8">منتجات طبيعية 100% للعناية بصحتك</p>
+          <ProductList products={herbalProductsList.slice(0, 8)} />
+        </div>
 
-        <Loyalty />
-        <Newsletter />
+        <div className="container mx-auto px-4 py-12">
+          <Loyalty />
+        </div>
+        
+        <div className="container mx-auto px-4 py-12">
+          <Newsletter />
+        </div>
       </main>
+      
       <Footer />
     </div>
   );
