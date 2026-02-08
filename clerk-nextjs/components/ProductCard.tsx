@@ -1,100 +1,120 @@
-"use client"; // تأكد من وجود هذا السطر في البداية
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import React from 'react';
 import Link from 'next/link';
-// تأكد من مسار استيراد الأنواع والكونتيكست صحيح حسب مشروعك
-import { useCart } from '../contexts/CartContext';
+import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 
-// تعريف النوع لضمان عدم حدوث أخطاء
-interface Product {
-  id: number | string;
-  title: string;
-  price: number;
-  oldPrice?: number;
-  image: string;
-  category: string;
-  isNew?: boolean;
+interface ProductCardProps {
+  product: {
+    id: number;
+    title: string;
+    price: number;
+    originalPrice?: number;
+    rating: number;
+    image: string;
+    category: string;
+    badge?: string;
+  };
+  onAddToCart?: (product: any) => void;
+  onQuickView?: (product: any) => void;
 }
 
-const ProductCard = ({ product }: { product: Product }) => {
-  const { addToCart } = useCart();
-  
-  // حالة للتأكد أننا في المتصفح
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addToCart(product);
-  };
+export default function ProductCard({ product, onAddToCart, onQuickView }: ProductCardProps) {
+  const discount = product.originalPrice 
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
 
   return (
-    <Link href={`/products/${product.id}`} className="block">
-      <div className="bg-white border rounded-lg p-2 hover:shadow-lg transition group relative flex flex-col h-full cursor-pointer">
-        
-        {/* ننتظر التحميل قبل إظهار البادجات المتغيرة */}
-        {isMounted && product.isNew && (
-          <span className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10" suppressHydrationWarning>
-            جديد
+    <div className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+      {/* Product Image */}
+      <div className="relative bg-gray-50 overflow-hidden">
+        {product.badge && (
+          <span className="absolute top-3 right-3 bg-red-500 text-white text-xs px-2 py-1 rounded-full z-10">
+            {product.badge}
           </span>
         )}
-
-        {isMounted && product.oldPrice && (
-          <span
-            className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded z-10"
-            suppressHydrationWarning
-          >
-            -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+        {discount > 0 && (
+          <span className="absolute top-3 left-3 bg-emerald-600 text-white text-xs px-2 py-1 rounded-full z-10">
+            -{discount}%
           </span>
         )}
         
-        <div className="relative mb-2 overflow-hidden h-32 flex items-center justify-center p-1">
-          <Image 
-            src={product.image} 
-            alt={product.title} 
-            width={120} 
-            height={120} 
-            className="h-full w-full object-contain group-hover:scale-105 transition duration-300" 
+        <Link href={`/products/${product.id}`}>
+          <img
+            src={product.image}
+            alt={product.title}
+            className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           />
-          
-          {/* الزر بصيغة div لتجنب مشاكل الروابط */}
-          <div 
-            role="button"
-            onClick={handleAddToCart}
-            className="absolute bottom-0 w-full bg-emerald-700 text-white py-1.5 translate-y-full group-hover:translate-y-0 transition duration-300 font-bold text-xs hover:bg-emerald-800 text-center cursor-pointer"
+        </Link>
+
+        {/* Quick Actions */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+          <button
+            onClick={() => onQuickView?.(product)}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
           >
-            أضف للسلة
+            <Eye className="w-5 h-5 text-gray-700" />
+          </button>
+          <button
+            onClick={() => onAddToCart?.(product)}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+          >
+            <ShoppingCart className="w-5 h-5 text-gray-700" />
+          </button>
+          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors">
+            <Heart className="w-5 h-5 text-gray-700" />
+          </button>
+        </div>
+      </div>
+
+      {/* Product Info */}
+      <div className="p-4">
+        <div className="mb-2">
+          <span className="text-xs text-emerald-600 font-medium">{product.category}</span>
+        </div>
+        
+        <Link href={`/products/${product.id}`}>
+          <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+            {product.title}
+          </h3>
+        </Link>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={`w-4 h-4 ${
+                  i < Math.floor(product.rating)
+                    ? 'text-yellow-400 fill-current'
+                    : 'text-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm text-gray-600">({product.rating})</span>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-emerald-600">{product.price} درهم</span>
+            {product.originalPrice && (
+              <span className="text-sm text-gray-400 line-through">{product.originalPrice} درهم</span>
+            )}
           </div>
         </div>
 
-        <div className="text-[9px] text-gray-500 mb-1 uppercase tracking-wide truncate">
-            {product.category}
-        </div>
-        
-        <h3 className="font-bold text-gray-800 text-xs mb-2 line-clamp-2 min-h-[28px] leading-tight" title={product.title}>
-          {product.title}
-        </h3>
-
-        <div className="flex flex-wrap items-end gap-1 mt-auto">
-          <span className="text-sm font-bold text-emerald-700" suppressHydrationWarning>
-            {product.price.toFixed(0)} DH
-          </span>
-          
-          {/* ننتظر التحميل لإظهار السعر القديم */}
-          {isMounted && product.oldPrice && (
-            <span className="text-[10px] text-gray-400 line-through mb-1">
-                {product.oldPrice.toFixed(0)} DH
-            </span>
-          )}
-        </div>
+        {/* Add to Cart Button */}
+        <button
+          onClick={() => onAddToCart?.(product)}
+          className="w-full bg-emerald-600 text-white py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+        >
+          <ShoppingCart className="w-4 h-4" />
+          أضف للسلة
+        </button>
       </div>
-    </Link>
+    </div>
   );
-};
-
-export default ProductCard;
+}

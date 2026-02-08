@@ -1,8 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "typeRoots": ["./node_modules/@types"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,14 +21,19 @@
     "jsx": "preserve",
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["react", "react-dom"],
+    "types": [
+      "react",
+      "react-dom"
+    ],
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -35,5 +46,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

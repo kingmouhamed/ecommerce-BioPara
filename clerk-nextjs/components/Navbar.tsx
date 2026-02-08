@@ -1,209 +1,277 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ShoppingCart,
-  User,
-  Heart,
-  Phone,
-  Menu,
-  X,
-  ChevronRight,
-  Droplets,
-  Leaf,
-} from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
-// تصنيفات البارافارماسيا
-const paraCategories = [
-  "العناية بالوجه", "العناية بالجسم", "العناية بالشعر", "النظافة الشخصية", "الأم والطفل", "الحماية من الشمس", "رجال"
-];
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { cartItemCount, setIsCartOpen } = useCart();
+  const pathname = usePathname();
 
-// تصنيفات الأعشاب والبيو
-const herbalCategories = [
-  "الزيوت العطرية", "الأعشاب والمشروبات", "العسل ومنتجات النحل", "المكملات الغذائية", "مستحضرات التجميل العضوية"
-];
+  const categories = [
+    { name: 'الأعشاب الطبية', href: '/products?category=medical-herbs' },
+    { name: 'Parapharmacie', href: '/products?category=parapharmacie' },
+    { name: 'الفيتامينات', href: '/products?category=vitamins' },
+    { name: 'منتجات عضوية', href: '/products?category=organic' }
+  ];
 
-const TopBar = () => (
-  <div className="bg-gray-100 text-gray-600 text-xs py-2 px-4 hidden md:flex justify-between items-center border-b" dir="rtl">
-    <div className="flex gap-4">
-      <Link href="/sitemap" className="hover:text-emerald-700">خريطة الموقع</Link>
-      <span className="flex items-center gap-1">
-        <Phone size={14} /> +212 600 000 000
-      </span>
-    </div>
-    <div className="flex gap-4">
-      <span>شحن مجاني للطلبات فوق 300 درهم</span>
-      <Link href="/contact" className="hover:text-emerald-700">اتصل بنا</Link>
-    </div>
-  </div>
-);
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`;
+    }
+  };
 
-function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
+  useEffect(() => {
+    const handleScroll = () => {
+      const navbar = document.getElementById('navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('shadow-lg');
+        } else {
+          navbar.classList.remove('shadow-lg');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <div className="fixed inset-0 z-[60] md:hidden">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-
-      <div className="absolute left-0 top-0 h-full w-80 max-w-[85%] bg-white shadow-xl p-4 overflow-auto">
-        <div className="flex items-center justify-between mb-4">
-          <Link href="/" onClick={onClose} className="text-xl font-bold text-emerald-700">
-            BioPara.ma
-          </Link>
-          <button onClick={onClose} className="p-2 rounded hover:bg-gray-100" aria-label="Close menu">
-            <X size={22} />
-          </button>
-        </div>
-
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="ابحث عن منتجات..."
-            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
-
-        <div className="mt-6">
-          {/* قسم البارا في الموبايل */}
-          <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 border-b pb-2">
-            <Droplets size={18} className="text-blue-500"/> شبه صيدلية
-          </h3>
-          <ul className="space-y-1 text-sm text-gray-700 mb-6 pl-4">
-            {paraCategories.map((cat) => (
-              <li key={cat}>
-                <Link href={`/category/${cat.toLowerCase()}`} onClick={onClose} className="flex justify-between items-center p-2 rounded hover:bg-gray-50">
-                  {cat} <ChevronRight size={14} />
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* قسم الأعشاب في الموبايل */}
-          <h3 className="font-bold text-gray-800 mb-2 flex items-center gap-2 border-b pb-2">
-             <Leaf size={18} className="text-green-600"/> الأعشاب الطبية
-          </h3>
-          <ul className="space-y-1 text-sm text-gray-700 pl-4">
-            {herbalCategories.map((cat) => (
-              <li key={cat}>
-                <Link href={`/category/${cat.toLowerCase()}`} onClick={onClose} className="flex justify-between items-center p-2 rounded hover:bg-gray-50">
-                  {cat} <ChevronRight size={14} />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-interface NavbarProps {
-  onOpenMobileMenu: () => void;
-  cartItemCount: number;
-}
-
-function Navbar({ onOpenMobileMenu, cartItemCount }: NavbarProps) {
-  return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
-      <TopBar />
-
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-        {/* Left: Mobile menu button */}
-        <button
-          type="button"
-          onClick={onOpenMobileMenu}
-          className="md:hidden p-2 rounded hover:bg-gray-100"
-          aria-label="Open menu"
-        >
-          <Menu size={22} className="text-gray-700" />
-        </button>
-
-        {/* Logo */}
-        <Link href="/" className="shrink-0 flex items-center gap-2">
-          <Image src="/logo.svg" alt="BioPara Logo" width={150} height={60} priority />
-        </Link>
-
-        {/* Search Bar */}
-        <div className="flex-1 max-w-2xl hidden md:flex relative">
-          <input
-            type="text"
-            placeholder="ابحث عن: فيتامين سي، زيت الأركان..."
-            className="w-full border-2 border-emerald-600 rounded-r-md py-2.5 px-4 focus:outline-none text-right"
-          />
-          <button className="bg-emerald-700 text-white px-6 rounded-l-md font-medium hover:bg-emerald-800 transition">
-            بحث
-          </button>
-        </div>
-
-        {/* Icons */}
-        <div className="flex items-center gap-6 text-gray-600">
-          <Link href="/auth/login" className="flex flex-col items-center hover:text-emerald-700 group">
-            <User size={24} />
-            <span className="text-xs mt-1 group-hover:underline">حسابي</span>
-          </Link>
-
-          <Link href="/dashboard/favorites" className="flex flex-col items-center hover:text-emerald-700 group">
-            <Heart size={24} />
-            <span className="text-xs mt-1 group-hover:underline">المفضلة</span>
-          </Link>
-
-          <Link href="/cart" className="flex flex-col items-center hover:text-emerald-700 group relative">
-            <div className="relative">
-              <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center" suppressHydrationWarning>
-                {cartItemCount}
-              </span>
+    <nav id="navbar" className="bg-white sticky top-0 z-40 transition-shadow duration-300" dir="rtl">
+      <div className="container mx-auto px-4">
+        {/* Top Bar */}
+        <div className="border-b border-gray-100 py-2">
+          <div className="flex justify-between items-center text-sm">
+            <div className="flex items-center gap-4 text-gray-600">
+              <span>📞 +212 5XX-XXXXXX</span>
+              <span>✉️ info@biopara.ma</span>
             </div>
-            <span className="text-xs mt-1 group-hover:underline">السلة</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Navigation Bar - مقسمة بوضوح */}
-      <nav className="bg-emerald-700 text-white hidden md:block" dir="rtl">
-        <div className="container mx-auto px-4">
-          <ul className="flex items-center gap-8 text-sm font-medium py-3">
-            <li>
-              <Link href="/products" className="flex items-center gap-2 hover:text-emerald-200 font-bold">
-                <Menu size={18} /> كل الأقسام
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard/favorites" className="text-gray-600 hover:text-emerald-600 transition-colors">
+                المفضلة
               </Link>
-            </li>
-            
-            {/* قسم البارافارماسيا */}
-            <li className="flex items-center gap-1 opacity-80 px-2 border-r border-emerald-600 pr-4">
-                <Droplets size={16} className="text-emerald-300"/> <span className="text-xs uppercase tracking-wider text-emerald-200">شبه صيدلية</span>
-            </li>
-            {paraCategories.slice(0, 3).map((cat) => (
-              <li key={cat}>
-                <Link href={`/category/${cat.toLowerCase()}`} className="hover:text-emerald-200 uppercase tracking-wide">
-                  {cat}
-                </Link>
-              </li>
-            ))}
-
-             {/* قسم الأعشاب */}
-            <li className="flex items-center gap-1 opacity-80 px-2 border-r border-emerald-600 pr-4">
-                <Leaf size={16} className="text-green-300"/> <span className="text-xs uppercase tracking-wider text-green-200">الأعشاب</span>
-            </li>
-            {herbalCategories.slice(0, 2).map((cat) => (
-               <li key={cat}>
-               <Link href={`/category/${cat.toLowerCase()}`} className="hover:text-emerald-200 uppercase tracking-wide">
-                 {cat}
-               </Link>
-             </li>
-            ))}
-
-            <li className="mr-auto">
-              <Link href="/promotions" className="text-orange-300 font-bold hover:text-white">العروض</Link>
-            </li>
-          </ul>
+              <Link href="/auth/login" className="text-gray-600 hover:text-emerald-600 transition-colors">
+                تسجيل الدخول
+              </Link>
+            </div>
+          </div>
         </div>
-      </nav>
-    </header>
+
+        {/* Main Navigation */}
+        <div className="py-4">
+          <div className="flex justify-between items-center">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">B</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">BioPara</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-8">
+              <Link
+                href="/"
+                className={`font-medium transition-colors ${
+                  pathname === '/' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
+                }`}
+              >
+                الرئيسية
+              </Link>
+              
+              {/* Categories Dropdown */}
+              <div className="relative">
+                <button
+                  onMouseEnter={() => setIsCategoriesOpen(true)}
+                  onMouseLeave={() => setIsCategoriesOpen(false)}
+                  className="flex items-center gap-1 font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                >
+                  المنتجات
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {isCategoriesOpen && (
+                  <div
+                    onMouseEnter={() => setIsCategoriesOpen(true)}
+                    onMouseLeave={() => setIsCategoriesOpen(false)}
+                    className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 py-2"
+                  >
+                    {categories.map((category, index) => (
+                      <Link
+                        key={index}
+                        href={category.href}
+                        className="block px-4 py-3 text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                    <div className="border-t border-gray-100 mt-2 pt-2">
+                      <Link
+                        href="/products"
+                        className="block px-4 py-3 text-emerald-600 font-medium hover:bg-emerald-50 transition-colors"
+                      >
+                        عرض جميع المنتجات
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/brands"
+                className={`font-medium transition-colors ${
+                  pathname === '/brands' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
+                }`}
+              >
+                الماركات
+              </Link>
+              <Link
+                href="/promotions"
+                className={`font-medium transition-colors ${
+                  pathname === '/promotions' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
+                }`}
+              >
+                العروض
+              </Link>
+              <Link
+                href="/about"
+                className={`font-medium transition-colors ${
+                  pathname === '/about' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
+                }`}
+              >
+                من نحن
+              </Link>
+            </div>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2 w-80">
+              <Search className="w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="ابحث عن منتج..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400"
+              />
+            </form>
+
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ShoppingCart className="w-6 h-6 text-gray-700" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+              
+              <Link href="/dashboard/profile" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <User className="w-6 h-6 text-gray-700" />
+              </Link>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Search */}
+          <form onSubmit={handleSearch} className="lg:hidden mt-4 flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2">
+            <Search className="w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="ابحث عن منتج..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400"
+            />
+          </form>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+          <div className="lg:hidden border-t border-gray-100 py-4">
+            <div className="space-y-4">
+              <Link
+                href="/"
+                className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                الرئيسية
+              </Link>
+              
+              <div>
+                <button
+                  onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                  className="flex items-center gap-1 font-medium text-gray-700 hover:text-emerald-600 transition-colors w-full"
+                >
+                  المنتجات
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isCategoriesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isCategoriesOpen && (
+                  <div className="mt-2 space-y-2 pr-4">
+                    {categories.map((category, index) => (
+                      <Link
+                        key={index}
+                        href={category.href}
+                        className="block text-gray-600 hover:text-emerald-600 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                    <Link
+                      href="/products"
+                      className="block text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      عرض جميع المنتجات
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/brands"
+                className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                الماركات
+              </Link>
+              <Link
+                href="/promotions"
+                className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                العروض
+              </Link>
+              <Link
+                href="/about"
+                className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                من نحن
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 }
-
-export default Navbar;
-export { MobileMenu };

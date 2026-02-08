@@ -1,236 +1,181 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Search, X, TrendingUp } from "lucide-react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, X, TrendingUp, Clock } from 'lucide-react';
 
 interface SearchBarProps {
-  placeholder?: string;
   onSearch?: (query: string) => void;
-  showSuggestions?: boolean;
+  placeholder?: string;
   className?: string;
+  showSuggestions?: boolean;
 }
 
 interface Suggestion {
-  id: number;
+  id: string;
   text: string;
-  type: "product" | "category" | "brand";
+  type: 'product' | 'category' | 'brand';
   url: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({
-  placeholder = "ابحث عن منتجات، علامات تجارية، أو فئات...",
+const mockSuggestions: Suggestion[] = [
+  { id: '1', text: 'زيت الأرغان النقي', type: 'product', url: '/products/argan-oil' },
+  { id: '2', text: 'صابون الغار', type: 'product', url: '/products/laurier-soap' },
+  { id: '3', text: 'الأعشاب الطبية', type: 'category', url: '/products?category=medical-herbs' },
+  { id: '4', text: 'La Roche-Posay', type: 'brand', url: '/brands/la-roche-posay' },
+  { id: '5', text: 'فيتامين C', type: 'product', url: '/products/vitamin-c' },
+  { id: '6', text: 'Parapharmacie', type: 'category', url: '/products?category=parapharmacie' }
+];
+
+const trendingSearches = [
+  'زيت الأرغان',
+  'صابون الغار',
+  'مستحضر فيتامين C',
+  'خلطة الأعشاب',
+  'كريم مرطب'
+];
+
+export default function SearchBar({
   onSearch,
-  showSuggestions = true,
-  className = "",
-}) => {
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  placeholder = 'ابحث عن منتجات، ماركات، أو أعشاب...',
+  className = '',
+  showSuggestions = true
+}: SearchBarProps) {
+  const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
 
-  // بيانات تجريبية للاقتراحات مع useMemo
-  const mockSuggestions = useMemo<Suggestion[]>(() => [
-    { id: 1, text: "زيت الأركان", type: "product", url: "/products?search=زيت الأركان" },
-    { id: 2, text: "عشبة الخزامى", type: "product", url: "/products?search=عشبة الخزامى" },
-    { id: 3, text: "العناية بالبشرة", type: "category", url: "/category/visage" },
-    { id: 4, text: "العناية بالشعر", type: "category", url: "/category/cheveux" },
-    { id: 5, text: "الأعشاب الطبية", type: "category", url: "/products?category=الأعشاب الطبية" },
-    { id: 6, text: "Parapharmacie", type: "category", url: "/products?category=Parapharmacie" },
-    { id: 7, text: "سيروم فيتامين C", type: "product", url: "/products?search=سيروم فيتامين C" },
-    { id: 8, text: "واقي شمس", type: "product", url: "/products?search=واقي شمس" },
-  ], []);
-
-  // تصفية الاقتراحات بناءً على البحث
   useEffect(() => {
-    if (query.trim() === "") {
-      setSuggestions([]);
-      setIsOpen(false);
-      return;
-    }
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
 
-    setIsLoading(true);
-    
-    // محاكاة تأخير البحث
-    const timer = setTimeout(() => {
-      const filtered = mockSuggestions.filter((suggestion) =>
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (query.trim() && showSuggestions) {
+      const filtered = mockSuggestions.filter(suggestion =>
         suggestion.text.toLowerCase().includes(query.toLowerCase())
       );
-      setSuggestions(filtered.slice(0, 5)); // عرض 5 اقتراحات كحد أقصى
-      setIsLoading(false);
+      setSuggestions(filtered.slice(0, 5));
       setIsOpen(true);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query, mockSuggestions]);
-
-  const handleSearch = (searchQuery: string = query) => {
-    if (searchQuery.trim()) {
+    } else {
+      setSuggestions([]);
       setIsOpen(false);
-      if (onSearch) {
-        onSearch(searchQuery);
-      } else {
-        router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
-      }
     }
+  }, [query, showSuggestions]);
+
+  const handleSearch = (searchQuery: string) => {
+    if (searchQuery.trim()) {
+      onSearch?.(searchQuery);
+      setIsOpen(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSearch(query);
   };
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
     setQuery(suggestion.text);
     setIsOpen(false);
-    router.push(suggestion.url);
+    // Navigate to suggestion URL
+    window.location.href = suggestion.url;
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    } else if (e.key === "Escape") {
-      setIsOpen(false);
-      inputRef.current?.blur();
-    }
-  };
-
-  const clearSearch = () => {
-    setQuery("");
-    setSuggestions([]);
-    setIsOpen(false);
-    inputRef.current?.focus();
-  };
-
-  const getTypeIcon = (type: Suggestion["type"]) => {
+  const getSuggestionIcon = (type: Suggestion['type']) => {
     switch (type) {
-      case "product":
-        return "🛍️";
-      case "category":
-        return "📂";
-      case "brand":
-        return "🏷️";
+      case 'product':
+        return '🛍️';
+      case 'category':
+        return '📂';
+      case 'brand':
+        return '🏷️';
       default:
-        return "🔍";
-    }
-  };
-
-  const getTypeLabel = (type: Suggestion["type"]) => {
-    switch (type) {
-      case "product":
-        return "منتج";
-      case "category":
-        return "فئة";
-      case "brand":
-        return "علامة تجارية";
-      default:
-        return "";
+        return '🔍';
     }
   };
 
   return (
-    <div className={`relative w-full max-w-2xl ${className}`} dir="rtl">
-      {/* شريط البحث الرئيسي */}
-      <div className="relative">
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
-        </div>
-        
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => query && setIsOpen(true)}
-          placeholder={placeholder}
-          className="w-full pr-12 pl-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 text-gray-900 placeholder-gray-500 bg-white shadow-sm"
-          dir="rtl"
-        />
-
-        {/* زر مسح البحث */}
-        {query && (
-          <button
-            onClick={clearSearch}
-            className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 hover:text-gray-600 transition-colors"
-            aria-label="مسح البحث"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
-      {/* قائمة الاقتراحات */}
-      {showSuggestions && isOpen && (
-        <>
-          {/* خلفية شبه شفافة */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
+    <div ref={searchRef} className={`relative ${className}`} dir="rtl">
+      {/* Search Input */}
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative">
+          <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => query.trim() && setIsOpen(true)}
+            placeholder={placeholder}
+            className="w-full pr-12 pl-12 py-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-800 placeholder-gray-400 bg-white"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setIsOpen(false);
+              }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </form>
 
-          {/* قائمة الاقتراحات */}
-          <div className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
-            {/* حالة التحميل */}
-            {isLoading ? (
-              <div className="p-4 text-center text-gray-500">
-                <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
-                <span className="mr-2">جاري البحث...</span>
-              </div>
-            ) : suggestions.length > 0 ? (
-              <>
-                {/* رأس القائمة */}
-                <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <TrendingUp className="h-4 w-4 ml-2" />
-                    <span>اقتراحات شائعة</span>
+      {/* Suggestions Dropdown */}
+      {isOpen && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+          <div className="max-h-80 overflow-y-auto">
+            {/* Suggestions */}
+            <div className="p-2">
+              <div className="text-xs font-medium text-gray-500 mb-2 px-3">اقتراحات البحث</div>
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion.id}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="w-full text-right px-3 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 group"
+                >
+                  <span className="text-lg">{getSuggestionIcon(suggestion.type)}</span>
+                  <div className="flex-1">
+                    <div className="text-gray-800 group-hover:text-emerald-600 transition-colors">
+                      {suggestion.text}
+                    </div>
+                    <div className="text-xs text-gray-500 capitalize">{suggestion.type}</div>
                   </div>
-                </div>
+                </button>
+              ))}
+            </div>
 
-                {/* قائمة الاقتراحات */}
-                <ul className="max-h-64 overflow-y-auto">
-                  {suggestions.map((suggestion) => (
-                    <li key={suggestion.id}>
-                      <button
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        className="w-full px-4 py-3 text-right hover:bg-gray-50 transition-colors flex items-center justify-between group"
-                      >
-                        <div className="flex items-center">
-                          <span className="ml-3 text-lg">{getTypeIcon(suggestion.type)}</span>
-                          <div className="text-right">
-                            <div className="font-medium text-gray-900 group-hover:text-emerald-600">
-                              {suggestion.text}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {getTypeLabel(suggestion.type)}
-                            </div>
-                          </div>
-                        </div>
-                        <Search className="h-4 w-4 text-gray-400 group-hover:text-emerald-600" />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* رأس القائمة للبحث الكامل */}
-                <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                  <button
-                    onClick={() => handleSearch()}
-                    className="w-full text-center text-sm text-emerald-600 hover:text-emerald-700 font-medium"
-                  >
-                    عرض جميع نتائج البحث لـ &quot;{query}&quot;
-                  </button>
-                </div>
-              </>
-            ) : query ? (
-              <div className="p-4 text-center text-gray-500">
-                <Search className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                <p>لم يتم العثور على نتائج لـ &quot;{query}&quot;</p>
-                <p className="text-sm mt-1">جرب كلمات مفتاحية مختلفة</p>
+            {/* Trending Searches */}
+            <div className="border-t border-gray-100 p-2">
+              <div className="text-xs font-medium text-gray-500 mb-2 px-3 flex items-center gap-2">
+                <TrendingUp className="w-3 h-3" />
+                الأكثر بحثاً
               </div>
-            ) : null}
+              {trendingSearches.slice(0, 3).map((trending, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSearch(trending)}
+                  className="w-full text-right px-3 py-2 hover:bg-gray-50 transition-colors flex items-center gap-3 group"
+                >
+                  <Clock className="w-3 h-3 text-gray-400" />
+                  <span className="text-sm text-gray-600 group-hover:text-emerald-600 transition-colors">
+                    {trending}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
-};
-
-export default SearchBar;
+}

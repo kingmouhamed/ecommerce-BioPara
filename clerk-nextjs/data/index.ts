@@ -1,40 +1,50 @@
-// بيانات تجريبية للفئات
-export interface Category {
-  name: string;
-  count: number;
-}
+import { parapharmacieProducts } from './parapharmacie-images';
+import { herbalProducts } from './herbal-images';
 
-export const categories: Category[] = [
-  { name: "Cosmétique", count: 120 },
-  { name: "Compléments", count: 45 },
-  { name: "Huiles Essentielles", count: 30 },
-  { name: "Hygiène", count: 85 },
-  { name: "Miel & Ruche", count: 20 },
-];
-
-// بيانات تجريبية للمنتجات
+// Unified Product interface
 export interface Product {
   id: number;
   title: string;
+  name: string; // مطلوب للتوافق
   price: number;
-  oldPrice: number;
+  originalPrice?: number;
+  oldPrice?: number; // للتوافق
   rating: number;
-  reviews: number;
   image: string;
-  badge: string | null;
   category: string;
+  badge?: string;
+  type: 'para' | 'herbal';
+  isNew?: boolean;
+  description: string; // Make required
+  brand?: string;
+  inStock?: boolean;
+  reviews?: number; // للتوافق - تغيير من number[] إلى number
+  origin?: string; // للأعشاب فقط
+  benefit?: string; // للأعشاب فقط
 }
 
-export const mockProducts: Product[] = Array.from({ length: 12 }).map((_, i) => ({
-  id: i + 1,
-  title: i % 2 === 0 ? "Huile d'Argan Bio Premium" : "Crème Hydratante Visage",
-  price: (i + 1) * 50 + 99,
-  oldPrice: (i + 1) * 50 + 150,
-  rating: 4.5,
-  reviews: 12 + i,
-  image: i % 2 === 0 
-    ? "https://images.unsplash.com/photo-1608248597279-f99d160bfbc8?q=80&w=600" 
-    : "/products2.png",
-  badge: i === 0 ? "Nouveau" : i === 3 ? "-20%" : null,
-  category: "Cosmétique"
-}));
+// Convert products to unified format
+const convertToUnifiedProduct = (product: any): Product => ({
+  ...product,
+  name: product.title, // استخدام title كـ name
+  oldPrice: product.originalPrice || product.oldPrice,
+  reviews: product.reviews || 0, // تغيير من [] إلى 0
+  description: product.description || '' // Provide default description
+});
+
+// 1. تصدير المنتجات منفصلة (لمن يحتاجها منفصلة)
+export const parapharmacieProductsUnified: Product[] = parapharmacieProducts.map(convertToUnifiedProduct);
+export const herbalProductsUnified: Product[] = herbalProducts.map(convertToUnifiedProduct);
+
+// 2. تصدير الكل معاً (للصفحات التي تعرض كل شيء مثل البحث)
+export const allProducts = [
+  ...parapharmacieProductsUnified,
+  ...herbalProductsUnified
+];
+
+// 3. تصدير بيانات وهمية للتوافق مع الكود القديم
+export const mockProducts = allProducts;
+
+// 4. للتوافق مع الاستيرادات القديمة
+export { parapharmacieProductsUnified as parapharmacieProducts };
+export { herbalProductsUnified as herbalProducts };
