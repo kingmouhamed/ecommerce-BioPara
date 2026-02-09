@@ -14,6 +14,7 @@ interface ProductCardProps {
     image: string;
     category: string;
     badge?: string;
+    brand?: string;
   };
   onAddToCart?: (product: any) => void;
   onQuickView?: (product: any) => void;
@@ -72,6 +73,87 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
         <div className="mb-2">
           <span className="text-xs text-emerald-600 font-medium">{product.category}</span>
         </div>
+        
+        {/* Brand Logo */}
+        {product.brand && (
+          <div className="flex items-center gap-2 mb-2">
+            {product.brand === 'CeraVe' ? (
+              <img 
+                src="/images/brands/cerave-logo.png" 
+                alt="CeraVe" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Uriage' ? (
+              <img 
+                src="/images/brands/uriage-logo.png" 
+                alt="Uriage" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Nuxe' ? (
+              <img 
+                src="/images/brands/nuxe-logo.png" 
+                alt="Nuxe" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'La Roche-Posay' ? (
+              <img 
+                src="/images/brands/la-roche-posay-logo.png" 
+                alt="La Roche-Posay" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Vichy' ? (
+              <img 
+                src="/images/brands/vichy-logo.png" 
+                alt="Vichy" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Bioderma' ? (
+              <img 
+                src="/images/brands/bioderma-logo.png" 
+                alt="Bioderma" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Avène' ? (
+              <img 
+                src="/images/brands/avene-logo.png" 
+                alt="Avène" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Mustela' ? (
+              <img 
+                src="/images/brands/mustela-logo.png" 
+                alt="Mustela" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Filorga' ? (
+              <img 
+                src="/images/brands/filorga-logo.png" 
+                alt="Filorga" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'SVR' ? (
+              <img 
+                src="/images/brands/svr-logo.png" 
+                alt="SVR" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'Eucerin' ? (
+              <img 
+                src="/images/brands/eucerin-logo.png" 
+                alt="Eucerin" 
+                className="h-5 object-contain"
+              />
+            ) : product.brand === 'BioOriental' ? (
+              <img 
+                src="/images/brands/bio-oriental-logo.png" 
+                alt="BioOriental" 
+                className="h-5 object-contain"
+              />
+            ) : (
+              <span className="text-xs text-gray-500 font-medium">{product.brand}</span>
+            )}
+          </div>
+        )}
         
         <Link href={`/products/${product.id}`}>
           <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">

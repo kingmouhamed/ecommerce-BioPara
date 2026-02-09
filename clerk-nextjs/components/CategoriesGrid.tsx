@@ -2,14 +2,12 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Sparkles, Heart, Shield, Truck } from 'lucide-react';
 
 interface Category {
   id: string;
   name: string;
   description: string;
-  icon: React.ReactNode;
-  color: string;
+  image: string;
   href: string;
 }
 
@@ -18,33 +16,29 @@ const categories: Category[] = [
     id: 'medical-herbs',
     name: 'الأعشاب الطبية',
     description: 'مستحضرات طبيعية للعلاج والوقاية',
-    icon: <Sparkles className="w-8 h-8" />,
-    color: 'bg-emerald-100 text-emerald-700',
+    image: '/images/categories/medical-herbs.jpg',
     href: '/products?category=medical-herbs'
   },
   {
     id: 'parapharmacie',
     name: 'Parapharmacie',
     description: 'منتجات العناية بالبشرة والشعر',
-    icon: <Heart className="w-8 h-8" />,
-    color: 'bg-pink-100 text-pink-700',
+    image: '/images/categories/parapharmacie.jpg',
     href: '/products?category=parapharmacie'
   },
   {
-    id: 'vitamins',
-    name: 'الفيتامينات والمكملات',
-    description: 'دعم صحي ومناعة قوية',
-    icon: <Shield className="w-8 h-8" />,
-    color: 'bg-blue-100 text-blue-700',
-    href: '/products?category=vitamins'
+    id: 'natural-oils',
+    name: 'الزيوت الطبيعية',
+    description: 'زيوت أساسية وعطرية للعناية',
+    image: '/images/categories/natural-oils.jpg',
+    href: '/products?category=natural-oils'
   },
   {
-    id: 'organic',
-    name: 'منتجات عضوية',
-    description: 'طبيعية 100% وخالية من المواد الكيميائية',
-    icon: <Truck className="w-8 h-8" />,
-    color: 'bg-green-100 text-green-700',
-    href: '/products?category=organic'
+    id: 'skincare',
+    name: 'العناية بالبشرة',
+    description: 'منتجات طبيعية للعناية بالبشرة',
+    image: '/images/categories/skincare.jpg',
+    href: '/products?category=skincare'
   }
 ];
 
@@ -58,8 +52,20 @@ export default function CategoriesGrid() {
           className="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-emerald-200"
         >
           <div className="flex flex-col items-center text-center">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${category.color} group-hover:scale-110 transition-transform duration-300`}>
-              {category.icon}
+            <div className="w-full h-32 rounded-lg overflow-hidden mb-4 group-hover:scale-105 transition-transform duration-300">
+              <img 
+                src={category.image} 
+                alt={category.name} 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = '<div class="w-full h-full bg-gray-200 flex items-center justify-center"><span class="text-4xl">📷</span></div>';
+                  }
+                }}
+              />
             </div>
             <h3 className="font-bold text-gray-800 mb-2 group-hover:text-emerald-600 transition-colors">
               {category.name}

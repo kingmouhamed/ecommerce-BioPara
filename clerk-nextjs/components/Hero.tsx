@@ -8,38 +8,38 @@ export default function Hero() {
   return (
     <div className="relative bg-cover bg-center bg-no-repeat py-20 lg:py-32" style={{ backgroundImage: 'url("/Hero-new.png")' }} dir="rtl">
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/80 to-teal-900/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/40 to-teal-900/30"></div>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
           <div className="text-center lg:text-right">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6 border border-white/30">
+            <div className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium mb-6 border border-white/40">
               <Sparkles className="w-4 h-4" />
               منتجات طبيعية 100% من مصادر موثوقة
             </div>
             
-            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
               اكتشف عالم
-              <span className="text-emerald-300"> الطبيعة</span>
+              <span className="text-emerald-300 drop-shadow-lg"> الطبيعة</span>
               <br />
               والعلاج بالأعشاب
             </h1>
             
-            <p className="text-xl text-white/90 mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0">
+            <p className="text-xl text-white/95 mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0 drop-shadow-md">
               أفضل المنتجات شبه الصيدلية والأعشاب الطبية من أشهر الماركات العالمية والمحلية، توصيل لجميع أنحاء المغرب
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 bg-emerald-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-emerald-400 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-emerald-500 transition-all duration-300 hover:shadow-lg hover:scale-105 drop-shadow-md"
               >
                 تسوق الآن
                 <ShoppingCart className="w-5 h-5" />
               </Link>
               <Link
                 href="/about"
-                className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white border-2 border-white/30 px-8 py-4 rounded-lg font-semibold hover:bg-white/30 transition-all duration-300"
+                className="inline-flex items-center gap-2 bg-black/30 backdrop-blur-sm text-white border-2 border-white/50 px-8 py-4 rounded-lg font-semibold hover:bg-black/40 transition-all duration-300 drop-shadow-md"
               >
                 اعرف المزيد
                 <ArrowLeft className="w-5 h-5" />
@@ -49,16 +49,16 @@ export default function Hero() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-6 max-w-md mx-auto lg:mx-0">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">300+</div>
-                <div className="text-sm text-white/80">منتج أصلي</div>
+                <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">300+</div>
+                <div className="text-sm text-white/90 drop-shadow-sm">منتج أصلي</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">50+</div>
-                <div className="text-sm text-white/80">ماركة موثوقة</div>
+                <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">50+</div>
+                <div className="text-sm text-white/90 drop-shadow-sm">ماركة موثوقة</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">10K+</div>
-                <div className="text-sm text-white/80">عميل راضٍ</div>
+                <div className="text-2xl font-bold text-white mb-1 drop-shadow-md">10K+</div>
+                <div className="text-sm text-white/90 drop-shadow-sm">عميل راضٍ</div>
               </div>
             </div>
           </div>
