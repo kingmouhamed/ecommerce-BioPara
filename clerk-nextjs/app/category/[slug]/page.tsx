@@ -3,6 +3,7 @@
 import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import ProductList from "../../../components/ProductList";
 import { mockProducts } from "../../../data/index";
 import { getCategoryNameFromSlug } from "./categoryUtils";
@@ -21,6 +22,17 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <div className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="relative w-full h-64 md:h-96 mb-10 rounded-2xl overflow-hidden shadow-lg bg-white">
+          <Image
+            src="/images/category-hero.jpg"
+            alt="Professional product photography composition combining natural parapharmacy and herbal medicine"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+
         {/* Category Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">

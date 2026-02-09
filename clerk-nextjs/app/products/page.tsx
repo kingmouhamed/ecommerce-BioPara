@@ -1,15 +1,45 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ProductList from '../../components/ProductList';
 import { allProducts, Product } from '../../data/index';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // Initialize state from URL parameters
+  useEffect(() => {
+    const search = searchParams.get('search');
+    const category = searchParams.get('category');
+    
+    if (search) {
+      setSearchQuery(search);
+    }
+    if (category) {
+      setSelectedCategory(category);
+    }
+  }, [searchParams]);
+
+  // Update URL when search or category changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (searchQuery.trim()) {
+      params.set('search', searchQuery);
+    }
+    if (selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
+    }
+    
+    const newUrl = params.toString() ? `/products?${params.toString()}` : '/products';
+    window.history.replaceState(null, '', newUrl);
+  }, [searchQuery, selectedCategory]);
 
   // Get unique categories
   const categories = useMemo(() => {
@@ -19,10 +49,15 @@ export default function ProductsPage() {
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = allProducts.filter(product =>
-      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = allProducts.filter(product => {
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        product.title.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower) ||
+        (product.description && product.description.toLowerCase().includes(searchLower)) ||
+        (product.brand && product.brand.toLowerCase().includes(searchLower))
+      );
+    });
 
     // Filter by category
     if (selectedCategory !== 'all') {
@@ -95,7 +130,7 @@ export default function ProductsPage() {
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="ابحث عن منتج..."
+                  placeholder="ابحث عن منتج، ماركة، أو وصف..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -155,7 +190,13 @@ export default function ProductsPage() {
       {/* Results Count */}
       <div className="container mx-auto px-4 py-4">
         <p className="text-gray-600">
+          {searchQuery && (
+            <span>نتائج البحث عن "{searchQuery}": </span>
+          )}
           عرض {filteredAndSortedProducts.length} من {allProducts.length} منتج
+          {selectedCategory !== 'all' && (
+            <span> في فئة "{selectedCategory}"</span>
+          )}
         </p>
       </div>
 
@@ -166,8 +207,26 @@ export default function ProductsPage() {
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-10 h-10 text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">لم يتم العثور على منتجات</h3>
-            <p className="text-gray-600">جرب تغيير كلمات البحث أو الفلاتر</p>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              {searchQuery ? `لم يتم العثور على نتائج لـ "${searchQuery}"` : 'لم يتم العثور على منتجات'}
+            </h3>
+            <p className="text-gray-600 mb-4">
+              {searchQuery 
+                ? 'جرب استخدام كلمات مختلفة أو تصفح جميع المنتجات' 
+                : 'جرب تغيير الفلاتر أو تصفح جميع المنتجات'
+              }
+            </p>
+            {(searchQuery || selectedCategory !== 'all') && (
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory('all');
+                }}
+                className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+              >
+                عرض جميع المنتجات
+              </button>
+            )}
           </div>
         ) : (
           <ProductList products={filteredAndSortedProducts} viewMode={viewMode} />

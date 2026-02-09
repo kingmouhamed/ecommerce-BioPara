@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Truck, Shield, CreditCard, MapPin } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { cart, calculateTotal, cartItemCount } = useCart();
+  const { cart, calculateTotal, cartItemCount, clearCart } = useCart();
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   if (cart.length === 0) {
     return (
@@ -33,6 +35,32 @@ export default function CheckoutPage() {
 
   const shippingCost = shippingMethod === "express" ? 30 : 0;
   const total = parseFloat(calculateTotal()) + shippingCost;
+
+  const handlePlaceOrder = async () => {
+    if (isProcessing) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Simulate order processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Clear cart after successful order
+      clearCart();
+      setOrderSuccess(true);
+      
+      // Redirect to success page after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/order-success';
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Order processing error:', error);
+      alert('حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
@@ -243,8 +271,19 @@ export default function CheckoutPage() {
               </div>
               
               {/* Place Order Button */}
-              <button className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition mt-6">
-                تأكيد الطلب
+              <button 
+                onClick={handlePlaceOrder}
+                disabled={isProcessing}
+                className="w-full bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-800 transition disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    جاري معالجة الطلب...
+                  </div>
+                ) : (
+                  'تأكيد الطلب'
+                )}
               </button>
               
               {/* Security Badge */}

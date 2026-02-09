@@ -2,7 +2,7 @@
 import React from "react";
 
 const WhatsAppWidget = () => {
-  const phoneNumber = "+212600000000"; // Replace with actual WhatsApp number
+  const phoneNumber = "+212673020264"; // Replace with actual WhatsApp number
   
   return (
     <a
