@@ -19,7 +19,7 @@ const brands: Brand[] = [
   {
     id: 1,
     name: "La Roche-Posay",
-    logo: "🧴",
+    logo: "/images/brands/la-roche-posay-logo.png",
     description: "رعاية البشرة الحساسة",
     productCount: 45,
     rating: 4.8,
@@ -29,7 +29,7 @@ const brands: Brand[] = [
   {
     id: 2,
     name: "Vichy",
-    logo: "💧",
+    logo: "/images/brands/vichy-logo.png",
     description: "منتجات العناية بالبشرة المعدنية",
     productCount: 38,
     rating: 4.7,
@@ -39,7 +39,7 @@ const brands: Brand[] = [
   {
     id: 3,
     name: "CeraVe",
-    logo: "🌿",
+    logo: "/images/brands/cerave-logo.png",
     description: "عناية بالبشرة بالسيراميد",
     productCount: 32,
     rating: 4.6,
@@ -48,7 +48,7 @@ const brands: Brand[] = [
   {
     id: 4,
     name: "Bioderma",
-    logo: "🌸",
+    logo: "/images/brands/bioderma-logo.png",
     description: "رعاية البشرة الحساسة",
     productCount: 28,
     rating: 4.7,
@@ -57,7 +57,7 @@ const brands: Brand[] = [
   {
     id: 5,
     name: "Avène",
-    logo: "🌺",
+    logo: "/images/brands/avene-logo.png",
     description: "علاج البشرة بالينابيع الحرارية",
     productCount: 35,
     rating: 4.8,
@@ -66,7 +66,7 @@ const brands: Brand[] = [
   {
     id: 6,
     name: "Nuxe",
-    logo: "🌻",
+    logo: "/images/brands/nuxe-logo.png",
     description: "منتجات تجميل طبيعية",
     productCount: 42,
     rating: 4.5,
@@ -75,7 +75,7 @@ const brands: Brand[] = [
   {
     id: 7,
     name: "Uriage",
-    logo: "⛰️",
+    logo: "/images/brands/uriage-logo.png",
     description: "عناية بالبشرة بالمياه الحرارية",
     productCount: 25,
     rating: 4.6,
@@ -84,7 +84,7 @@ const brands: Brand[] = [
   {
     id: 8,
     name: "Mustela",
-    logo: "👶",
+    logo: "/images/brands/mustela-logo.png",
     description: "العناية بالأم والطفل",
     productCount: 18,
     rating: 4.9,
@@ -93,7 +93,7 @@ const brands: Brand[] = [
   {
     id: 9,
     name: "Eucerin",
-    logo: "🧼",
+    logo: "/images/brands/eucerin-logo.png",
     description: "حلول العناية بالبشرة المتقدمة",
     productCount: 40,
     rating: 4.7,
@@ -102,7 +102,7 @@ const brands: Brand[] = [
   {
     id: 10,
     name: "SVR",
-    logo: "🔬",
+    logo: "/images/brands/svr-logo.png",
     description: "علاجات جلدية متخصصة",
     productCount: 22,
     rating: 4.6,
@@ -111,7 +111,7 @@ const brands: Brand[] = [
   {
     id: 11,
     name: "Filorga",
-    logo: "✨",
+    logo: "/images/brands/filorga-logo.png",
     description: "مستحضرات مضادة للشيخوخة",
     productCount: 30,
     rating: 4.8,
@@ -120,7 +120,7 @@ const brands: Brand[] = [
   {
     id: 12,
     name: "BioOriental",
-    logo: "🌿",
+    logo: "/images/brands/bio-oriental-logo.png",
     description: "زيوت وأعشاب طبيعية",
     productCount: 48,
     rating: 4.9,
@@ -196,19 +196,28 @@ export default function Brands() {
         {searchTerm === '' && selectedCategory === 'all' && (
           <div className="mb-16">
             <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">الماركات المميزة</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {featuredBrands.map((brand) => (
                 <Link
                   key={brand.id}
                   href={`/brands/${brand.id}`}
-                  className="group bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-emerald-100"
+                  className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200"
                 >
                   <div className="text-center">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 text-5xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      {brand.logo}
+                    <div className="w-24 h-24 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-300 p-3">
+                      <img 
+                        src={brand.logo} 
+                        alt={brand.name} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.parentElement!.innerHTML = '<span class="text-4xl">🏷️</span>';
+                        }}
+                      />
                     </div>
-                    <h3 className="font-bold text-gray-800 mb-3 text-xl">{brand.name}</h3>
-                    <p className="text-gray-600 mb-4">{brand.description}</p>
+                    <h3 className="font-bold text-gray-800 mb-2 text-lg">{brand.name}</h3>
+                    <p className="text-gray-600 text-sm mb-3">{brand.description}</p>
                     <div className="flex justify-between items-center text-sm mb-4">
                       <span className="text-emerald-600 font-medium">{brand.productCount} منتج</span>
                       <div className="flex items-center gap-1">
@@ -216,8 +225,8 @@ export default function Brands() {
                         <span>{brand.rating}</span>
                       </div>
                     </div>
-                    <div className="text-emerald-600 font-medium group-hover:text-emerald-700 transition-colors">
-                      استكشف المنتجات ←
+                    <div className="text-emerald-600 font-medium group-hover:text-emerald-700 transition-colors text-sm">
+                      استكشف المنتجات →
                     </div>
                   </div>
                 </Link>
@@ -247,8 +256,17 @@ export default function Brands() {
                   className="group bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer"
                 >
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl group-hover:scale-110 transition-transform">
-                      {brand.logo}
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform p-3">
+                      <img 
+                        src={brand.logo} 
+                        alt={brand.name} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.parentElement!.innerHTML = '<span class="text-4xl">🏷️</span>';
+                        }}
+                      />
                     </div>
                     <h3 className="font-bold text-gray-800 mb-2 text-lg">{brand.name}</h3>
                     <p className="text-gray-600 text-sm mb-3">{brand.description}</p>

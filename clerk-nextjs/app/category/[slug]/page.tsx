@@ -2,35 +2,17 @@
 
 import React from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import ProductList from "../../../components/ProductList";
 import { mockProducts } from "../../../data/index";
+import { getCategoryNameFromSlug } from "./categoryUtils";
 
 export default function CategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
-  
-  // Convert slug back to readable category name
-  const getCategoryName = (slug: string) => {
-    const categoryMap: { [key: string]: string } = {
-      "العناية-بالوجه": "العناية بالوجه",
-      "العناية-بالجسم": "العناية بالجسم", 
-      "العناية-بالشعر": "العناية بالشعر",
-      "النظافة-الشخصية": "النظافة الشخصية",
-      "الأم-والطفل": "الأم والطفل",
-      "الحماية-من-الشمس": "الحماية من الشمس",
-      "رجال": "رجال",
-      "الزيوت-العطرية": "الزيوت العطرية",
-      "الأعشاب-والمشروبات": "الأعشاب والمشروبات",
-      "العسل-ومنتجات-النحل": "العسل ومنتجات النحل",
-      "المكملات-الغذائية": "المكملات الغذائية",
-      "مستحضرات-التجميل-العضوية": "مستحضرات التجميل العضوية"
-    };
-    
-    return categoryMap[slug] || slug;
-  };
-  
-  const categoryName = getCategoryName(slug);
-  
+
+  const categoryName = getCategoryNameFromSlug(slug);
+
   // Filter products by category
   const categoryProducts = mockProducts.filter(product => 
     product.category === categoryName
@@ -63,12 +45,12 @@ export default function CategoryPage() {
             <p className="text-gray-500 mb-6">
               جرب استكشاف الأقسام الأخرى أو العودة لاحقاً
             </p>
-            <a
+            <Link
               href="/products"
               className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-800 transition"
             >
               عرض جميع المنتجات
-            </a>
+            </Link>
           </div>
         )}
       </div>

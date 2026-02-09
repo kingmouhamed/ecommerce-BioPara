@@ -93,6 +93,89 @@ export default function ProductDetailPage() {
             {/* Title and Price */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
+              
+              {/* Brand Logo */}
+              {product.brand && (
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-sm text-gray-600">العلامة التجارية:</span>
+                  {product.brand === 'CeraVe' ? (
+                    <img 
+                      src="/images/brands/cerave-logo.png" 
+                      alt="CeraVe" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Uriage' ? (
+                    <img 
+                      src="/images/brands/uriage-logo.png" 
+                      alt="Uriage" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Nuxe' ? (
+                    <img 
+                      src="/images/brands/nuxe-logo.png" 
+                      alt="Nuxe" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'La Roche-Posay' ? (
+                    <img 
+                      src="/images/brands/la-roche-posay-logo.png" 
+                      alt="La Roche-Posay" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Vichy' ? (
+                    <img 
+                      src="/images/brands/vichy-logo.png" 
+                      alt="Vichy" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Bioderma' ? (
+                    <img 
+                      src="/images/brands/bioderma-logo.png" 
+                      alt="Bioderma" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Avène' ? (
+                    <img 
+                      src="/images/brands/avene-logo.png" 
+                      alt="Avène" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Mustela' ? (
+                    <img 
+                      src="/images/brands/mustela-logo.png" 
+                      alt="Mustela" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Filorga' ? (
+                    <img 
+                      src="/images/brands/filorga-logo.png" 
+                      alt="Filorga" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'SVR' ? (
+                    <img 
+                      src="/images/brands/svr-logo.png" 
+                      alt="SVR" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'Eucerin' ? (
+                    <img 
+                      src="/images/brands/eucerin-logo.png" 
+                      alt="Eucerin" 
+                      className="h-8 object-contain"
+                    />
+                  ) : product.brand === 'BioOriental' ? (
+                    <img 
+                      src="/images/brands/bio-oriental-logo.png" 
+                      alt="BioOriental" 
+                      className="h-8 object-contain"
+                    />
+                  ) : (
+                    <span className="font-medium text-gray-800">{product.brand}</span>
+                  )}
+                </div>
+              )}
+              
               <div className="flex items-center gap-4 mb-4">
                 <span className="text-3xl font-bold text-emerald-600">{product.price} درهم</span>
                 {product.originalPrice && (
