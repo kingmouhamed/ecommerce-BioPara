@@ -26,7 +26,7 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
     : 0;
 
   return (
-    <div className="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+    <div className="group bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
       {/* Product Image */}
       <div className="relative bg-gray-50 overflow-hidden">
         {product.badge && (
@@ -44,32 +44,32 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
           <img
             src={product.image}
             alt={product.title}
-            className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-48 sm:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           />
         </Link>
 
         {/* Quick Actions */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 sm:gap-3">
           <button
             onClick={() => onQuickView?.(product)}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
           >
-            <Eye className="w-5 h-5 text-gray-700" />
+            <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
           <button
             onClick={() => onAddToCart?.(product)}
-            className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
           >
-            <ShoppingCart className="w-5 h-5 text-gray-700" />
+            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
-          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors">
-            <Heart className="w-5 h-5 text-gray-700" />
+          <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors">
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
         </div>
       </div>
 
       {/* Product Info */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="mb-2">
           <span className="text-xs text-emerald-600 font-medium">{product.category}</span>
         </div>
@@ -179,11 +179,11 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
         </div>
 
         {/* Price */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-emerald-600">{product.price} درهم</span>
+            <span className="text-base sm:text-lg font-bold text-emerald-600">{product.price} درهم</span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-400 line-through">{product.originalPrice} درهم</span>
+              <span className="text-xs sm:text-sm text-gray-400 line-through">{product.originalPrice} درهم</span>
             )}
           </div>
         </div>
@@ -191,9 +191,9 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
         {/* Add to Cart Button */}
         <button
           onClick={() => onAddToCart?.(product)}
-          className="w-full bg-emerald-600 text-white py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-emerald-600 text-white py-2 sm:py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
         >
-          <ShoppingCart className="w-4 h-4" />
+          <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
           أضف للسلة
         </button>
       </div>

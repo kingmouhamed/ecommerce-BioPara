@@ -4,6 +4,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile-specific styles */
+@import '../styles/mobile.css';
+
+/* Custom base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
 @layer base {
   * {
     border-color: #e5e7eb;

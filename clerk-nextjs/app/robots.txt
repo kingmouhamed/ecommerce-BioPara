@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://biopara.ma/sitemap.xml
+
+# Block admin areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /auth/
+
+# Allow specific areas
+Allow: /products
+Allow: /brands
+Allow: /blog
+Allow: /about
+Allow: /contact
+Allow: /faq
+Allow: /promotions
+Allow: /careers
+
+# Crawl delay
+Crawl-delay: 1

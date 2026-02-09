@@ -49,15 +49,15 @@ export default function Navbar() {
         {/* Top Bar */}
         <div className="border-b border-gray-100 py-2">
           <div className="flex justify-between items-center text-sm">
-            <div className="flex items-center gap-4 text-gray-600">
-              <span>📞 +212 5XX-XXXXXX</span>
-              <span>✉️ info@biopara.ma</span>
+            <div className="hidden sm:flex items-center gap-4 text-gray-600">
+              <span className="text-xs sm:text-sm">📞 +212 673020264</span>
+              <span className="text-xs sm:text-sm">✉️ biopara@gmail.com</span>
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard/favorites" className="text-gray-600 hover:text-emerald-600 transition-colors">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/dashboard/favorites" className="text-gray-600 hover:text-emerald-600 transition-colors text-xs sm:text-sm">
                 المفضلة
               </Link>
-              <Link href="/auth/login" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link href="/auth/login" className="text-gray-600 hover:text-emerald-600 transition-colors text-xs sm:text-sm">
                 تسجيل الدخول
               </Link>
             </div>
@@ -69,14 +69,14 @@ export default function Navbar() {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">B</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg sm:text-xl">B</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">BioPara</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-900">BioPara</span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-4 sm:gap-8">
               <Link
                 href="/"
                 className={`font-medium transition-colors ${
@@ -151,62 +151,62 @@ export default function Navbar() {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2 w-80">
-              <Search className="w-5 h-5 text-gray-400" />
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 w-48 xl:w-80">
+              <Search className="w-4 h-4 xl:w-5 xl:h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="ابحث عن منتج..."
+                placeholder="ابحث..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400"
+                className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400 text-sm"
               />
             </form>
 
             {/* Actions */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <ShoppingCart className="w-6 h-6 text-gray-700" />
+                <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center">
                     {cartItemCount}
                   </span>
                 )}
               </button>
               
-              <Link href="/dashboard/profile" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <User className="w-6 h-6 text-gray-700" />
+              <Link href="/dashboard/profile" className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <User className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" />
               </Link>
 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
 
           {/* Mobile Search */}
-          <form onSubmit={handleSearch} className="lg:hidden mt-4 flex items-center gap-2 bg-gray-50 rounded-lg px-4 py-2">
-            <Search className="w-5 h-5 text-gray-400" />
+          <form onSubmit={handleSearch} className="lg:hidden mt-3 sm:mt-4 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+            <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="ابحث عن منتج..."
+              placeholder="ابحث..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400"
+              className="bg-transparent flex-1 outline-none text-gray-700 placeholder-gray-400 text-sm"
             />
           </form>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 py-4">
-            <div className="space-y-4">
+          <div className="lg:hidden border-t border-gray-100 py-3 sm:py-4">
+            <div className="space-y-3 sm:space-y-4">
               <Link
                 href="/"
                 className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
