@@ -14,10 +14,10 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const categories = [
-    { name: 'الأعشاب الطبية', href: '/products?category=medical-herbs' },
-    { name: 'Parapharmacie', href: '/products?category=parapharmacie' },
-    { name: 'الفيتامينات', href: '/products?category=vitamins' },
-    { name: 'منتجات عضوية', href: '/products?category=organic' }
+    { name: 'الأعشاب الطبية', href: '/products?category=الأعشاب الطبية' },
+    { name: 'Parapharmacie', href: '/products?category=Parapharmacie' },
+    { name: 'الأعشاب العطرية', href: '/products?category=الأعشاب العطرية' },
+    { name: 'العناية بالبشرة', href: '/products?category=العناية بالبشرة' }
   ];
 
   const handleSearch = (e: React.FormEvent) => {

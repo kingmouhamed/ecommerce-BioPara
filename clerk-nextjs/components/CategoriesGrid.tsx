@@ -17,28 +17,28 @@ const categories: Category[] = [
     name: 'الأعشاب الطبية',
     description: 'مستحضرات طبيعية للعلاج والوقاية',
     image: '/images/categories/medical-herbs.jpg',
-    href: '/products?category=medical-herbs'
+    href: '/products?category=الأعشاب الطبية'
   },
   {
     id: 'parapharmacie',
     name: 'Parapharmacie',
     description: 'منتجات العناية بالبشرة والشعر',
     image: '/images/categories/parapharmacie.jpg',
-    href: '/products?category=parapharmacie'
+    href: '/products?category=Parapharmacie'
   },
   {
-    id: 'natural-oils',
-    name: 'الزيوت الطبيعية',
-    description: 'زيوت أساسية وعطرية للعناية',
-    image: '/images/categories/natural-oils.jpg',
-    href: '/products?category=natural-oils'
+    id: 'aromatic-herbs',
+    name: 'الأعشاب العطرية',
+    description: 'أعشاب عطرية للروائح الطبيعية',
+    image: '/images/categories/medical-herbs.jpg',
+    href: '/products?category=الأعشاب العطرية'
   },
   {
     id: 'skincare',
     name: 'العناية بالبشرة',
     description: 'منتجات طبيعية للعناية بالبشرة',
     image: '/images/categories/skincare.jpg',
-    href: '/products?category=skincare'
+    href: '/products?category=العناية بالبشرة'
   }
 ];
 

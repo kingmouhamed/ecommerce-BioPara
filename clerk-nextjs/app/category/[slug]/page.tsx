@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import ProductList from "../../../components/ProductList";
-import { mockProducts } from "../../../data/index";
+import { allProducts } from "../../../data/index";
 import { getCategoryNameFromSlug } from "./categoryUtils";
 
 export default function CategoryPage() {
@@ -15,7 +15,7 @@ export default function CategoryPage() {
   const categoryName = getCategoryNameFromSlug(slug);
 
   // Filter products by category
-  const categoryProducts = mockProducts.filter(product => 
+  const categoryProducts = allProducts.filter((product: any) => 
     product.category === categoryName
   );
 
@@ -23,14 +23,13 @@ export default function CategoryPage() {
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="relative w-full h-64 md:h-96 mb-10 rounded-2xl overflow-hidden shadow-lg bg-white">
-          <Image
-            src="/images/category-hero.jpg"
-            alt="Professional product photography composition combining natural parapharmacy and herbal medicine"
-            fill
-            className="object-cover"
-            priority
-          />
+        <div className="relative w-full h-64 md:h-96 mb-10 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-r from-emerald-400 to-emerald-600">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h1 className="text-3xl md:text-5xl font-bold mb-4">{categoryName}</h1>
+              <p className="text-lg md:text-xl opacity-90">منتجات طبيعية عالية الجودة</p>
+            </div>
+          </div>
         </div>
 
         {/* Category Header */}
