@@ -42,9 +42,6 @@ export const allProducts = [
   ...herbalProductsUnified
 ];
 
-// 3. تصدير بيانات وهمية للتوافق مع الكود القديم
-export const mockProducts = allProducts;
-
-// 4. للتوافق مع الاستيرادات القديمة
+// 3. للتوافق مع الاستيرادات القديمة
 export { parapharmacieProductsUnified as parapharmacieProducts };
 export { herbalProductsUnified as herbalProducts };

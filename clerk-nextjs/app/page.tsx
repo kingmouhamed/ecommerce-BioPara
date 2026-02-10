@@ -6,12 +6,10 @@ import Hero from "../components/Hero";
 import ProductList from "../components/ProductList";
 import Brands from "../components/Brands";
 import FeaturedTabs from "../components/FeaturedTabs";
-import PromoBanner from "../components/PromoBanner";
 import Loyalty from "../components/Loyalty";
-import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 import CategoriesGrid from "../components/CategoriesGrid";
-import { mockProducts, Product, allProducts, parapharmacieProducts, herbalProducts } from "../data/index";
+import { allProducts, Product, parapharmacieProducts, herbalProducts } from "../data/index";
 
 export default function HomePage() {
   const { addToCart, cartItemCount } = useCart();
@@ -19,8 +17,8 @@ export default function HomePage() {
   // Filter products for different sections
   const paraProducts = parapharmacieProducts;
   const herbalProductsList = herbalProducts;
-  const newArrivals = mockProducts.filter((p: Product) => p && p.isNew).slice(0, 10);
-  const bestSellers = mockProducts
+  const newArrivals = allProducts.filter((p: Product) => p && p.isNew).slice(0, 10);
+  const bestSellers = allProducts
     .filter((p: Product) => p)
     .sort((a: Product, b: Product) => (b.oldPrice || 0) - (a.oldPrice || 0))
     .slice(0, 10);
@@ -48,9 +46,6 @@ export default function HomePage() {
           <FeaturedTabs />
         </div>
 
-        {/* Promotional Banner */}
-        <PromoBanner />
-
         {/* Herbalism Products */}
         <div className="container mx-auto px-4 py-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في الأعشاب الطبية</h2>
@@ -60,10 +55,6 @@ export default function HomePage() {
 
         <div className="container mx-auto px-4 py-12">
           <Loyalty />
-        </div>
-        
-        <div className="container mx-auto px-4 py-12">
-          <Newsletter />
         </div>
       </main>
       

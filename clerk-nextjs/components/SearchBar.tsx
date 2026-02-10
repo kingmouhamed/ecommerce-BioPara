@@ -18,19 +18,19 @@ interface Suggestion {
 }
 
 const mockSuggestions: Suggestion[] = [
-  { id: '1', text: 'زيت الأرغان النقي', type: 'product', url: '/products/argan-oil' },
-  { id: '2', text: 'صابون الغار', type: 'product', url: '/products/laurier-soap' },
-  { id: '3', text: 'الأعشاب الطبية', type: 'category', url: '/products?category=medical-herbs' },
+  { id: '1', text: 'زيت الأرغان النقي', type: 'product', url: '/products/1' },
+  { id: '2', text: 'إكليل الجبل', type: 'product', url: '/products/1001' },
+  { id: '3', text: 'الأعشاب الطبية', type: 'category', url: '/products?category=الأعشاب الطبية' },
   { id: '4', text: 'La Roche-Posay', type: 'brand', url: '/brands/la-roche-posay' },
-  { id: '5', text: 'فيتامين C', type: 'product', url: '/products/vitamin-c' },
-  { id: '6', text: 'Parapharmacie', type: 'category', url: '/products?category=parapharmacie' }
+  { id: '5', text: 'كريم فيتامين C', type: 'product', url: '/products/2' },
+  { id: '6', text: 'Parapharmacie', type: 'category', url: '/products?category=Parapharmacie' }
 ];
 
 const trendingSearches = [
   'زيت الأرغان',
-  'صابون الغار',
-  'مستحضر فيتامين C',
-  'خلطة الأعشاب',
+  'إكليل الجبل',
+  'كريم فيتامين C',
+  'الخزامى',
   'كريم مرطب'
 ];
 
