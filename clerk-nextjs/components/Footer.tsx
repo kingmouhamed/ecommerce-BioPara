@@ -12,9 +12,11 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">B</span>
-              </div>
+              <img 
+                src="/images/logo.png" 
+                alt="BioPara Logo" 
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-xl font-bold">BioPara</span>
             </div>
             <p className="text-gray-400 mb-4 leading-relaxed">

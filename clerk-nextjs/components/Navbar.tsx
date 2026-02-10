@@ -69,9 +69,11 @@ export default function Navbar() {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg sm:text-xl">B</span>
-              </div>
+              <img 
+                src="/images/logo.png" 
+                alt="BioPara Logo" 
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+              />
               <span className="text-lg sm:text-xl font-bold text-gray-900">BioPara</span>
             </Link>
 
