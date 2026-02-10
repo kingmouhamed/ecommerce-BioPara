@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   authors: [{ name: "BioPara" }],
   creator: "BioPara",
   publisher: "BioPara",
+  icons: {
+    icon: '/images/logo.png',
+    shortcut: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -58,10 +63,6 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "your-google-verification-code",
-  },
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/logo.svg',
   },
 };
 
