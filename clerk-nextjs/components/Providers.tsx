@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { CartProvider } from '../contexts/CartContext';
-// import { AuthProvider } from '../contexts/AuthContext';
+import { AuthProvider } from '../contexts/AuthContext';
 import ErrorBoundary from './ErrorBoundary';
 
 interface ProvidersProps {
@@ -12,11 +12,11 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <ErrorBoundary>
-      {/* <AuthProvider> */}
+      <AuthProvider>
         <CartProvider>
           {children}
         </CartProvider>
-      {/* </AuthProvider> */}
+      </AuthProvider>
     </ErrorBoundary>
   );
 }
