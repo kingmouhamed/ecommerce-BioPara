@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
@@ -39,13 +40,16 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
             -{discount}%
           </span>
         )}
-        
+
         <Link href={`/products/${product.id}`}>
-          <img
-            src={product.image}
-            alt={product.title}
-            className="w-full h-48 sm:h-64 object-cover group-hover:scale-110 transition-transform duration-500"
-          />
+          <div className="relative w-full aspect-square overflow-hidden rounded-xl">
+            <Image
+              src={product.image}
+              alt={product.title}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+          </div>
         </Link>
 
         {/* Quick Actions */}
@@ -53,16 +57,21 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
           <button
             onClick={() => onQuickView?.(product)}
             className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+            aria-label="عرض سريع للمنتج"
           >
             <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
           <button
             onClick={() => onAddToCart?.(product)}
             className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+            aria-label="إضافة للسلة"
           >
             <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
-          <button className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors">
+          <button
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center hover:bg-emerald-50 transition-colors"
+            aria-label="إضافة للمفضلة"
+          >
             <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700" />
           </button>
         </div>
@@ -78,75 +87,99 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
         {product.brand && (
           <div className="flex items-center gap-2 mb-2">
             {product.brand === 'CeraVe' ? (
-              <img 
-                src="/images/brands/cerave-logo.png" 
-                alt="CeraVe" 
+              <Image
+                src="/images/brands/cerave-logo.png"
+                alt="CeraVe"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Uriage' ? (
-              <img 
-                src="/images/brands/uriage-logo.png" 
-                alt="Uriage" 
+              <Image
+                src="/images/brands/uriage-logo.png"
+                alt="Uriage"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Nuxe' ? (
-              <img 
-                src="/images/brands/nuxe-logo.png" 
-                alt="Nuxe" 
+              <Image
+                src="/images/brands/nuxe-logo.png"
+                alt="Nuxe"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'La Roche-Posay' ? (
-              <img 
-                src="/images/brands/la-roche-posay-logo.png" 
-                alt="La Roche-Posay" 
+              <Image
+                src="/images/brands/la-roche-posay-logo.png"
+                alt="La Roche-Posay"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Vichy' ? (
-              <img 
-                src="/images/brands/vichy-logo.png" 
-                alt="Vichy" 
+              <Image
+                src="/images/brands/vichy-logo.png"
+                alt="Vichy"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Bioderma' ? (
-              <img 
-                src="/images/brands/bioderma-logo.png" 
-                alt="Bioderma" 
+              <Image
+                src="/images/brands/bioderma-logo.png"
+                alt="Bioderma"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Avène' ? (
-              <img 
-                src="/images/brands/avene-logo.png" 
-                alt="Avène" 
+              <Image
+                src="/images/brands/avene-logo.png"
+                alt="Avène"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Mustela' ? (
-              <img 
-                src="/images/brands/mustela-logo.png" 
-                alt="Mustela" 
+              <Image
+                src="/images/brands/mustela-logo.png"
+                alt="Mustela"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Filorga' ? (
-              <img 
-                src="/images/brands/filorga-logo.png" 
-                alt="Filorga" 
+              <Image
+                src="/images/brands/filorga-logo.png"
+                alt="Filorga"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'SVR' ? (
-              <img 
-                src="/images/brands/svr-logo.png" 
-                alt="SVR" 
+              <Image
+                src="/images/brands/svr-logo.png"
+                alt="SVR"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'Eucerin' ? (
-              <img 
-                src="/images/brands/eucerin-logo.png" 
-                alt="Eucerin" 
+              <Image
+                src="/images/brands/eucerin-logo.png"
+                alt="Eucerin"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : product.brand === 'BioOriental' ? (
-              <img 
-                src="/images/brands/bio-oriental-logo.png" 
-                alt="BioOriental" 
+              <Image
+                src="/images/brands/bio-oriental-logo.png"
+                alt="BioOriental"
+                width={100}
+                height={20}
                 className="h-5 object-contain"
               />
             ) : (
