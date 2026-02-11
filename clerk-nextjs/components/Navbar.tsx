@@ -48,16 +48,16 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         {/* Top Bar */}
         <div className="border-b border-gray-100 py-2">
-          <div className="flex justify-between items-center text-sm">
-            <div className="hidden sm:flex items-center gap-4 text-gray-600">
+          <div className="flex justify-between items-center">
+            <div className="hidden sm:flex items-center gap-2 text-gray-600">
               <span className="text-xs sm:text-sm">📞 +212 673020264</span>
               <span className="text-xs sm:text-sm">✉️ biopara@gmail.com</span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2">
               <Link href="/dashboard/favorites" className="text-gray-600 hover:text-emerald-600 transition-colors text-xs sm:text-sm">
                 المفضلة
               </Link>
-              <Link href="/auth/login" className="text-gray-600 hover:text-emerald-600 transition-colors text-xs sm:text-sm">
+              <Link href="/auth/login" className="text-gray-600 hover:text-emerald-600 transition-colors text-xs sm:text-sm whitespace-nowrap">
                 تسجيل الدخول
               </Link>
             </div>
