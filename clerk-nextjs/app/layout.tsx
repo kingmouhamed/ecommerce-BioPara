@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+// import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "../components/Providers";
 import WhatsAppWidget from "../components/WhatsAppWidget";
 import Navbar from "../components/Navbar";
@@ -77,29 +77,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="ar" dir="rtl">
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-          <meta name="mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="format-detection" content="telephone=no" />
-        </head>
-        <body className={`${tajawal.variable} font-sans antialiased`}>
-          <TopBar />
-          <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
-            <Providers>
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Cart />
-              <WhatsAppWidget />
-            </Providers>
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="ar" dir="rtl">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+      </head>
+      <body className={`${tajawal.variable} font-sans antialiased`}>
+        <TopBar />
+        <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
+          <Providers>
+            <Navbar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Cart />
+            <WhatsAppWidget />
+          </Providers>
+        </div>
+      </body>
+    </html>
   );
 }
