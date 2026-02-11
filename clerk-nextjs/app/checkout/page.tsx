@@ -11,6 +11,13 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    address: '',
+    city: '',
+    postalCode: ''
+  });
 
   if (cart.length === 0) {
     return (
@@ -36,12 +43,62 @@ export default function CheckoutPage() {
   const shippingCost = shippingMethod === "express" ? 30 : 0;
   const total = parseFloat(calculateTotal()) + shippingCost;
 
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handlePlaceOrder = async () => {
     if (isProcessing) return;
+    
+    // Validate form
+    if (!formData.fullName || !formData.phone || !formData.address || !formData.city || !formData.postalCode) {
+      alert('يرجى ملء جميع حقول المعلومات المطلوبة');
+      return;
+    }
     
     setIsProcessing(true);
     
     try {
+      // Create order message for WhatsApp
+      const orderItems = cart.map(item => 
+        `• ${item.title} - الكمية: ${item.quantity} - السعر: ${(item.price * item.quantity).toFixed(2)} درهم`
+      ).join('\n');
+      
+      const shippingMethodText = shippingMethod === "express" ? "التوصيل السريع (30.00 درهم)" : "التوصيل القياسي (مجاني)";
+      const paymentMethodText = paymentMethod === "cod" ? "الدفع عند الاستلام" : "بطاقة ائتمانية";
+      
+      const whatsappMessage = `🛍️ *طلب جديد من BioPara*
+
+📦 *معلومات الطلب:*
+${orderItems}
+
+💰 *تفاصيل الدفع:*
+المجموع الفرعي: ${calculateTotal()} درهم
+الشحن: ${shippingCost === 0 ? "مجاني" : shippingCost + ".00 درهم"}
+المجموع الكلي: ${total.toFixed(2)} درهم
+طريقة الدفع: ${paymentMethodText}
+
+🚚 *معلومات الشحن:*
+الاسم: ${formData.fullName}
+الهاتف: ${formData.phone}
+العنوان: ${formData.address}
+المدينة: ${formData.city}
+الرمز البريدي: ${formData.postalCode}
+طريقة الشحن: ${shippingMethodText}
+
+⏰ *التوقيت:* ${new Date().toLocaleString('ar-MA')}
+
+📞 *يرجى الاتصال بالعميل لتأكيد الطلب*`;
+      
+      // Send WhatsApp message
+      const whatsappUrl = `https://wa.me/212673020264?text=${encodeURIComponent(whatsappMessage)}`;
+      window.open(whatsappUrl, '_blank');
+      
       // Simulate order processing
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -49,10 +106,10 @@ export default function CheckoutPage() {
       clearCart();
       setOrderSuccess(true);
       
-      // Redirect to success page after 2 seconds
+      // Redirect to success page after 3 seconds
       setTimeout(() => {
         window.location.href = '/order-success';
-      }, 2000);
+      }, 3000);
       
     } catch (error) {
       console.error('Order processing error:', error);
@@ -84,6 +141,9 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="أدخل اسمك الكامل"
                   />
@@ -95,6 +155,9 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="+212 6XX XXX XXX"
                   />
@@ -106,6 +169,9 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="الشارع، المدينة، الرمز البريدي"
                   />
@@ -115,7 +181,7 @@ export default function CheckoutPage() {
                   <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
                     المدينة *
                   </label>
-                  <select id="city" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  <select id="city" name="city" value={formData.city} onChange={handleInputChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="">اختر المدينة</option>
                     <option value="casablanca">الدار البيضاء</option>
                     <option value="rabat">الرباط</option>
@@ -134,6 +200,9 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
+                    name="postalCode"
+                    value={formData.postalCode}
+                    onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="XXXXX"
                   />

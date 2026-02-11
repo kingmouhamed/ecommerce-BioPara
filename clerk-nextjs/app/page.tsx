@@ -6,7 +6,6 @@ import Hero from "../components/Hero";
 import ProductList from "../components/ProductList";
 import Brands from "../components/Brands";
 import FeaturedTabs from "../components/FeaturedTabs";
-import Loyalty from "../components/Loyalty";
 import Footer from "../components/Footer";
 import CategoriesGrid from "../components/CategoriesGrid";
 import { allProducts, Product, parapharmacieProducts, herbalProducts } from "../data/index";
@@ -51,10 +50,6 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في الأعشاب الطبية</h2>
           <p className="text-gray-600 mb-8">منتجات طبيعية 100% للعناية بصحتك</p>
           <ProductList products={herbalProductsList.slice(0, 8)} />
-        </div>
-
-        <div className="container mx-auto px-4 py-12">
-          <Loyalty />
         </div>
       </main>
       
