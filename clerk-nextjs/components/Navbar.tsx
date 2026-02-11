@@ -10,15 +10,29 @@ import { useCart } from '../contexts/CartContext';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { cartItemCount, setIsCartOpen } = useCart();
   const pathname = usePathname();
 
   const categories = [
     { name: 'الأعشاب الطبية', href: '/products?category=الأعشاب الطبية' },
-    { name: 'Parapharmacie', href: '/products?category=Parapharmacie' },
-    { name: 'الأعشاب العطرية', href: '/products?category=الأعشاب العطرية' },
-    { name: 'العناية بالبشرة', href: '/products?category=العناية بالبشرة' }
+    { name: 'Parapharmacie', href: '/products?category=Parapharmacie' }
+  ];
+
+  const brands = [
+    { name: 'La Roche-Posay', href: '/brands/la-roche-posay' },
+    { name: 'Vichy', href: '/brands/vichy' },
+    { name: 'CeraVe', href: '/brands/cerave' },
+    { name: 'Bioderma', href: '/brands/bioderma' },
+    { name: 'Avène', href: '/brands/avene' },
+    { name: 'Nuxe', href: '/brands/nuxe' },
+    { name: 'Uriage', href: '/brands/uriage' },
+    { name: 'Mustela', href: '/brands/mustela' },
+    { name: 'Eucerin', href: '/brands/eucerin' },
+    { name: 'SVR', href: '/brands/svr' },
+    { name: 'Filorga', href: '/brands/filorga' },
+    { name: 'BioOriental', href: '/brands/bio-oriental' }
   ];
 
   const handleSearch = (e: React.FormEvent) => {
@@ -94,8 +108,12 @@ export default function Navbar() {
               {/* Categories Dropdown */}
               <div className="relative">
                 <button
-                  onMouseEnter={() => setIsCategoriesOpen(true)}
-                  onMouseLeave={() => setIsCategoriesOpen(false)}
+                  onMouseEnter={() => {
+                    setTimeout(() => setIsCategoriesOpen(true), 150);
+                  }}
+                  onMouseLeave={() => {
+                    setTimeout(() => setIsCategoriesOpen(false), 200);
+                  }}
                   className="flex items-center gap-1 font-medium text-gray-700 hover:text-emerald-600 transition-colors"
                 >
                   المنتجات
@@ -105,8 +123,10 @@ export default function Navbar() {
                 {isCategoriesOpen && (
                   <div
                     onMouseEnter={() => setIsCategoriesOpen(true)}
-                    onMouseLeave={() => setIsCategoriesOpen(false)}
-                    className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 py-2"
+                    onMouseLeave={() => {
+                      setTimeout(() => setIsCategoriesOpen(false), 200);
+                    }}
+                    className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50 transition-all duration-300 ease-in-out transform origin-top"
                   >
                     {categories.map((category, index) => (
                       <Link
@@ -129,14 +149,51 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link
-                href="/brands"
-                className={`font-medium transition-colors ${
-                  pathname === '/brands' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
-                }`}
-              >
-                الماركات
-              </Link>
+              {/* Brands Dropdown */}
+              <div className="relative">
+                <button
+                  onMouseEnter={() => {
+                    setTimeout(() => setIsBrandsOpen(true), 150);
+                  }}
+                  onMouseLeave={() => {
+                    setTimeout(() => setIsBrandsOpen(false), 200);
+                  }}
+                  className={`flex items-center gap-1 font-medium transition-colors ${
+                    pathname === '/brands' ? 'text-emerald-600' : 'text-gray-700 hover:text-emerald-600'
+                  }`}
+                >
+                  الماركات
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {isBrandsOpen && (
+                  <div
+                    onMouseEnter={() => setIsBrandsOpen(true)}
+                    onMouseLeave={() => {
+                      setTimeout(() => setIsBrandsOpen(false), 200);
+                    }}
+                    className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-100 py-2 max-h-96 overflow-y-auto z-50 transition-all duration-300 ease-in-out transform origin-top"
+                  >
+                    {brands.map((brand, index) => (
+                      <Link
+                        key={index}
+                        href={brand.href}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"
+                      >
+                        {brand.name}
+                      </Link>
+                    ))}
+                    <div className="border-t border-gray-100 mt-2 pt-2">
+                      <Link
+                        href="/brands"
+                        className="block px-4 py-2 text-emerald-600 font-medium hover:bg-emerald-50 transition-colors"
+                      >
+                        عرض جميع الماركات
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
               <Link
                 href="/promotions"
                 className={`font-medium transition-colors ${
