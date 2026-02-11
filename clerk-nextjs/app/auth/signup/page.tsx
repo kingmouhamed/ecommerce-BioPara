@@ -1,45 +1,19 @@
-"use client";
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
-import Link from 'next/link';
-
 export default function SignupPage() {
-  const router = useRouter();
-  const { isSignedIn } = useUser();
-
-  if (isSignedIn) {
-    router.push('/');
-    return null;
-  }
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50" dir="rtl">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-900">إنشاء حساب جديد</h2>
-        
-        <div className="space-y-4">
-          <SignUpButton mode="modal">
-            <button className="w-full px-4 py-3 font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition">
-              إنشاء حساب جديد
-            </button>
-          </SignUpButton>
-          
-          <div className="text-center text-gray-500">أو</div>
-          
-          <SignInButton mode="modal">
-            <button className="w-full px-4 py-3 font-medium text-green-600 border border-green-600 rounded-md hover:bg-green-50 transition">
-              تسجيل الدخول
-            </button>
-          </SignInButton>
-        </div>
-        
-        <p className="text-sm text-center text-gray-600">
-          <Link href="/" className="font-medium text-green-600 hover:text-green-500">
-            العودة للصفحة الرئيسية
-          </Link>
+        <p className="text-center text-gray-600">
+          هذه الصفحة قيد التطوير. سيتم تفعيل إنشاء الحسابات قريباً.
         </p>
+        <div className="text-center">
+          <a 
+            href="/" 
+            className="inline-block bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+          >
+            العودة للرئيسية
+          </a>
+        </div>
       </div>
     </div>
   );
