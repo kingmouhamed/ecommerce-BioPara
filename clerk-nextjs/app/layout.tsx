@@ -7,7 +7,6 @@ import Providers from "../components/Providers";
 import WhatsAppWidget from "../components/WhatsAppWidget";
 import Navbar from "../components/Navbar";
 import Cart from "../components/Cart";
-import TopBar from '../components/TopBar';
 
 const inter = Inter({ subsets: ["latin"] });
 const tajawal = Tajawal({ 
@@ -80,14 +79,12 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="ar" dir="rtl">
         <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
           <meta name="mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           <meta name="format-detection" content="telephone=no" />
         </head>
         <body className={`${tajawal.variable} font-sans antialiased`}>
-          <TopBar />
           <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
             <Providers>
               <Navbar />

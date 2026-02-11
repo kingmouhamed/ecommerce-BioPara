@@ -190,6 +190,11 @@
   background-position: center;
 }
 
+/* Hero background */
+.hero-background {
+  background-image: url("/Hero-new.png");
+}
+
 /* Print styles */
 @media print {
   .no-print {

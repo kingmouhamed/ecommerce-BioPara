@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
@@ -69,9 +70,11 @@ export default function Navbar() {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <img 
-                src="/images/logo.png" 
-                alt="BioPara Logo" 
+              <Image
+                src="/images/logo.png"
+                alt="BioPara Logo"
+                width={40}
+                height={40}
                 className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
               />
               <span className="text-lg sm:text-xl font-bold text-gray-900">BioPara</span>
@@ -153,7 +156,7 @@ export default function Navbar() {
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 w-48 xl:w-80">
+            <form onSubmit={handleSearch} className="hidden lg:flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 w-full max-w-[520px]">
               <Search className="w-4 h-4 xl:w-5 xl:h-5 text-gray-400" />
               <input
                 type="text"

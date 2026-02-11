@@ -7,7 +7,7 @@ import { Search, ShoppingCart, Sparkles, ArrowLeft } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <div className="relative bg-cover bg-center bg-no-repeat py-12 sm:py-16 lg:py-24" style={{ backgroundImage: 'url("/Hero-new.png")' }} dir="rtl">
+    <div className="relative bg-cover bg-center bg-no-repeat py-12 sm:py-16 lg:py-24 min-h-[320px] sm:min-h-[520px] hero-background" dir="rtl">
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/40 to-teal-900/30"></div>
       <div className="container mx-auto px-4">

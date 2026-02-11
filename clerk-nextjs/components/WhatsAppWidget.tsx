@@ -9,7 +9,7 @@ const WhatsAppWidget = () => {
       href={`https://wa.me/${phoneNumber.replace(/[^\d]/g, '')}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-110 group"
+      className="fixed bottom-4 left-4 sm:bottom-6 sm:left-6 z-50 bg-green-500 text-white p-3 sm:p-4 rounded-full shadow-lg hover:bg-green-600 transition-all hover:scale-110 group"
       aria-label="تواصل معنا عبر WhatsApp"
     >
       <div className="relative">
