@@ -10,7 +10,7 @@ export default function BrandsPage() {
     {
       id: 1,
       name: "La Roche-Posay",
-      logo: "🧴",
+      logo: "/images/brands/la-roche-posay-logo.png",
       description: "رعاية البشرة الحساسة",
       productCount: 45,
       category: "العناية بالبشرة"
@@ -18,7 +18,7 @@ export default function BrandsPage() {
     {
       id: 2,
       name: "Vichy",
-      logo: "💧",
+      logo: "/images/brands/vichy-logo.png",
       description: "منتجات العناية بالبشرة المعدنية",
       productCount: 38,
       category: "العناية بالبشرة"
@@ -26,7 +26,7 @@ export default function BrandsPage() {
     {
       id: 3,
       name: "CeraVe",
-      logo: "🌿",
+      logo: "/images/brands/cerave-logo.png",
       description: "عناية بالبشرة بالسيراميد",
       productCount: 32,
       category: "العناية بالبشرة"
@@ -34,7 +34,7 @@ export default function BrandsPage() {
     {
       id: 4,
       name: "Bioderma",
-      logo: "🌸",
+      logo: "/images/brands/bioderma-logo.png",
       description: "رعاية البشرة الحساسة",
       productCount: 28,
       category: "العناية بالبشرة"
@@ -42,7 +42,7 @@ export default function BrandsPage() {
     {
       id: 5,
       name: "Avène",
-      logo: "🌺",
+      logo: "/images/brands/avene-logo.png",
       description: "علاج البشرة بالينابيع الحرارية",
       productCount: 35,
       category: "العناية بالبشرة"
@@ -50,7 +50,7 @@ export default function BrandsPage() {
     {
       id: 6,
       name: "Nuxe",
-      logo: "🌻",
+      logo: "/images/brands/nuxe-logo.png",
       description: "منتجات تجميل طبيعية",
       productCount: 42,
       category: "العناية بالبشرة"
@@ -58,7 +58,7 @@ export default function BrandsPage() {
     {
       id: 7,
       name: "Uriage",
-      logo: "⛰️",
+      logo: "/images/brands/uriage-logo.png",
       description: "عناية بالبشرة بالمياه الحرارية",
       productCount: 25,
       category: "العناية بالبشرة"
@@ -66,7 +66,7 @@ export default function BrandsPage() {
     {
       id: 8,
       name: "Mustela",
-      logo: "👶",
+      logo: "/images/brands/mustela-logo.png",
       description: "العناية بالأم والطفل",
       productCount: 18,
       category: "العناية بالطفل"
@@ -74,7 +74,7 @@ export default function BrandsPage() {
     {
       id: 9,
       name: "Eucerin",
-      logo: "🧼",
+      logo: "/images/brands/eucerin-logo.png",
       description: "حلول العناية بالبشرة المتقدمة",
       productCount: 40,
       category: "العناية بالبشرة"
@@ -82,7 +82,7 @@ export default function BrandsPage() {
     {
       id: 10,
       name: "SVR",
-      logo: "🔬",
+      logo: "/images/brands/svr-logo.png",
       description: "علاجات جلدية متخصصة",
       productCount: 22,
       category: "العناية بالبشرة"
@@ -90,7 +90,7 @@ export default function BrandsPage() {
     {
       id: 11,
       name: "Filorga",
-      logo: "✨",
+      logo: "/images/brands/filorga-logo.png",
       description: "مستحضرات مضادة للشيخوخة",
       productCount: 30,
       category: "العناية بالبشرة"
@@ -98,7 +98,7 @@ export default function BrandsPage() {
     {
       id: 12,
       name: "BioOriental",
-      logo: "🌿",
+      logo: "/images/brands/bio-oriental-logo.png",
       description: "زيوت وأعشاب طبيعية",
       productCount: 48,
       category: "الأعشاب الطبية"
@@ -146,8 +146,15 @@ export default function BrandsPage() {
               className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow cursor-pointer group"
             >
               <div className="text-center">
-                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl group-hover:scale-110 transition-transform">
-                  {brand.logo}
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden group-hover:scale-110 transition-transform">
+                  <img 
+                    src={brand.logo} 
+                    alt={`${brand.name} logo`}
+                    className="w-16 h-16 object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = '/images/brands/bio-oriental-logo.png';
+                    }}
+                  />
                 </div>
                 <h3 className="font-bold text-gray-800 mb-2 text-lg">{brand.name}</h3>
                 <p className="text-gray-600 text-sm mb-3">{brand.description}</p>
