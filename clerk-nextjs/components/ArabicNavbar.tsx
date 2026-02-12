@@ -61,44 +61,6 @@ export default function ArabicNavbar() {
                 <Link href="/contact" className="nav-link">اتصل بنا</Link>
               </div>
 
-              {/* Language & Currency Selectors */}
-              <div className="flex items-center gap-4">
-                {/* Currency Selector */}
-                <div className="relative group">
-                  <button className="selector-dropdown flex items-center gap-2">
-                    <span>🇲🇦</span>
-                    <span>د.م</span>
-                    <ChevronLeft className="w-3 h-3 rotate-90" />
-                  </button>
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-premium-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    {currencies.map((currency) => (
-                      <button key={currency.code} className="w-full px-4 py-3 text-right hover:bg-[var(--color-surface-alt)] transition-colors flex items-center justify-end gap-3">
-                        <span>{currency.name}</span>
-                        <span>{currency.code}</span>
-                        <span>{currency.flag}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Language Selector */}
-                <div className="relative group">
-                  <button className="selector-dropdown flex items-center gap-2">
-                    <span>🇸🇦</span>
-                    <span>العربية</span>
-                    <ChevronLeft className="w-3 h-3 rotate-90" />
-                  </button>
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-premium-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    {languages.map((language) => (
-                      <button key={language.code} className="w-full px-4 py-3 text-right hover:bg-[var(--color-surface-alt)] transition-colors flex items-center justify-end gap-3">
-                        <span>{language.name}</span>
-                        <span>{language.flag}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
               {/* Action Buttons */}
               <div className="flex items-center gap-4">
                 <button 
@@ -138,17 +100,6 @@ export default function ArabicNavbar() {
               <Link href="/products" className="block px-4 py-2 nav-link text-right">المنتجات</Link>
               <Link href="/about" className="block px-4 py-2 nav-link text-right">من نحن</Link>
               <Link href="/contact" className="block px-4 py-2 nav-link text-right">اتصل بنا</Link>
-            </div>
-            
-            <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-              <button className="selector-dropdown flex items-center gap-2">
-                <span>🇲🇦</span>
-                <span>د.م</span>
-              </button>
-              <button className="selector-dropdown flex items-center gap-2">
-                <span>🇸🇦</span>
-                <span>العربية</span>
-              </button>
             </div>
           </div>
         </div>
