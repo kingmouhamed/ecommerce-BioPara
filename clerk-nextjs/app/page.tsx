@@ -8,7 +8,7 @@ import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
 import FeaturedTabs from '../components/FeaturedTabs';
 import CategoriesGrid from '../components/CategoriesGrid';
-import GlobalFooter from '../components/GlobalFooter';
+import Footer from '../components/Footer-Unified';
 import Cart from '../components/Cart';
 import WhatsAppWidget from '../components/WhatsAppWidget';
 import LiveChatSupport from '../components/LiveChatSupport';
@@ -60,7 +60,7 @@ export default function HomePage() {
         <ArabicCustomerReviews />
       </main>
       
-      <GlobalFooter />
+      <Footer locale="ar" variant="global" />
       <Cart />
       <WhatsAppWidget />
       <LiveChatSupport />
