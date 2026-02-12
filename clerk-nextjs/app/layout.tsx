@@ -103,14 +103,7 @@ export default function RootLayout({
         <body className={`${tajawal.variable} font-sans antialiased`}>
           <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
             <Providers>
-              <Navbar />
-              <main className="flex-1">
-                {children}
-              </main>
-              <GlobalFooter />
-              <Cart />
-              <WhatsAppWidget />
-              <LiveChatSupport />
+              {children}
             </Providers>
           </div>
         </body>

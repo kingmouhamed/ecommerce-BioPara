@@ -8,6 +8,10 @@ import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
 import FeaturedTabs from '../components/FeaturedTabs';
 import CategoriesGrid from '../components/CategoriesGrid';
+import GlobalFooter from '../components/GlobalFooter';
+import Cart from '../components/Cart';
+import WhatsAppWidget from '../components/WhatsAppWidget';
+import LiveChatSupport from '../components/LiveChatSupport';
 import { allProducts, parapharmacieProducts, herbalProducts } from '../data/index';
 
 export default function HomePage() {
@@ -55,6 +59,11 @@ export default function HomePage() {
         {/* Global Customer Reviews */}
         <ArabicCustomerReviews />
       </main>
+      
+      <GlobalFooter />
+      <Cart />
+      <WhatsAppWidget />
+      <LiveChatSupport />
     </div>
   );
 }
