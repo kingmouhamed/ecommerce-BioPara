@@ -11,8 +11,11 @@ import { brands, Brand } from '@/data/brands';
 export default function BrandDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  // Find the brand by ID
-  const brand = brands.find((b: Brand) => b.id === parseInt(id));
+  // Find brand by name (slug) or ID
+  const brand = brands.find((b: Brand) => 
+    b.name.toLowerCase().replace(/[^a-z0-9]/g, '-') === id ||
+    b.id === parseInt(id)
+  );
 
   if (!brand) {
     notFound();
