@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Search, ShoppingCart, User, Menu, X, ChevronDown } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import LanguageCurrencySwitcher from './LanguageCurrencySwitcher';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -226,6 +227,8 @@ export default function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-2 sm:gap-4">
+              <LanguageCurrencySwitcher />
+              
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"

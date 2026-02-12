@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useCart } from "../contexts/CartContext";
-import Hero from "../components/Hero";
+import GlobalHero from "../components/GlobalHero";
 import ProductList from "../components/ProductList";
 import Brands from "../components/Brands";
 import FeaturedTabs from "../components/FeaturedTabs";
-import Footer from "../components/Footer";
 import CategoriesGrid from "../components/CategoriesGrid";
+import TrustBadgesSection from "../components/TrustBadgesSection";
 import { allProducts, Product, parapharmacieProducts, herbalProducts } from "../data/index";
 
 export default function HomePage() {
@@ -25,16 +25,18 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <main>
-        <Hero />
+        <GlobalHero />
         
         <div className="container mx-auto px-4 py-12">
           <CategoriesGrid />
         </div>
 
+        <TrustBadgesSection />
+
         {/* Parapharmacie Products */}
         <div className="container mx-auto px-4 py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في شبه الصيدلية</h2>
-          <p className="text-gray-600 mb-8">أفضل الماركات العالمية للعناية بالبشرة</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Premium Parapharmacy</h2>
+          <p className="text-gray-600 mb-8">World's leading skincare and wellness brands</p>
           <ProductList products={paraProducts.slice(0, 8)} />
         </div>
 
@@ -47,13 +49,11 @@ export default function HomePage() {
 
         {/* Herbalism Products */}
         <div className="container mx-auto px-4 py-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً في الأعشاب الطبية</h2>
-          <p className="text-gray-600 mb-8">منتجات طبيعية 100% للعناية بصحتك</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Natural Herbal Remedies</h2>
+          <p className="text-gray-600 mb-8">100% natural products for your wellness journey</p>
           <ProductList products={herbalProductsList.slice(0, 8)} />
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 }

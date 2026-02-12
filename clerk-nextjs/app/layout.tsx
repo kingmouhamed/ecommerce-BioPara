@@ -7,6 +7,7 @@ import Providers from "../components/Providers";
 import WhatsAppWidget from "../components/WhatsAppWidget";
 import Navbar from "../components/Navbar";
 import Cart from "../components/Cart";
+import GlobalFooter from "../components/GlobalFooter";
 
 const inter = Inter({ subsets: ["latin"] });
 const tajawal = Tajawal({ 
@@ -16,9 +17,9 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "BioPara - Parapharmacie en ligne",
-  description: "Votre expert en parapharmacie et phytothérapie au Maroc.",
-  keywords: "parapharmacie, maroc, bio, cosmétiques, soins, santé",
+  title: "BioPara - Premium Natural Wellness | Global Delivery",
+  description: "Premium natural wellness products delivered worldwide. Authentic Moroccan argan oil, herbal remedies, and parapharmacy products trusted by customers in 50+ countries.",
+  keywords: "natural wellness, parapharmacy, argan oil, herbal remedies, global delivery, premium skincare, bio products, morocco",
   authors: [{ name: "BioPara" }],
   creator: "BioPara",
   publisher: "BioPara",
@@ -32,22 +33,36 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://biopara.ma"),
+  metadataBase: new URL("https://biopara.com"),
   alternates: {
     canonical: "/",
+    languages: {
+      'en-US': '/en',
+      'fr-FR': '/fr',
+      'ar-MA': '/ar',
+    },
   },
   openGraph: {
-    title: "BioPara - Parapharmacie en ligne",
-    description: "Votre expert en parapharmacie et phytothérapie au Maroc.",
-    url: "https://biopara.ma",
+    title: "BioPara - Premium Natural Wellness | Global Delivery",
+    description: "Premium natural wellness products delivered worldwide. Authentic Moroccan argan oil, herbal remedies, and parapharmacy products.",
+    url: "https://biopara.com",
     siteName: "BioPara",
-    locale: "ar_MA",
+    locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'BioPara Premium Natural Wellness',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BioPara - Parapharmacie en ligne",
-    description: "Votre expert en parapharmacie et phytothérapie au Maroc.",
+    title: "BioPara - Premium Natural Wellness | Global Delivery",
+    description: "Premium natural wellness products delivered worldwide. Authentic Moroccan argan oil, herbal remedies, and parapharmacy products.",
+    images: ['/images/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -91,6 +106,7 @@ export default function RootLayout({
               <main className="flex-1">
                 {children}
               </main>
+              <GlobalFooter />
               <Cart />
               <WhatsAppWidget />
             </Providers>
