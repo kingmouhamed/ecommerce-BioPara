@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Navbar from '../components/Navbar-Unified';
-import ArabicHero from '../components/ArabicHero';
+import Hero from '../components/Hero-Unified';
 import ArabicCustomerReviews from '../components/ArabicCustomerReviews';
 import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
@@ -29,7 +29,7 @@ export default function HomePage() {
       <Navbar locale="ar" variant="premium" />
       
       <main>
-        <ArabicHero />
+        <Hero locale="ar" variant="premium" />
         
         <div className="container-premium py-12">
           <CategoriesGrid />
