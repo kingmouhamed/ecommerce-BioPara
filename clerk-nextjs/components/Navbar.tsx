@@ -309,13 +309,37 @@ export default function Navbar() {
                 )}
               </div>
 
-              <Link
-                href="/brands"
-                className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                الماركات
-              </Link>
+              <div>
+                <button
+                  onClick={() => setIsBrandsOpen(!isBrandsOpen)}
+                  className="flex items-center gap-1 font-medium text-gray-700 hover:text-emerald-600 transition-colors w-full"
+                >
+                  الماركات
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isBrandsOpen ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {isBrandsOpen && (
+                  <div className="mt-2 space-y-2 pr-4 max-h-48 overflow-y-auto">
+                    {brands.map((brand, index) => (
+                      <Link
+                        key={index}
+                        href={brand.href}
+                        className="block text-gray-600 hover:text-emerald-600 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {brand.name}
+                      </Link>
+                    ))}
+                    <Link
+                      href="/brands"
+                      className="block text-emerald-600 font-medium hover:text-emerald-700 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      عرض جميع الماركات
+                    </Link>
+                  </div>
+                )}
+              </div>
               <Link
                 href="/promotions"
                 className="block font-medium text-gray-700 hover:text-emerald-600 transition-colors"
