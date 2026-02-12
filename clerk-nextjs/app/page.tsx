@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import ArabicNavbar from '../components/ArabicNavbar';
+import Navbar from '../components/Navbar-Master';
 import ArabicHero from '../components/ArabicHero';
 import ArabicCustomerReviews from '../components/ArabicCustomerReviews';
 import ProductList from '../components/ProductList';
@@ -26,7 +26,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
-      <ArabicNavbar />
+      <Navbar locale="ar" variant="premium" />
       
       <main>
         <ArabicHero />
