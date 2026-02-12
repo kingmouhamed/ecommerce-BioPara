@@ -227,7 +227,6 @@ export default function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <LanguageCurrencySwitcher />
               
               <button
                 onClick={() => setIsCartOpen(true)}
