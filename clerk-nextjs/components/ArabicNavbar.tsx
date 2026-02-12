@@ -37,15 +37,6 @@ export default function ArabicNavbar() {
 
   return (
     <>
-      {/* Worldwide Shipping Banner */}
-      <div className="shipping-banner">
-        <div className="container-premium flex items-center justify-center gap-2">
-          <Truck className="w-4 h-4" />
-          <span className="font-medium">شحن عالمي • موثوق من قبل أكثر من 1 مليون عميل</span>
-          <Shield className="w-4 h-4" />
-        </div>
-      </div>
-
       {/* Main Navigation */}
       <nav className="bg-[var(--color-surface)] border-b border-gray-100 sticky top-0 z-50 shadow-premium">
         <div className="container-premium">
