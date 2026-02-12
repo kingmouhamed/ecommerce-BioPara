@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react';
-import PremiumNavbar from '../components/PremiumNavbar';
-import PremiumHero from '../components/PremiumHero';
-import GlobalCustomerReviews from '../components/GlobalCustomerReviews';
+import ArabicNavbar from '../components/ArabicNavbar';
+import ArabicHero from '../components/ArabicHero';
+import ArabicCustomerReviews from '../components/ArabicCustomerReviews';
 import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
 import FeaturedTabs from '../components/FeaturedTabs';
@@ -22,10 +22,10 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
-      <PremiumNavbar />
+      <ArabicNavbar />
       
       <main>
-        <PremiumHero />
+        <ArabicHero />
         
         <div className="container-premium py-12">
           <CategoriesGrid />
@@ -33,8 +33,8 @@ export default function HomePage() {
 
         {/* Parapharmacie Products */}
         <div className="container-premium py-12">
-          <h2 className="text-headline text-gradient-primary mb-4">Premium Parapharmacy</h2>
-          <p className="text-body text-[var(--color-text-secondary)] mb-8">World's leading skincare and wellness brands</p>
+          <h2 className="text-headline text-gradient-primary mb-4 text-right">الصيدلية الفاخرة</h2>
+          <p className="text-body text-[var(--color-text-secondary)] mb-8 text-right">أفضل العلامات التجارية للعناية بالبشرة والعافية في العالم</p>
           <ProductList products={paraProducts.slice(0, 8)} />
         </div>
 
@@ -47,13 +47,13 @@ export default function HomePage() {
 
         {/* Herbalism Products */}
         <div className="container-premium py-12">
-          <h2 className="text-headline text-gradient-primary mb-4">Natural Herbal Remedies</h2>
-          <p className="text-body text-[var(--color-text-secondary)] mb-8">100% natural products for your wellness journey</p>
+          <h2 className="text-headline text-gradient-primary mb-4 text-right">العلاجات العشبية الطبيعية</h2>
+          <p className="text-body text-[var(--color-text-secondary)] mb-8 text-right">منتجات 100% طبيعية لرحلتك نحو العافية</p>
           <ProductList products={herbalProductsList.slice(0, 8)} />
         </div>
 
         {/* Global Customer Reviews */}
-        <GlobalCustomerReviews />
+        <ArabicCustomerReviews />
       </main>
     </div>
   );

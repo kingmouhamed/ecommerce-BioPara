@@ -101,7 +101,7 @@ export default function RootLayout({
           <meta name="format-detection" content="telephone=no" />
         </head>
         <body className={`${tajawal.variable} font-sans antialiased`}>
-          <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
+          <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
             <Providers>
               <Navbar />
               <main className="flex-1">
