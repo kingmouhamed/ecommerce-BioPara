@@ -31,6 +31,7 @@ import {
   Check
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import WhatsAppWidget from './WhatsAppWidget';
 
 // TypeScript Interface for Props
 interface MasterComponentProps {
@@ -49,21 +50,22 @@ interface MasterComponentProps {
   maxReviews?: number;
 }
 
-export default function MasterComponent({ 
-  locale = 'ar', 
-  variant = 'default',
-  showLanguageSelector = false,
-  showCurrencySelector = false,
-  showShippingBanner = false,
-  showStats = true,
-  showTrustBadges = true,
-  showVideo = false,
-  showNewsletter = true,
-  showPaymentMethods = true,
-  showShippingInfo = true,
-  showCountries = true,
-  maxReviews = 6
-}: MasterComponentProps) {
+export default function MasterComponent(props: MasterComponentProps): JSX.Element {
+  const {
+    locale = 'ar',
+    variant = 'default',
+    showLanguageSelector = false,
+    showCurrencySelector = false,
+    showShippingBanner = false,
+    showStats = true,
+    showTrustBadges = true,
+    showVideo = false,
+    showNewsletter = true,
+    showPaymentMethods = true,
+    showShippingInfo = true,
+    showCountries = true,
+    maxReviews = 6
+  } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
@@ -139,7 +141,8 @@ export default function MasterComponent({
         company: {
           name: 'بيوبارا',
           description: 'خبيرك في المنتجات شبه الصيدلية والعلاج بالنباتات في المغرب. نقدم أفضل المنتجات الطبيعية والعلاجية.',
-          tagline: 'صنع في المغرب'
+          tagline: 'صنع في المغرب',
+          madeIn: 'صنع في المغرب'
         },
         navigation: {
           quickLinks: {
@@ -169,7 +172,8 @@ export default function MasterComponent({
             address: 'الدار البيضاء، المغرب',
             hours: '9:00 - 18:00 (السبت - الخميس)'
           }
-        }
+        },
+        copyright: '© 2024 بيوبارا. جميع الحقوق محفوظة.'
       },
       reviews: {
         header: {
@@ -299,7 +303,139 @@ export default function MasterComponent({
           description: 'Premium natural wellness products delivered worldwide. From Morocco to world, bringing nature\'s best to your doorstep.',
           tagline: 'Made with ❤️ in Morocco',
           madeIn: 'Made in Morocco'
-        }
+        },
+        navigation: {
+          quickLinks: {
+            title: 'Quick Links',
+            links: [
+              { name: 'About', href: '/about' },
+              { name: 'Products', href: '/products' },
+              { name: 'Brands', href: '/brands' },
+              { name: 'Special Offers', href: '/promotions' },
+              { name: 'Contact', href: '/contact' }
+            ]
+          },
+          customerService: {
+            title: 'Customer Service',
+            links: [
+              { name: 'Delivery & Shipping', href: '/delivery' },
+              { name: 'Payment Methods', href: '/payment' },
+              { name: 'Terms & Conditions', href: '/terms' },
+              { name: 'Privacy Policy', href: '/privacy' },
+              { name: 'Favorites', href: '/dashboard/favorites' }
+            ]
+          },
+          contact: {
+            title: 'Contact Us',
+            phone: '+212 5XX-XXXXXX',
+            email: 'info@biopara.ma',
+            address: 'Casablanca, Morocco',
+            hours: '9:00 - 18:00 (Mon - Fri)'
+          }
+        },
+        copyright: '© 2024 BioPara. All rights reserved.'
+      },
+      reviews: {
+        header: {
+          title: 'Customer Reviews',
+          subtitle: 'From Around the World'
+        },
+        stats: {
+          totalReviews: '45,678',
+          averageRating: '4.9/5',
+          verifiedPurchases: '98%',
+          countriesServed: '52'
+        },
+        cta: {
+          title: 'Join Our Global Community',
+          description: 'Experience premium natural wellness trusted by customers worldwide. Fast and secure shipping to your doorstep.',
+          primaryButton: 'Shop Premium Collection',
+          secondaryButton: 'View All Reviews'
+        },
+        countries: [
+          { flag: '🇸🇦', name: 'Saudi Arabia', count: 12543 },
+          { flag: '🇲🇦', name: 'Morocco', count: 18976 },
+          { flag: '🇦🇪', name: 'United Arab Emirates', count: 8934 },
+          { flag: '🇶🇦', name: 'Qatar', count: 7654 },
+          { flag: '🇰🇼', name: 'Kuwait', count: 5678 },
+          { flag: '🇹🇳', name: 'Tunisia', count: 6789 },
+          { flag: '🇴🇲', name: 'Oman', count: 9876 },
+          { flag: '🇧🇭', name: 'Bahrain', count: 4567 }
+        ],
+        reviews: [
+          {
+            id: 1,
+            name: 'Sarah Ahmed',
+            country: '🇸🇦 Saudi Arabia',
+            flag: '🇸🇦',
+            rating: 5,
+            date: '2 weeks ago',
+            comment: 'Exceptional quality! Pure and authentic argan oil. Fast shipping to Riyadh, arrived in perfect condition. Will definitely order again!',
+            product: 'Premium Argan Oil',
+            verified: true
+          },
+          {
+            id: 2,
+            name: 'Mohammed Al-Shammari',
+            country: '🇲🇦 Morocco',
+            flag: '🇲🇦',
+            rating: 5,
+            date: '1 month ago',
+            comment: 'Excellent quality and authentic Moroccan products. Great customer service and fast shipping to Casablanca, well packaged.',
+            product: 'Herbal Tea Collection',
+            verified: true
+          },
+          {
+            id: 3,
+            name: 'Fatima Al-Zahra',
+            country: '🇦🇪 United Arab Emirates',
+            flag: '🇦🇪',
+            rating: 5,
+            date: '3 weeks ago',
+            comment: 'Amazing products with 100% natural ingredients. Loved the premium packaging and fast shipping to Dubai.',
+            product: 'Natural Care Collection',
+            verified: true
+          },
+          {
+            id: 4,
+            name: 'Nour El-Din Qasim',
+            country: '🇶🇦 Qatar',
+            flag: '🇶🇦',
+            rating: 5,
+            date: '2 weeks ago',
+            comment: 'Excellent shopping experience! High-quality products and outstanding customer service. Fast and secure shipping to Doha.',
+            product: 'Organic Argan Oil',
+            verified: true
+          },
+          {
+            id: 5,
+            name: 'Khadija Mohammed',
+            country: '🇹🇳 Tunisia',
+            flag: '🇹🇳',
+            rating: 5,
+            date: '3 weeks ago',
+            comment: 'Good quality certified products. Elegant packaging and reasonable shipping to Tunisia. Highly recommend!',
+            product: 'Luxury Beauty Collection',
+            verified: true
+          },
+          {
+            id: 6,
+            name: 'Abdullah Al-Said',
+            country: '🇴🇲 Oman',
+            flag: '🇴🇲',
+            rating: 5,
+            date: '1 month ago',
+            comment: 'Premium natural and authentic products. Excellent customer service and reliable shipping to Muscat.',
+            product: 'Complete Wellness Collection',
+            verified: true
+          }
+        ],
+        trustBadges: [
+          { icon: <Shield className="w-6 h-6" />, text: 'Secure Payment' },
+          { icon: <Award className="w-6 h-6" />, text: 'Certified Organic' },
+          { icon: <Truck className="w-6 h-6" />, text: 'Worldwide Shipping' },
+          { icon: <Check className="w-6 h-6" />, text: '30-Day Returns' }
+        ]
       }
     },
     fr: {
@@ -327,7 +463,139 @@ export default function MasterComponent({
           description: 'Produits de bien-être naturels premium livrés dans le monde entier. Du Maroc au monde, apportant le meilleur de la nature.',
           tagline: 'Fabriqué avec ❤️ au Maroc',
           madeIn: 'Fabriqué au Maroc'
-        }
+        },
+        navigation: {
+          quickLinks: {
+            title: 'Liens rapides',
+            links: [
+              { name: 'À propos', href: '/about' },
+              { name: 'Produits', href: '/products' },
+              { name: 'Marques', href: '/brands' },
+              { name: 'Offres spéciales', href: '/promotions' },
+              { name: 'Contact', href: '/contact' }
+            ]
+          },
+          customerService: {
+            title: 'Service client',
+            links: [
+              { name: 'Livraison et expédition', href: '/delivery' },
+              { name: 'Modes de paiement', href: '/payment' },
+              { name: 'Termes et conditions', href: '/terms' },
+              { name: 'Politique de confidentialité', href: '/privacy' },
+              { name: 'Favoris', href: '/dashboard/favorites' }
+            ]
+          },
+          contact: {
+            title: 'Contactez-nous',
+            phone: '+212 5XX-XXXXXX',
+            email: 'info@biopara.ma',
+            address: 'Casablanca, Maroc',
+            hours: '9:00 - 18:00 (Lundi - Vendredi)'
+          }
+        },
+        copyright: '© 2024 BioPara. Tous droits réservés.'
+      },
+      reviews: {
+        header: {
+          title: 'Avis Clients',
+          subtitle: 'Du Monde Entier'
+        },
+        stats: {
+          totalReviews: '45,678',
+          averageRating: '4.9/5',
+          verifiedPurchases: '98%',
+          countriesServed: '52'
+        },
+        cta: {
+          title: 'Rejoignez Notre Communauté Mondiale',
+          description: 'Découvrez le bien-être naturel premium approuvé par les clients du monde entier. Livraison rapide et sécurisée à votre porte.',
+          primaryButton: 'Acheter Collection Premium',
+          secondaryButton: 'Voir Tous les Avis'
+        },
+        countries: [
+          { flag: '🇸🇦', name: 'Arabie Saoudite', count: 12543 },
+          { flag: '🇲🇦', name: 'Maroc', count: 18976 },
+          { flag: '🇦🇪', name: 'Émirats Arabes Unis', count: 8934 },
+          { flag: '🇶🇦', name: 'Qatar', count: 7654 },
+          { flag: '🇰🇼', name: 'Koweït', count: 5678 },
+          { flag: '🇹🇳', name: 'Tunisie', count: 6789 },
+          { flag: '🇴🇲', name: 'Oman', count: 9876 },
+          { flag: '🇧🇭', name: 'Bahreïn', count: 4567 }
+        ],
+        reviews: [
+          {
+            id: 1,
+            name: 'Sarah Ahmed',
+            country: '🇸🇦 Arabie Saoudite',
+            flag: '🇸🇦',
+            rating: 5,
+            date: 'il y a 2 semaines',
+            comment: 'Qualité exceptionnelle ! Huile d\'argan pure et authentique. Livraison rapide à Riyad, arrivée en parfait état. Je commanderai certainement à nouveau !',
+            product: 'Huile d\'Argan Premium',
+            verified: true
+          },
+          {
+            id: 2,
+            name: 'Mohammed Al-Shammari',
+            country: '🇲🇦 Maroc',
+            flag: '🇲🇦',
+            rating: 5,
+            date: 'il y a 1 mois',
+            comment: 'Excellente qualité et produits marocains authentiques. Excellent service client et livraison rapide à Casablanca, bien emballé.',
+            product: 'Collection de Thé aux Herbes',
+            verified: true
+          },
+          {
+            id: 3,
+            name: 'Fatima Al-Zahra',
+            country: '🇦🇪 Émirats Arabes Unis',
+            flag: '🇦🇪',
+            rating: 5,
+            date: 'il y a 3 semaines',
+            comment: 'Produits étonnants avec 100% d\'ingrédients naturels. J\'ai adoré l\'emballage premium et la livraison rapide à Dubaï.',
+            product: 'Collection Soins Naturels',
+            verified: true
+          },
+          {
+            id: 4,
+            name: 'Nour El-Din Qasim',
+            country: '🇶🇦 Qatar',
+            flag: '🇶🇦',
+            rating: 5,
+            date: 'il y a 2 semaines',
+            comment: 'Excellente expérience d\'achat ! Produits de haute qualité et service client exceptionnel. Livraison rapide et sécurisée à Doha.',
+            product: 'Huile d\'Argan Bio',
+            verified: true
+          },
+          {
+            id: 5,
+            name: 'Khadija Mohammed',
+            country: '🇹🇳 Tunisie',
+            flag: '🇹🇳',
+            rating: 5,
+            date: 'il y a 3 semaines',
+            comment: 'Produits de bonne qualité certifiés. Emballage élégant et livraison raisonnable en Tunisie. Je recommande !',
+            product: 'Collection Beauté Luxe',
+            verified: true
+          },
+          {
+            id: 6,
+            name: 'Abdullah Al-Said',
+            country: '🇴🇲 Oman',
+            flag: '🇴🇲',
+            rating: 5,
+            date: 'il y a 1 mois',
+            comment: 'Produits naturels premium et authentiques. Excellent service client et livraison fiable à Mascate.',
+            product: 'Collection Bien-être Complet',
+            verified: true
+          }
+        ],
+        trustBadges: [
+          { icon: <Shield className="w-6 h-6" />, text: 'Paiement Sécurisé' },
+          { icon: <Award className="w-6 h-6" />, text: 'Certifié Bio' },
+          { icon: <Truck className="w-6 h-6" />, text: 'Livraison Mondiale' },
+          { icon: <Check className="w-6 h-6" />, text: 'Retours 30 Jours' }
+        ]
       }
     }
   };
@@ -631,23 +899,23 @@ export default function MasterComponent({
                 </ul>
               </div>
               <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation.contact.title}</h4>
+                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.contact?.title || 'Contact Us'}</h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 mb-2">
                     <Phone className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.contact.phone}</span>
+                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.phone || '+212 5XX-XXXXXX'}</span>
                   </div>
                   <div className="flex items-center gap-3 mb-2">
                     <Mail className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.contact.email}</span>
+                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.email || 'info@biopara.ma'}</span>
                   </div>
                   <div className="flex items-center gap-3 mb-2">
                     <MapPin className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.contact.address}</span>
+                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.address || 'Casablanca, Morocco'}</span>
                   </div>
                   <div className="flex items-center gap-3 mb-2">
                     <Clock className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.contact.hours}</span>
+                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.hours || '9:00 - 18:00'}</span>
                   </div>
                 </div>
               </div>
@@ -656,10 +924,10 @@ export default function MasterComponent({
           <div className="border-t border-gray-800 mt-8 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-sm">
-                {currentLang.footer.copyright}
+                {currentLang.footer.copyright || '© 2024 BioPara. All rights reserved.'}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-sm">{currentLang.footer.company.tagline}</span>
+                <span className="text-gray-400 text-sm">{currentLang.footer.company.madeIn || 'Made with ❤️ in Morocco'}</span>
               </div>
             </div>
           </div>

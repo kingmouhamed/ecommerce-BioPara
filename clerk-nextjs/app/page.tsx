@@ -1,9 +1,7 @@
 "use client";
 
 import React from 'react';
-import Navbar from '../components/Navbar-Unified';
-import Hero from '../components/Hero-Unified';
-import CustomerReviews from '../components/CustomerReviews-Fixed';
+import MasterComponent from '../components/MasterComponent';
 import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
 import FeaturedTabs from '../components/FeaturedTabs';
@@ -26,15 +24,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
-      <Navbar locale="ar" variant="premium" />
+      <MasterComponent locale="ar" variant="premium" />
       
       <main>
-        <Hero locale="ar" variant="premium" />
+        <CategoriesGrid />
         
-        <div className="container-premium py-12">
-          <CategoriesGrid />
-        </div>
-
         {/* Parapharmacie Products */}
         <div className="container-premium py-12">
           <h2 className="text-headline text-gradient-primary mb-4 text-right">الصيدلية الفاخرة</h2>
@@ -57,7 +51,7 @@ export default function HomePage() {
         </div>
 
         {/* Global Customer Reviews */}
-        <CustomerReviews locale="ar" />
+        {/* <CustomerReviews locale="ar" /> */}
       </main>
       
       <Footer locale="ar" variant="global" />
