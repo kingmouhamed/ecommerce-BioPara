@@ -3,7 +3,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar-Unified';
 import Hero from '../components/Hero-Unified';
-import ArabicCustomerReviews from '../components/ArabicCustomerReviews';
+import CustomerReviews from '../components/CustomerReviews-Fixed';
 import ProductList from '../components/ProductList';
 import Brands from '../components/Brands';
 import FeaturedTabs from '../components/FeaturedTabs';
@@ -57,7 +57,7 @@ export default function HomePage() {
         </div>
 
         {/* Global Customer Reviews */}
-        <ArabicCustomerReviews />
+        <CustomerReviews locale="ar" />
       </main>
       
       <Footer locale="ar" variant="global" />

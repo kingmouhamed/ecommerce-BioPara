@@ -196,7 +196,7 @@ export default function GlobalCustomerReviews() {
                   <div className="text-xs text-[var(--color-text-muted)]">{review.date}</div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="p-2 rounded-lg hover:bg-[var(--color-surface-alt)] transition-colors">
+                  <button className="p-2 rounded-lg hover:bg-[var(--color-surface-alt)] transition-colors" aria-label="Like">
                     <Heart className="w-4 h-4 text-[var(--color-text-secondary)]" />
                   </button>
                 </div>
