@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Navbar from '../components/Navbar-Master';
+import Navbar from '../components/Navbar-Unified';
 import ArabicHero from '../components/ArabicHero';
 import ArabicCustomerReviews from '../components/ArabicCustomerReviews';
 import ProductList from '../components/ProductList';
