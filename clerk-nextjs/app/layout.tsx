@@ -4,11 +4,6 @@ import { Tajawal } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "../components/Providers";
-import WhatsAppWidget from "../components/WhatsAppWidget";
-import Navbar from "../components/Navbar";
-import Cart from "../components/Cart";
-import GlobalFooter from "../components/GlobalFooter";
-import LiveChatSupport from "../components/LiveChatSupport";
 
 const inter = Inter({ subsets: ["latin"] });
 const tajawal = Tajawal({ 

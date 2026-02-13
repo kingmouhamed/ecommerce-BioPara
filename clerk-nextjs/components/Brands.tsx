@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, Star, Package } from 'lucide-react';
 import { brands } from '@/data/brands';
 
@@ -81,12 +82,14 @@ export default function Brands() {
                 >
                   <div className="text-center">
                     <div className="w-24 h-24 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-300 p-3">
-                      <img 
+                      <Image 
                         src={brand.logo} 
                         alt={brand.name} 
+                        width={96}
+                        height={96}
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          const target = e.currentTarget;
                           target.style.display = 'none';
                           target.parentElement!.innerHTML = '<span class="text-4xl">🏷️</span>';
                         }}
@@ -133,12 +136,14 @@ export default function Brands() {
                 >
                   <div className="text-center">
                     <div className="w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-300 p-3">
-                      <img 
+                      <Image 
                         src={brand.logo} 
                         alt={brand.name} 
+                        width={80}
+                        height={80}
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
+                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                          const target = e.currentTarget;
                           target.style.display = 'none';
                           target.parentElement!.innerHTML = '<span class="text-3xl">🏷️</span>';
                         }}

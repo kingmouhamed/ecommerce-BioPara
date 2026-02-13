@@ -84,7 +84,7 @@ export default function ProductsPage() {
     }
 
     return filtered;
-  }, [allProducts, searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, selectedCategory, sortBy]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
