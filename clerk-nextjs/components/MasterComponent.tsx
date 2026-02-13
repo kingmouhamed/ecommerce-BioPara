@@ -505,38 +505,42 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Parapharmacie Category */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
-              <div className="aspect-square bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center relative">
-                <div className="text-center p-8">
-                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                    <Package className="w-10 h-10 text-emerald-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Parapharmacie</h3>
-                  <p className="text-gray-600 mb-4">منتجات العناية بالبشرة والصحة</p>
-                  <div className="flex items-center justify-center gap-2 text-emerald-600 font-medium">
-                    <span>تصفح المنتجات</span>
-                    <ChevronRight className="w-4 h-4" />
+            <Link href="/products?category=parapharmacie" className="block">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                <div className="aspect-square bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center relative">
+                  <div className="text-center p-8">
+                    <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <Package className="w-10 h-10 text-emerald-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Parapharmacie</h3>
+                    <p className="text-gray-600 mb-4">منتجات العناية بالبشرة والصحة</p>
+                    <div className="flex items-center justify-center gap-2 text-emerald-600 font-medium">
+                      <span>تصفح المنتجات</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
             
             {/* Medical Herbs Category */}
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
-              <div className="aspect-square bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center relative">
-                <div className="text-center p-8">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
-                    <Leaf className="w-10 h-10 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">الأعشاب الطبية</h3>
-                  <p className="text-gray-600 mb-4">أعشاب طبيعية نقية ومجففة</p>
-                  <div className="flex items-center justify-center gap-2 text-green-600 font-medium">
-                    <span>تصفح المنتجات</span>
-                    <ChevronRight className="w-4 h-4" />
+            <Link href="/products?category=medical-herbs" className="block">
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                <div className="aspect-square bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center relative">
+                  <div className="text-center p-8">
+                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300">
+                      <Leaf className="w-10 h-10 text-green-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">الأعشاب الطبية</h3>
+                    <p className="text-gray-600 mb-4">أعشاب طبيعية نقية ومجففة</p>
+                    <div className="flex items-center justify-center gap-2 text-green-600 font-medium">
+                      <span>تصفح المنتجات</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -545,12 +549,12 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Company Info */}
-            <div>
+            <div className="text-right">
               <h3 className="text-lg font-semibold mb-4">{currentLang.footer?.company?.name || 'BioPara'}</h3>
               <p className="text-gray-400 mb-4">{currentLang.footer?.company?.description || 'Premium natural wellness products'}</p>
-              <div className="flex gap-4 mb-4">
+              <div className="flex gap-4 mb-4 justify-end">
                 <a href="#" aria-label="Facebook" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
                   <Facebook className="w-5 h-5 text-white" />
                 </a>
@@ -563,56 +567,50 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
               </div>
             </div>
             
-            {/* Links Section - Stacked Vertically */}
-            <div className="space-y-8">
-              {/* Quick Links */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.quickLinks?.title || 'Quick Links'}</h4>
-                <ul className="space-y-2">
-                  {currentLang.footer.navigation?.quickLinks?.links?.map((link, index) => (
-                    <li key={index}>
-                      <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Quick Links */}
+            <div className="text-right">
+              <h4 className="font-semibold text-gray-300 mb-4">{currentLang.footer.navigation?.quickLinks?.title || 'Quick Links'}</h4>
+              <ul className="space-y-2">
+                {currentLang.footer.navigation?.quickLinks?.links?.map((link, index) => (
+                  <li key={index}>
+                    <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            
+            {/* Customer Service & Contact */}
+            <div className="text-right">
+              <h4 className="font-semibold text-gray-300 mb-4">{currentLang.footer.navigation?.customerService?.title || 'Customer Service'}</h4>
+              <ul className="space-y-2 mb-6">
+                {currentLang.footer.navigation?.customerService?.links?.map((link, index) => (
+                  <li key={index}>
+                    <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
               
-              {/* Customer Service */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.customerService?.title || 'Customer Service'}</h4>
-                <ul className="space-y-2">
-                  {currentLang.footer.navigation?.customerService?.links?.map((link, index) => (
-                    <li key={index}>
-                      <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
-                        {link.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              
-              {/* Contact */}
-              <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.contact?.title || 'Contact Us'}</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 mb-2">
-                    <Phone className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.phone || '+212 5XX-XXXXXX'}</span>
-                  </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Mail className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.email || 'info@biopara.ma'}</span>
-                  </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <MapPin className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.address || 'Casablanca, Morocco'}</span>
-                  </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Clock className="w-5 h-5 text-emerald-400" />
-                    <span className="text-gray-600">{currentLang.footer.navigation?.contact?.hours || '9:00 - 18:00'}</span>
-                  </div>
+              <h4 className="font-semibold text-gray-300 mb-4">{currentLang.footer.navigation?.contact?.title || 'Contact Us'}</h4>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 justify-end">
+                  <span className="text-gray-600">{currentLang.footer.navigation?.contact?.phone || '+212 5XX-XXXXXX'}</span>
+                  <Phone className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex items-center gap-3 justify-end">
+                  <span className="text-gray-600">{currentLang.footer.navigation?.contact?.email || 'info@biopara.ma'}</span>
+                  <Mail className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex items-center gap-3 justify-end">
+                  <span className="text-gray-600">{currentLang.footer.navigation?.contact?.address || 'Casablanca, Morocco'}</span>
+                  <MapPin className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="flex items-center gap-3 justify-end">
+                  <span className="text-gray-600">{currentLang.footer.navigation?.contact?.hours || '9:00 - 18:00'}</span>
+                  <Clock className="w-5 h-5 text-emerald-400" />
                 </div>
               </div>
             </div>
