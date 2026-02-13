@@ -36,7 +36,7 @@ export const parapharmacieProducts: Product[] = [
     originalPrice: 150,
     rating: 4.5,
     image: "/images/parapharmacie/argan-oil-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     badge: "الأكثر مبيعاً",
     type: "para",
     isNew: false,
@@ -51,7 +51,7 @@ export const parapharmacieProducts: Product[] = [
     originalPrice: 110,
     rating: 4.7,
     image: "/images/parapharmacie/vitamin-c-cream-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     badge: "جديد",
     type: "para",
     isNew: true,
@@ -66,7 +66,7 @@ export const parapharmacieProducts: Product[] = [
     originalPrice: 80,
     rating: 4.6,
     image: "/images/parapharmacie/sunscreen-spf50-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "واقي شمس عالي الحماية SPF50، مقاوم للماء",
@@ -79,7 +79,7 @@ export const parapharmacieProducts: Product[] = [
     price: 75,
     rating: 4.4,
     image: "/images/parapharmacie/la-roche-posay-cleanser-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "غسول لطيف للبشرة الحساسة، يزيل الشوائب دون تهيج",
@@ -93,7 +93,7 @@ export const parapharmacieProducts: Product[] = [
     originalPrice: 120,
     rating: 4.8,
     image: "/images/parapharmacie/hyaluronic-serum-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     badge: "الأكثر مبيعاً",
     type: "para",
     isNew: false,
@@ -107,7 +107,7 @@ export const parapharmacieProducts: Product[] = [
     price: 55,
     rating: 4.3,
     image: "/images/parapharmacie/moisturizing-cream-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "كريم مرطب غني للبشرة الجافة والحساسة",
@@ -120,7 +120,7 @@ export const parapharmacieProducts: Product[] = [
     price: 45,
     rating: 4.2,
     image: "/images/parapharmacie/facial-exfoliator-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: true,
     description: "مقشر لطيف للوجه ينظف البشرة بعمق",
@@ -133,7 +133,7 @@ export const parapharmacieProducts: Product[] = [
     price: 35,
     rating: 4.1,
     image: "/images/parapharmacie/clay-mask-new.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "قناع طيني لتنقية المسام وتنظيف البشرة",
@@ -146,7 +146,7 @@ export const parapharmacieProducts: Product[] = [
     price: 40,
     rating: 4.4,
     image: "/images/parapharmacie/biopara-jojoba-oil.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "زيت الجوجوبا الطبيعي للبشرة والشعر",
@@ -159,7 +159,7 @@ export const parapharmacieProducts: Product[] = [
     price: 50,
     rating: 4.6,
     image: "/images/parapharmacie/johnson-baby-bath.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     type: "para",
     isNew: false,
     description: "غسول لطيف ومناسب لبشرة الأطفال الحساسة",
@@ -173,7 +173,7 @@ export const parapharmacieProducts: Product[] = [
     originalPrice: 140,
     rating: 4.7,
     image: "/images/parapharmacie/eye-cream-cerave.jpg",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     badge: "جديد",
     type: "para",
     isNew: true,
@@ -190,7 +190,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "زيت الأرغان النقي",
     imageUrl: "/images/parapharmacie/argan-oil-new.jpg",
     alt: "زيت الأرغان النقي للمغرب",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "BioOriental"
   },
   {
@@ -199,7 +199,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "كريم فيتامين C",
     imageUrl: "/images/parapharmacie/vitamin-c-cream-new.jpg",
     alt: "كريم فيتامين C للوجه",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "La Roche-Posay"
   },
   {
@@ -208,7 +208,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "واقي الشمس SPF50",
     imageUrl: "/images/parapharmacie/sunscreen-spf50-new.jpg",
     alt: "واقي الشمس عالي الحماية",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Vichy"
   },
   {
@@ -217,7 +217,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "غسول لاروش بوزيه",
     imageUrl: "/images/parapharmacie/la-roche-posay-cleanser-new.jpg",
     alt: "غسول لاروش بوزيه للبشرة الحساسة",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "La Roche-Posay"
   },
   {
@@ -226,7 +226,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "سيروم الهيالورونيك أسيد",
     imageUrl: "/images/parapharmacie/hyaluronic-serum-new.jpg",
     alt: "سيروم الهيالورونيك أسيد",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "CeraVe"
   },
   {
@@ -235,7 +235,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "كريم مرطب للبشرة الجافة",
     imageUrl: "/images/parapharmacie/moisturizing-cream-new.jpg",
     alt: "كريم مرطب للبشرة الجافة",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Avène"
   },
   {
@@ -244,7 +244,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "مقشر للوجه",
     imageUrl: "/images/parapharmacie/facial-exfoliator-new.jpg",
     alt: "مقشر للوجه بلطف",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Bioderma"
   },
   {
@@ -253,7 +253,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "قناع الوجه الطيني",
     imageUrl: "/images/parapharmacie/clay-mask-new.jpg",
     alt: "قناع الوجه الطيني للتنقية",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Nuxe"
   },
   {
@@ -262,7 +262,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "زيت الجوجوبا",
     imageUrl: "/images/parapharmacie/biopara-jojoba-oil.jpg",
     alt: "زيت الجوجوبا للبشرة والشعر",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Uriage"
   },
   {
@@ -271,7 +271,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "غسول الأطفال",
     imageUrl: "/images/parapharmacie/johnson-baby-bath.jpg",
     alt: "غسول لطيف للأطفال",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Mustela"
   },
   {
@@ -280,7 +280,7 @@ export const parapharmacieImages: ParapharmacieImage[] = [
     productName: "كريم العين",
     imageUrl: "/images/parapharmacie/eye-cream-cerave.jpg",
     alt: "كريم العين لمكافحة التجاعيد",
-    category: "Parapharmacie",
+    category: "parapharmacie",
     brand: "Filorga"
   }
 ];
