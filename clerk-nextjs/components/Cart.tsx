@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useCart } from '../contexts/CartContext';
 import { ShoppingCart, X, Plus, Minus, Trash2 } from 'lucide-react';
 
@@ -66,9 +67,11 @@ export default function Cart() {
               <div className="space-y-3 sm:space-y-4">
                 {cart.map((item) => (
                   <div key={item.id} className="flex gap-2 sm:gap-3 p-2 sm:p-3 bg-gray-50 rounded-lg">
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.title}
+                      width={80}
+                      height={80}
                       className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg"
                     />
                     <div className="flex-1">

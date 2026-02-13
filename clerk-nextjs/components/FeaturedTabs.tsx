@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Star, TrendingUp, Clock, Award } from 'lucide-react';
 import { allProducts } from '../data/index';
 
@@ -76,9 +77,11 @@ export default function FeaturedTabs() {
                   {product.badge}
                 </span>
               )}
-              <img
+              <Image
                 src={product.image}
                 alt={product.title}
+                width={192}
+                height={192}
                 className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
               />
             </div>
