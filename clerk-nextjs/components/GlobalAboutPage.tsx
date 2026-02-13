@@ -163,7 +163,7 @@ export default function GlobalAboutPage() {
             
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               For over 15 years, BioPara has been bridging traditional Moroccan wellness with modern global standards, 
-              bringing nature's finest ingredients to customers worldwide.
+              bringing nature&apos;s finest ingredients to customers worldwide.
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -191,7 +191,7 @@ export default function GlobalAboutPage() {
                 <p>
                   Founded in 2008 in the heart of Morocco, BioPara began with a simple yet powerful vision: 
                   to share the authentic wellness traditions of Morocco with the world. Our founder, 
-                  a passionate pharmacist, recognized the incredible potential of Morocco's natural resources 
+                  a passionate pharmacist, recognized the incredible potential of Morocco&apos;s natural resources 
                   – from the golden argan oil of the Atlas Mountains to the healing herbs of the Mediterranean coast.
                 </p>
                 <p>
@@ -296,7 +296,7 @@ export default function GlobalAboutPage() {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              The passionate people behind BioPara's global success
+              The passionate people behind BioPara&apos;s global success
             </p>
           </div>
           
