@@ -46,7 +46,6 @@ interface MasterComponentProps {
   showPaymentMethods?: boolean;
   showShippingInfo?: boolean;
   showCountries?: boolean;
-  maxReviews?: number;
 }
 
 export default function MasterComponent(props: MasterComponentProps): JSX.Element {
@@ -62,8 +61,7 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
     showNewsletter = true,
     showPaymentMethods = true,
     showShippingInfo = true,
-    showCountries = true,
-    maxReviews = 6
+    showCountries = true
   } = props;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -173,108 +171,6 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
           }
         },
         copyright: '© 2024 بيوبارا. جميع الحقوق محفوظة.'
-      },
-      reviews: {
-        header: {
-          title: 'آراء العملاء',
-          subtitle: 'من حول العالم'
-        },
-        stats: {
-          totalReviews: '45,678',
-          averageRating: '4.9/5',
-          verifiedPurchases: '98%',
-          countriesServed: '52'
-        },
-        cta: {
-          title: 'انضم إلى مجتمعنا العالمي',
-          description: 'استمتع بالعافية الطبيعية الفاخرة الموثوقة من قبل العملاء حول العالم. شحن سريع وآمن لباب منزلك.',
-          primaryButton: 'تسوق المجموعة الفاخرة',
-          secondaryButton: 'عرض جميع المراجعات'
-        },
-        countries: [
-          { flag: '🇸🇦', name: 'المملكة العربية السعودية', count: 12543 },
-          { flag: '🇲🇦', name: 'المغرب', count: 18976 },
-          { flag: '🇦🇦', name: 'الإمارات العربية المتحدة', count: 8934 },
-          { flag: '🇩🇶', name: 'قطر', count: 7654 },
-          { flag: '🇩🇦', name: 'الكويت', count: 5678 },
-          { flag: '🇹🇳', name: 'تونس', count: 6789 },
-          { flag: '🇪🇸', name: 'عُمان', count: 9876 },
-          { flag: '🇪🇸', name: 'البحرين', count: 4567 }
-        ],
-        reviews: [
-          {
-            id: 1,
-            name: 'سارة أحمد',
-            country: '🇸🇦 المملكة العربية السعودية',
-            flag: '🇸🇦',
-            rating: 5,
-            date: 'منذ أسبوعين',
-            comment: 'جودة فائقة حقاً! زيت الأرغان نقي وأصيل. شحن سريع إلى الرياض، وصل في حالة مثالية. سأطلب بالتأكيد مرة أخرى!',
-            product: 'زيت الأرغان الفاخر',
-            verified: true
-          },
-          {
-            id: 2,
-            name: 'محمد الشمري',
-            country: '🇲🇦 المغرب',
-            flag: '🇲🇦',
-            rating: 5,
-            date: 'منذ شهر',
-            comment: 'جودة ممتازة ومنتجات مغربية أصيلة. خدمة العملاء ممتازة والشحن إلى الدار البيضاء كان سريعاً ومغلفاً بشكل جيد.',
-            product: 'مجموعة الشاي العشبي',
-            verified: true
-          },
-          {
-            id: 3,
-            name: 'فاطمة الزهراء',
-            country: '🇦🇦 الإمارات العربية المتحدة',
-            flag: '🇦🇦',
-            rating: 5,
-            date: 'منذ 3 أسابيع',
-            comment: 'منتجات رائعة ومكونات طبيعية 100%. أحببت التغليف الفاخر والشحن السريع إلى دبي.',
-            product: 'مجموعة العناية الطبيعية',
-            verified: true
-          },
-          {
-            id: 4,
-            name: 'نور الدين قاسم',
-            country: '🇩🇶 قطر',
-            flag: '🇩🇶',
-            rating: 5,
-            date: 'منذ أسبوعين',
-            comment: 'تجربة شراء ممتازة! منتجات عالية الجودة وخدمة عملاء ممتازة. الشحن إلى الدوحة كان سريعاً وآمناً.',
-            product: 'زيت الأرغان العضوي',
-            verified: true
-          },
-          {
-            id: 5,
-            name: 'خديجة محمد',
-            country: '🇹🇳 تونس',
-            flag: '🇹🇳',
-            rating: 5,
-            date: 'منذ 3 أسابيع',
-            comment: 'منتجات جيدة وجودة معتمدة. التغليف أنيق والشحن إلى تونس كان معقولاً. أوصي به!',
-            product: 'مجموعة الجمال الفاخرة',
-            verified: true
-          },
-          {
-            id: 6,
-            name: 'عبدالله السعيد',
-            country: '🇪🇸 عُمان',
-            flag: '🇪🇸',
-            rating: 5,
-            date: 'منذ شهر',
-            comment: 'منتجات طبيعية فاخرة وأصلية. خدمة عملاء ممتازة وشحن موثوق إلى مسقط.',
-            product: 'مجموعة العافية المتكاملة',
-            verified: true
-          }
-        ],
-        trustBadges: [
-          { icon: <Shield className="w-6 h-6" />, text: 'دفع آمن' },
-          { icon: <Award className="w-6 h-6" />, text: 'عضوي معتمد' },
-          { icon: <Truck className="w-6 h-6" />, text: 'شحن عالمي' },
-          { icon: <Check className="w-6 h-6" />, text: 'إرجاع 30 يوم' }
-        ]
       }
     },
     en: {
@@ -333,108 +229,6 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
           }
         },
         copyright: '© 2024 BioPara. All rights reserved.'
-      },
-      reviews: {
-        header: {
-          title: 'Customer Reviews',
-          subtitle: 'From Around the World'
-        },
-        stats: {
-          totalReviews: '45,678',
-          averageRating: '4.9/5',
-          verifiedPurchases: '98%',
-          countriesServed: '52'
-        },
-        cta: {
-          title: 'Join Our Global Community',
-          description: 'Experience premium natural wellness trusted by customers worldwide. Fast and secure shipping to your doorstep.',
-          primaryButton: 'Shop Premium Collection',
-          secondaryButton: 'View All Reviews'
-        },
-        countries: [
-          { flag: '🇸🇦', name: 'Saudi Arabia', count: 12543 },
-          { flag: '🇲🇦', name: 'Morocco', count: 18976 },
-          { flag: '🇦🇪', name: 'United Arab Emirates', count: 8934 },
-          { flag: '🇶🇦', name: 'Qatar', count: 7654 },
-          { flag: '🇰🇼', name: 'Kuwait', count: 5678 },
-          { flag: '🇹🇳', name: 'Tunisia', count: 6789 },
-          { flag: '🇴🇲', name: 'Oman', count: 9876 },
-          { flag: '🇧🇭', name: 'Bahrain', count: 4567 }
-        ],
-        reviews: [
-          {
-            id: 1,
-            name: 'Sarah Ahmed',
-            country: '🇸🇦 Saudi Arabia',
-            flag: '🇸🇦',
-            rating: 5,
-            date: '2 weeks ago',
-            comment: 'Exceptional quality! Pure and authentic argan oil. Fast shipping to Riyadh, arrived in perfect condition. Will definitely order again!',
-            product: 'Premium Argan Oil',
-            verified: true
-          },
-          {
-            id: 2,
-            name: 'Mohammed Al-Shammari',
-            country: '🇲🇦 Morocco',
-            flag: '🇲🇦',
-            rating: 5,
-            date: '1 month ago',
-            comment: 'Excellent quality and authentic Moroccan products. Great customer service and fast shipping to Casablanca, well packaged.',
-            product: 'Herbal Tea Collection',
-            verified: true
-          },
-          {
-            id: 3,
-            name: 'Fatima Al-Zahra',
-            country: '🇦🇪 United Arab Emirates',
-            flag: '🇦🇪',
-            rating: 5,
-            date: '3 weeks ago',
-            comment: 'Amazing products with 100% natural ingredients. Loved the premium packaging and fast shipping to Dubai.',
-            product: 'Natural Care Collection',
-            verified: true
-          },
-          {
-            id: 4,
-            name: 'Nour El-Din Qasim',
-            country: '🇶🇦 Qatar',
-            flag: '🇶🇦',
-            rating: 5,
-            date: '2 weeks ago',
-            comment: 'Excellent shopping experience! High-quality products and outstanding customer service. Fast and secure shipping to Doha.',
-            product: 'Organic Argan Oil',
-            verified: true
-          },
-          {
-            id: 5,
-            name: 'Khadija Mohammed',
-            country: '🇹🇳 Tunisia',
-            flag: '🇹🇳',
-            rating: 5,
-            date: '3 weeks ago',
-            comment: 'Good quality certified products. Elegant packaging and reasonable shipping to Tunisia. Highly recommend!',
-            product: 'Luxury Beauty Collection',
-            verified: true
-          },
-          {
-            id: 6,
-            name: 'Abdullah Al-Said',
-            country: '🇴🇲 Oman',
-            flag: '🇴🇲',
-            rating: 5,
-            date: '1 month ago',
-            comment: 'Premium natural and authentic products. Excellent customer service and reliable shipping to Muscat.',
-            product: 'Complete Wellness Collection',
-            verified: true
-          }
-        ],
-        trustBadges: [
-          { icon: <Shield className="w-6 h-6" />, text: 'Secure Payment' },
-          { icon: <Award className="w-6 h-6" />, text: 'Certified Organic' },
-          { icon: <Truck className="w-6 h-6" />, text: 'Worldwide Shipping' },
-          { icon: <Check className="w-6 h-6" />, text: '30-Day Returns' }
-        ]
       }
     },
     fr: {
@@ -493,108 +287,6 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
           }
         },
         copyright: '© 2024 BioPara. Tous droits réservés.'
-      },
-      reviews: {
-        header: {
-          title: 'Avis Clients',
-          subtitle: 'Du Monde Entier'
-        },
-        stats: {
-          totalReviews: '45,678',
-          averageRating: '4.9/5',
-          verifiedPurchases: '98%',
-          countriesServed: '52'
-        },
-        cta: {
-          title: 'Rejoignez Notre Communauté Mondiale',
-          description: 'Découvrez le bien-être naturel premium approuvé par les clients du monde entier. Livraison rapide et sécurisée à votre porte.',
-          primaryButton: 'Acheter Collection Premium',
-          secondaryButton: 'Voir Tous les Avis'
-        },
-        countries: [
-          { flag: '🇸🇦', name: 'Arabie Saoudite', count: 12543 },
-          { flag: '🇲🇦', name: 'Maroc', count: 18976 },
-          { flag: '🇦🇪', name: 'Émirats Arabes Unis', count: 8934 },
-          { flag: '🇶🇦', name: 'Qatar', count: 7654 },
-          { flag: '🇰🇼', name: 'Koweït', count: 5678 },
-          { flag: '🇹🇳', name: 'Tunisie', count: 6789 },
-          { flag: '🇴🇲', name: 'Oman', count: 9876 },
-          { flag: '🇧🇭', name: 'Bahreïn', count: 4567 }
-        ],
-        reviews: [
-          {
-            id: 1,
-            name: 'Sarah Ahmed',
-            country: '🇸🇦 Arabie Saoudite',
-            flag: '🇸🇦',
-            rating: 5,
-            date: 'il y a 2 semaines',
-            comment: 'Qualité exceptionnelle ! Huile d\'argan pure et authentique. Livraison rapide à Riyad, arrivée en parfait état. Je commanderai certainement à nouveau !',
-            product: 'Huile d\'Argan Premium',
-            verified: true
-          },
-          {
-            id: 2,
-            name: 'Mohammed Al-Shammari',
-            country: '🇲🇦 Maroc',
-            flag: '🇲🇦',
-            rating: 5,
-            date: 'il y a 1 mois',
-            comment: 'Excellente qualité et produits marocains authentiques. Excellent service client et livraison rapide à Casablanca, bien emballé.',
-            product: 'Collection de Thé aux Herbes',
-            verified: true
-          },
-          {
-            id: 3,
-            name: 'Fatima Al-Zahra',
-            country: '🇦🇪 Émirats Arabes Unis',
-            flag: '🇦🇪',
-            rating: 5,
-            date: 'il y a 3 semaines',
-            comment: 'Produits étonnants avec 100% d\'ingrédients naturels. J\'ai adoré l\'emballage premium et la livraison rapide à Dubaï.',
-            product: 'Collection Soins Naturels',
-            verified: true
-          },
-          {
-            id: 4,
-            name: 'Nour El-Din Qasim',
-            country: '🇶🇦 Qatar',
-            flag: '🇶🇦',
-            rating: 5,
-            date: 'il y a 2 semaines',
-            comment: 'Excellente expérience d\'achat ! Produits de haute qualité et service client exceptionnel. Livraison rapide et sécurisée à Doha.',
-            product: 'Huile d\'Argan Bio',
-            verified: true
-          },
-          {
-            id: 5,
-            name: 'Khadija Mohammed',
-            country: '🇹🇳 Tunisie',
-            flag: '🇹🇳',
-            rating: 5,
-            date: 'il y a 3 semaines',
-            comment: 'Produits de bonne qualité certifiés. Emballage élégant et livraison raisonnable en Tunisie. Je recommande !',
-            product: 'Collection Beauté Luxe',
-            verified: true
-          },
-          {
-            id: 6,
-            name: 'Abdullah Al-Said',
-            country: '🇴🇲 Oman',
-            flag: '🇴🇲',
-            rating: 5,
-            date: 'il y a 1 mois',
-            comment: 'Produits naturels premium et authentiques. Excellent service client et livraison fiable à Mascate.',
-            product: 'Collection Bien-être Complet',
-            verified: true
-          }
-        ],
-        trustBadges: [
-          { icon: <Shield className="w-6 h-6" />, text: 'Paiement Sécurisé' },
-          { icon: <Award className="w-6 h-6" />, text: 'Certifié Bio' },
-          { icon: <Truck className="w-6 h-6" />, text: 'Livraison Mondiale' },
-          { icon: <Check className="w-6 h-6" />, text: 'Retours 30 Jours' }
-        ]
       }
     }
   };
@@ -820,48 +512,14 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            {currentLang.reviews.header.title}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {currentLang.reviews.reviews.slice(0, maxReviews).map((review, index) => (
-              <div key={review.id} className="bg-white rounded-lg shadow-lg p-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                    <span className="text-2xl font-bold text-emerald-600">⭐</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">{review.name}</div>
-                    <div className="text-sm text-gray-600">{review.country}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-                  ))}
-                  <span className="text-sm text-gray-600">{review.rating}.0</span>
-                </div>
-                <p className="text-gray-600 mb-4">{review.comment}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-emerald-600">{review.product}</span>
-                  <span className="text-xs text-gray-400">{review.date}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">{currentLang.footer.company.name}</h3>
-              <p className="text-gray-400 mb-4">{currentLang.footer.company.description}</p>
+              <h3 className="text-lg font-semibold mb-4">{currentLang.footer?.company?.name || 'BioPara'}</h3>
+              <p className="text-gray-400 mb-4">{currentLang.footer?.company?.description || 'Premium natural wellness products'}</p>
               <div className="flex gap-4 mb-4">
                 <a href="#" aria-label="Facebook" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
                   <Facebook className="w-5 h-5 text-white" />
@@ -874,9 +532,9 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
                 </a>
               </div>
               <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation.quickLinks.title}</h4>
+                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.quickLinks?.title || 'Quick Links'}</h4>
                 <ul className="space-y-2">
-                  {currentLang.footer.navigation.quickLinks.links.map((link, index) => (
+                  {currentLang.footer.navigation?.quickLinks?.links?.map((link, index) => (
                     <li key={index}>
                       <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
                         {link.name}
@@ -886,9 +544,9 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
                 </ul>
               </div>
               <div className="space-y-2">
-                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation.customerService.title}</h4>
+                <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.customerService?.title || 'Customer Service'}</h4>
                 <ul className="space-y-2">
-                  {currentLang.footer.navigation.customerService.links.map((link, index) => (
+                  {currentLang.footer.navigation?.customerService?.links?.map((link, index) => (
                     <li key={index}>
                       <Link href={link.href} className="text-gray-400 hover:text-emerald-400 transition-colors">
                         {link.name}
@@ -923,10 +581,10 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
           <div className="border-t border-gray-800 mt-8 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-sm">
-                {currentLang.footer.copyright || '© 2024 BioPara. All rights reserved.'}
+                {currentLang.footer?.copyright || '© 2024 BioPara. All rights reserved.'}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-sm">{currentLang.footer.company.madeIn || 'Made with ❤️ in Morocco'}</span>
+                <span className="text-gray-400 text-sm">{currentLang.footer?.company?.madeIn || 'Made with ❤️ in Morocco'}</span>
               </div>
             </div>
           </div>
