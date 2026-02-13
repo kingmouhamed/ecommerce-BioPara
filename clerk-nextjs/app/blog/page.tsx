@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Search, Calendar, User, Clock, ChevronRight } from "lucide-react";
 
 export default function BlogPage() {
@@ -133,9 +134,11 @@ export default function BlogPage() {
             <article key={post.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition group">
               {/* Image */}
               <div className="relative h-48 bg-gray-100">
-                <img
+                <Image
                   src={post.image}
                   alt={post.title}
+                  width={192}
+                  height={192}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-4 right-4 bg-emerald-700 text-white px-3 py-1 rounded-full text-xs font-medium">

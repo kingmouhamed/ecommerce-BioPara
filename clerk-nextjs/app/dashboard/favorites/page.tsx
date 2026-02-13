@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import { Heart, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "../../../contexts/CartContext";
 
@@ -75,9 +76,11 @@ export default function FavoritesPage() {
             {favorites.map((item) => (
               <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="relative">
-                  <img 
+                  <Image 
                     src={item.image} 
                     alt={item.title}
+                    width={192}
+                    height={192}
                     className="w-full h-48 object-cover"
                   />
                   <button

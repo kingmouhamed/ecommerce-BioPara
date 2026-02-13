@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Search } from "lucide-react";
 
 export default function BrandsPage() {
@@ -147,9 +148,11 @@ export default function BrandsPage() {
             >
               <div className="text-center">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden group-hover:scale-110 transition-transform">
-                  <img 
+                  <Image 
                     src={brand.logo} 
                     alt={`${brand.name} logo`}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 object-contain"
                     onError={(e) => {
                       e.currentTarget.src = '/images/brands/bio-oriental-logo.png';
