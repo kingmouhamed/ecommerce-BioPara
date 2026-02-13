@@ -2,14 +2,6 @@
 
 import React from 'react';
 import MasterComponent from '../components/MasterComponent';
-import ProductList from '../components/ProductList';
-import Brands from '../components/Brands';
-import FeaturedTabs from '../components/FeaturedTabs';
-import CategoriesGrid from '../components/CategoriesGrid';
-import Footer from '../components/Footer-Unified';
-import Cart from '../components/Cart';
-import WhatsAppWidget from '../components/WhatsAppWidget';
-import LiveChatSupport from '../components/LiveChatSupport';
 import { allProducts, parapharmacieProducts, herbalProducts } from '../data/index';
 
 export default function HomePage() {
@@ -24,40 +16,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
-      <MasterComponent locale="ar" variant="premium" />
-      
-      <main>
-        <CategoriesGrid />
-        
-        {/* Parapharmacie Products */}
-        <div className="container-premium py-12">
-          <h2 className="text-headline text-gradient-primary mb-4 text-right">الصيدلية الفاخرة</h2>
-          <p className="text-body text-[var(--color-text-secondary)] mb-8 text-right">أفضل العلامات التجارية للعناية بالبشرة والعافية في العالم</p>
-          <ProductList products={paraProducts.slice(0, 8)} />
-        </div>
-
-        <Brands />
-
-        {/* Featured Products Tabs */}
-        <div className="container-premium py-12">
-          <FeaturedTabs />
-        </div>
-
-        {/* Herbalism Products */}
-        <div className="container-premium py-12">
-          <h2 className="text-headline text-gradient-primary mb-4 text-right">العلاجات العشبية الطبيعية</h2>
-          <p className="text-body text-[var(--color-text-secondary)] mb-8 text-right">منتجات 100% طبيعية لرحلتك نحو العافية</p>
-          <ProductList products={herbalProductsList.slice(0, 8)} />
-        </div>
-
-        {/* Global Customer Reviews */}
-        {/* <CustomerReviews locale="ar" /> */}
-      </main>
-      
-      <Footer locale="ar" variant="global" />
-      <Cart />
-      <WhatsAppWidget />
-      <LiveChatSupport />
+      <MasterComponent locale="ar" variant="global" />
     </div>
   );
 }
