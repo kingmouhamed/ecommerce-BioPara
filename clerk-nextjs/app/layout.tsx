@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
@@ -76,10 +76,11 @@ export const metadata: Metadata = {
   },
 };
 
-export const generateViewport = () => ({
+export const viewport: Viewport = {
   themeColor: '#10b981',
-  viewport: 'width=device-width, initial-scale=1',
-});
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export default function RootLayout({
   children,

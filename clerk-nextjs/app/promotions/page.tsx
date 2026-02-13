@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Search, Clock, Tag, Gift, Star } from "lucide-react";
 
 export default function PromotionsPage() {
@@ -129,9 +130,11 @@ export default function PromotionsPage() {
                 <div key={promo.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition">
                   {/* Promotion Image */}
                   <div className="relative h-48 bg-gray-100">
-                    <img
+                    <Image
                       src={promo.image}
                       alt={promo.title}
+                      width={192}
+                      height={192}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full font-bold text-sm">
