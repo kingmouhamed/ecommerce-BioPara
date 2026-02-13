@@ -191,11 +191,11 @@ export default function ProductsPage() {
       <div className="container mx-auto px-4 py-4">
         <p className="text-gray-600">
           {searchQuery && (
-            <span>نتائج البحث عن "{searchQuery}": </span>
+            <span>نتائج البحث عن &quot;{searchQuery}&quot;: </span>
           )}
           عرض {filteredAndSortedProducts.length} من {allProducts.length} منتج
           {selectedCategory !== 'all' && (
-            <span> في فئة "{selectedCategory}"</span>
+            <span> في فئة &quot;{selectedCategory}&quot;</span>
           )}
         </p>
       </div>

@@ -31,7 +31,6 @@ import {
   Check
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
-import WhatsAppWidget from './WhatsAppWidget';
 
 // TypeScript Interface for Props
 interface MasterComponentProps {
@@ -864,13 +863,13 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
               <h3 className="text-lg font-semibold mb-4">{currentLang.footer.company.name}</h3>
               <p className="text-gray-400 mb-4">{currentLang.footer.company.description}</p>
               <div className="flex gap-4 mb-4">
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                <a href="#" aria-label="Facebook" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
                   <Facebook className="w-5 h-5 text-white" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                <a href="#" aria-label="Instagram" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
                   <Instagram className="w-5 h-5 text-white" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                <a href="#" aria-label="Twitter" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors">
                   <Twitter className="w-5 h-5 text-white" />
                 </a>
               </div>
