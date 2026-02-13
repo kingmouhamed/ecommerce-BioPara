@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star, Heart, ShoppingCart, Eye, Trash2, Plus, Minus } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 
@@ -67,9 +68,11 @@ export default function ProductRow({
               </span>
             )}
             <Link href={`/products/${product.id}`}>
-              <img
+              <Image
                 src={product.image}
                 alt={product.title}
+                width={200}
+                height={200}
                 className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
               />
             </Link>

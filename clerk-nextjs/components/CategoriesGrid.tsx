@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Category {
   id: string;
@@ -53,12 +54,14 @@ export default function CategoriesGrid() {
         >
           <div className="flex flex-col items-center text-center">
             <div className="w-full h-32 rounded-lg overflow-hidden mb-4 group-hover:scale-105 transition-transform duration-300">
-              <img 
+              <Image 
                 src={category.image} 
                 alt={category.name} 
+                width={128}
+                height={128}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
+                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                  const target = e.currentTarget;
                   target.style.display = 'none';
                   const parent = target.parentElement;
                   if (parent) {
