@@ -501,13 +501,135 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
             {currentLang.nav.products}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-              <div key={item} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="aspect-square bg-gray-100 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-gray-400">منتج {item}</span>
-                </div>
+            {/* Parapharmacie Products */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/parapharmacie/argan-oil-new.jpg"
+                  alt="زيت الأرغان الفاخر"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            ))}
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">زيت الأرغان الفاخر</h3>
+                <p className="text-emerald-600 font-bold">350.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/parapharmacie/hyaluronic-serum-new.jpg"
+                  alt="سيروم الهيالورونيك أسيد"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">سيروم الهيالورونيك أسيد</h3>
+                <p className="text-emerald-600 font-bold">280.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/parapharmacie/moisturizing-cream-new.jpg"
+                  alt="كريم مرطب للبشرة"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">كريم مرطب للبشرة</h3>
+                <p className="text-emerald-600 font-bold">220.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/parapharmacie/sunscreen-spf50-new.jpg"
+                  alt="واقي الشمس SPF50"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">واقي الشمس SPF50</h3>
+                <p className="text-emerald-600 font-bold">180.00 درهم</p>
+              </div>
+            </div>
+            
+            {/* Medical Herbs */}
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/medical-herbs/camomile-herb.jpg"
+                  alt="البابونج الطبي"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">البابونج الطبي</h3>
+                <p className="text-emerald-600 font-bold">45.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/medical-herbs/lavender-herb.jpg"
+                  alt="الخزامى الطبي"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">الخزامى الطبي</h3>
+                <p className="text-emerald-600 font-bold">55.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/medical-herbs/mint-herb.jpg"
+                  alt="النعناع الطبي"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">النعناع الطبي</h3>
+                <p className="text-emerald-600 font-bold">35.00 درهم</p>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <Image
+                  src="/images/medical-herbs/rosemary-herb.jpg"
+                  alt="إكليل الجبل"
+                  width={200}
+                  height={200}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">إكليل الجبل</h3>
+                <p className="text-emerald-600 font-bold">40.00 درهم</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
