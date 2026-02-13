@@ -545,7 +545,8 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Company Info */}
             <div>
               <h3 className="text-lg font-semibold mb-4">{currentLang.footer?.company?.name || 'BioPara'}</h3>
               <p className="text-gray-400 mb-4">{currentLang.footer?.company?.description || 'Premium natural wellness products'}</p>
@@ -560,6 +561,11 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
                   <Twitter className="w-5 h-5 text-white" />
                 </a>
               </div>
+            </div>
+            
+            {/* Links Section - Stacked Vertically */}
+            <div className="space-y-8">
+              {/* Quick Links */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.quickLinks?.title || 'Quick Links'}</h4>
                 <ul className="space-y-2">
@@ -572,6 +578,8 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
                   ))}
                 </ul>
               </div>
+              
+              {/* Customer Service */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.customerService?.title || 'Customer Service'}</h4>
                 <ul className="space-y-2">
@@ -584,6 +592,8 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
                   ))}
                 </ul>
               </div>
+              
+              {/* Contact */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-gray-300">{currentLang.footer.navigation?.contact?.title || 'Contact Us'}</h4>
                 <div className="space-y-3">
