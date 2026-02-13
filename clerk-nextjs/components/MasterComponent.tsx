@@ -67,7 +67,7 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { cartItemCount, setIsCartOpen } = useCart();
+  const { cartItemCount, isCartOpen, setIsCartOpen } = useCart();
   const pathname = usePathname();
 
   const categories = [
@@ -591,23 +591,25 @@ export default function MasterComponent(props: MasterComponentProps): JSX.Elemen
         </div>
       </footer>
 
-      {/* Cart */}
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-80">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-gray-900">سلة التسوق</h3>
-            <button
-              onClick={() => setIsCartOpen(false)}
-              className="text-emerald-600 hover:text-emerald-500 transition-colors"
-            >
-              إغلاق السلة
-            </button>
-          </div>
-          <div className="text-sm text-gray-600">
-            {cartItemCount} منتجات - {locale === 'ar' ? 'درهم' : 'MAD'}
+      {/* Cart Dropdown */}
+      {isCartOpen && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-80">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-gray-900">سلة التسوق</h3>
+              <button
+                onClick={() => setIsCartOpen(false)}
+                className="text-emerald-600 hover:text-emerald-500 transition-colors"
+              >
+                إغلاق السلة
+              </button>
+            </div>
+            <div className="text-sm text-gray-600">
+              {cartItemCount} منتجات - {locale === 'ar' ? 'درهم' : 'MAD'}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
