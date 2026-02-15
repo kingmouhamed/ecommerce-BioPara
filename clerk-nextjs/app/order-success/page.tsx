@@ -64,11 +64,19 @@ export default function OrderSuccessPage() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/products"
+              href="/products?category=parapharmacie"
               className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
             >
               <ShoppingBag className="w-5 h-5" />
-              متابعة التسوق
+              متابعة التسوق (البارافارماسي)
+            </Link>
+
+            <Link
+              href="/products?category=medical-herbs"
+              className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              متابعة التسوق (الأعشاب الطبية)
             </Link>
             
             <Link
