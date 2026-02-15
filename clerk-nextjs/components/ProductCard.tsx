@@ -26,6 +26,17 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  const getCategoryLabel = (category: string) => {
+    const categoryLabels: Record<string, string> = {
+      parapharmacie: 'البارافارماسي',
+      'medical-herbs': 'الأعشاب الطبية',
+      Parapharmacie: 'البارافارماسي',
+      'Herbal Medicine': 'الأعشاب الطبية'
+    };
+
+    return categoryLabels[category] ?? category;
+  };
+
   return (
     <div className="group bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
       {/* Product Image */}
@@ -80,7 +91,7 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
       {/* Product Info */}
       <div className="p-3 sm:p-4">
         <div className="mb-2">
-          <span className="text-xs text-emerald-600 font-medium">{product.category}</span>
+          <span className="text-xs text-emerald-600 font-medium">{getCategoryLabel(product.category)}</span>
         </div>
         
         {/* Brand Logo */}

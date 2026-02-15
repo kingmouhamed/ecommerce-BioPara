@@ -109,13 +109,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
       if (!paymentMethod.cardExpiry?.trim()) {
         errors.cardExpiry = "تاريخ الانتهاء مطلوب";
       } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(paymentMethod.cardExpiry)) {
-        errors.cardExpiry = "التاريخ غير صالح (MM/YY)";
+        errors.cardExpiry = "التاريخ غير صالح (شهر/سنة)";
       }
 
       if (!paymentMethod.cardCVV?.trim()) {
-        errors.cardCVV = "CVV مطلوب";
+        errors.cardCVV = "رمز الأمان مطلوب";
       } else if (!/^\d{3,4}$/.test(paymentMethod.cardCVV)) {
-        errors.cardCVV = "CVV غير صالح";
+        errors.cardCVV = "رمز الأمان غير صالح";
       }
 
       if (!paymentMethod.cardName?.trim()) {
@@ -174,7 +174,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 error={!!fieldErrors.email}
                 helperText={fieldErrors.email}
                 required
-                placeholder="example@email.com"
+                placeholder="name@example.com"
                 className="text-right"
                 leftIcon={<User className="w-4 h-4" />}
               />
@@ -347,7 +347,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                     error={!!fieldErrors.cardExpiry}
                     helperText={fieldErrors.cardExpiry}
                     required
-                    placeholder="MM/YY"
+                    placeholder="شهر/سنة"
                     className="text-right"
                   />
                 </div>
@@ -355,7 +355,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 <div>
                   <Input
                     type="text"
-                    label="CVV"
+                    label="رمز الأمان"
                     value={paymentMethod.cardCVV || ""}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePaymentChange("cardCVV", e.target.value)}
                     error={!!fieldErrors.cardCVV}

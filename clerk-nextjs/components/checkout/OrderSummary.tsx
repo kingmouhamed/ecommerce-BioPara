@@ -41,7 +41,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   const total = subtotal + shippingCost + tax;
 
   const formatPrice = (price: number) => {
-    return `${price.toFixed(2)} DH`;
+    return `${price.toFixed(2)} درهم`;
   };
 
   const handleQuantityChange = (id: number | string, newQuantity: number) => {

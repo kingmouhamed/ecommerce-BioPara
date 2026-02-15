@@ -2,7 +2,11 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Breadcrumbs from '../../components/Breadcrumbs';
+import ProductFilters from '../../components/ProductFilters';
 import ProductList from '../../components/ProductList';
+import ParapharmacieLanding from '../../components/parapharmacie/ParapharmacieLanding';
+import MedicalHerbsLanding from '../../components/medical-herbs/MedicalHerbsLanding';
 import { allProducts, Product } from '../../data/index';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
 
@@ -12,6 +16,28 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  const getCategoryLabel = (category: string) => {
+    const categoryLabels: Record<string, string> = {
+      parapharmacie: 'البارافارماسي',
+      'medical-herbs': 'الأعشاب الطبية',
+      Parapharmacie: 'البارافارماسي',
+      'Herbal Medicine': 'الأعشاب الطبية'
+    };
+
+    return categoryLabels[category] ?? category;
+  };
+
+  const handleFiltersChange = (filters: any) => {
+    const categoriesFilter = filters?.category;
+    if (Array.isArray(categoriesFilter) && categoriesFilter.length === 1) {
+      setSelectedCategory(categoriesFilter[0]);
+      return;
+    }
+    if (!categoriesFilter || (Array.isArray(categoriesFilter) && categoriesFilter.length === 0)) {
+      setSelectedCategory('all');
+    }
+  };
 
   // Initialize state from URL parameters
   useEffect(() => {
@@ -86,8 +112,20 @@ export default function ProductsPage() {
     return filtered;
   }, [searchQuery, selectedCategory, sortBy]);
 
+  if (selectedCategory === 'parapharmacie') {
+    return <ParapharmacieLanding />;
+  }
+
+  if (selectedCategory === 'medical-herbs') {
+    return <MedicalHerbsLanding />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
+      <div className="container mx-auto px-4 pt-6">
+        <Breadcrumbs items={[{ label: 'المنتجات' }]} />
+      </div>
+
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-6">
@@ -122,8 +160,12 @@ export default function ProductsPage() {
 
       {/* Controls */}
       <div className="container mx-auto px-4 py-6">
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-3">
+            <ProductFilters onFiltersChange={handleFiltersChange} />
+          </div>
+          <div className="lg:col-span-9 bg-white rounded-lg shadow-sm p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
@@ -146,7 +188,7 @@ export default function ProductsPage() {
             >
               {categories.map((category) => (
                 <option key={category} value={category}>
-                  {category === 'all' ? 'جميع الفئات' : category}
+                  {category === 'all' ? 'جميع الفئات' : getCategoryLabel(category)}
                 </option>
               ))}
             </select>
@@ -184,6 +226,7 @@ export default function ProductsPage() {
               </button>
             </div>
           </div>
+          </div>
         </div>
       </div>
 
@@ -195,7 +238,7 @@ export default function ProductsPage() {
           )}
           عرض {filteredAndSortedProducts.length} من {allProducts.length} منتج
           {selectedCategory !== 'all' && (
-            <span> في فئة &quot;{selectedCategory}&quot;</span>
+            <span> في فئة &quot;{getCategoryLabel(selectedCategory)}&quot;</span>
           )}
         </p>
       </div>

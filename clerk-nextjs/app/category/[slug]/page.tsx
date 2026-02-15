@@ -56,12 +56,20 @@ export default function CategoryPage() {
             <p className="text-gray-500 mb-6">
               جرب استكشاف الأقسام الأخرى أو العودة لاحقاً
             </p>
-            <Link
-              href="/products"
-              className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-800 transition"
-            >
-              عرض جميع المنتجات
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/products?category=parapharmacie"
+                className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-800 transition"
+              >
+                عرض البارافارماسي
+              </Link>
+              <Link
+                href="/products?category=medical-herbs"
+                className="bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold hover:bg-emerald-800 transition"
+              >
+                عرض الأعشاب الطبية
+              </Link>
+            </div>
           </div>
         )}
       </div>

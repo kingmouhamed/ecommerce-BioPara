@@ -23,9 +23,13 @@ export default function NotFound() {
           <div className="bg-white rounded-lg p-4 border border-gray-200">
             <p className="text-sm text-gray-600 mb-3">هل تبحث عن:</p>
             <div className="flex flex-col gap-2">
-              <Link href="/products" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
+              <Link href="/products?category=parapharmacie" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
                 <Package className="w-4 h-4" />
-                المنتجات
+                البارافارماسي
+              </Link>
+              <Link href="/products?category=medical-herbs" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
+                <Package className="w-4 h-4" />
+                الأعشاب الطبية
               </Link>
               <Link href="/brands" className="text-emerald-700 hover:text-emerald-800 text-sm flex items-center justify-center gap-2">
                 <Search className="w-4 h-4" />

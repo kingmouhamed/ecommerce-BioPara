@@ -23,7 +23,7 @@ const filterSections: FilterSection[] = [
     type: 'checkbox',
     options: [
       { id: 'medical-herbs', label: 'الأعشاب الطبية', count: 45 },
-      { id: 'parapharmacie', label: 'Parapharmacie', count: 38 },
+      { id: 'parapharmacie', label: 'البارافارماسي', count: 38 },
       { id: 'vitamins', label: 'الفيتامينات', count: 28 },
       { id: 'organic', label: 'منتجات عضوية', count: 22 }
     ]
