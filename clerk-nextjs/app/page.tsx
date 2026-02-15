@@ -21,6 +21,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       {/* Hero Section */}
       <HeroSection
+        backgroundImage="/Hero-new.png"
         title="مرحباً بك في BioPara"
         subtitle="منتجات طبيعية وعلاجية مختارة بعناية. اكتشف الأعشاب الطبية والبارافارماسي بجودة عالية."
         badge={{

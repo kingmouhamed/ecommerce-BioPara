@@ -46,6 +46,7 @@ export default function HeroSection({
             const target = e.currentTarget;
             target.src = '/images/backgrounds/hero-bg.jpg';
           }}
+          unoptimized={backgroundImage.endsWith('.png')}
         />
         <BackgroundPattern opacity={0.4} />
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 to-emerald-100/60"></div>
