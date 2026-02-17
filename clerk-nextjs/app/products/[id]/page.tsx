@@ -73,6 +73,8 @@ export default function ProductDetailPage() {
                   className={`relative w-full h-20 rounded-lg overflow-hidden border-2 transition-colors ${
                     selectedImage === index ? 'border-emerald-600' : 'border-gray-200'
                   }`}
+                  aria-label={`عرض الصورة ${index + 1}`}
+                  title={`عرض الصورة ${index + 1}`}
                 >
                   <Image
                     src={imageSrc}

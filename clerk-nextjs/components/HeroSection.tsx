@@ -7,7 +7,7 @@ import { ChevronLeft, Sparkles } from 'lucide-react';
 import BackgroundPattern from './BackgroundPattern';
 
 interface HeroSectionProps {
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   backgroundImage?: string;
   primaryAction?: {
