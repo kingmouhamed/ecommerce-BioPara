@@ -8,15 +8,18 @@ import { useCart } from '../../contexts/CartContext';
 
 type MedicalHerbsProductCardProps = {
   product: Product;
+  onAddToCart?: () => void;
+  onToggleWishlist?: () => void;
+  isWishlisted?: boolean;
 };
 
-export default function MedicalHerbsProductCard({ product }: MedicalHerbsProductCardProps) {
-  const { addToCart } = useCart();
+export default function MedicalHerbsProductCard({ product, onAddToCart, onToggleWishlist, isWishlisted }: MedicalHerbsProductCardProps) {
+  const { addToCart: addToCartContext } = useCart();
 
   const hasDiscount = typeof product.originalPrice === 'number' && product.originalPrice > product.price;
 
   const handleAdd = () => {
-    addToCart(
+    addToCartContext(
       {
         id: product.id,
         title: product.title,
