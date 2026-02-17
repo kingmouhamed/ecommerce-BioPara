@@ -36,6 +36,7 @@ import { useCart } from '../../contexts/CartContext';
 import { herbalProductsUnified } from '../../data';
 import MedicalHerbsProductCard from './MedicalHerbsProductCard';
 import CategoryHeader from '../category-landing/CategoryHeader';
+import HeroSection from '../HeroSection';
 import {
   getHerbsPromoProducts,
   medicalHerbsBrands,
@@ -144,67 +145,62 @@ export default function MedicalHerbsLanding() {
         whatsappNumber="+212 673020264"
       />
 
-      {/* Enhanced Hero Section */}
-      <section className="container mx-auto px-4 pt-6">
-        <div className="bg-gradient-to-br from-green-50 via-white to-emerald-50 rounded-3xl overflow-hidden border border-green-100 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Side - Content */}
-            <div className="p-8 lg:p-12 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-bold mb-6 w-fit">
-                <Leaf className="w-4 h-4" />
-                أعشاب طبيعية 100%
-              </div>
-              
-              <h1 className="text-4xl lg:text-5xl font-black text-gray-900 leading-tight mb-6">
-                الأعشاب الطبية
-                <span className="block text-green-600 text-3xl lg:text-4xl">علاج من الطبيعة</span>
-              </h1>
-              
-              <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                اكتشف مجموعة مختارة من الأعشاب الطبية النادرة والفعالة. 
-                من مصادر موثوقة مع معلومات كاملة عن الفوائد والاستخدام.
-              </p>
+      {/* Hero Section */}
+      <HeroSection
+        backgroundImage="/images/backgrounds/medical-herbs-bg.jpg"
+        title={
+          <>
+            الأعشاب الطبية
+            <span className="block text-green-600">علاج من الطبيعة</span>
+          </>
+        }
+        subtitle="اكتشف مجموعة مختارة من الأعشاب الطبية النادرة والفعالة. من مصادر موثوقة مع معلومات كاملة عن الفوائد والاستخدام."
+        badge={{
+          text: "أعشاب طبيعية 100%",
+          icon: <Leaf className="w-4 h-4" />
+        }}
+        primaryAction={{
+          text: "تسوق الآن",
+          href: "/products?category=medical-herbs"
+        }}
+        secondaryAction={{
+          text: "اكتشف الفوائد",
+          href: "#benefits"
+        }}
+      />
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button className="group inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-4 rounded-2xl transition-all transform hover:scale-105 shadow-lg">
-                  تسوق الآن
-                  <ChevronLeft className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button className="group inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-800 font-bold px-8 py-4 rounded-2xl border-2 border-gray-200 hover:border-green-300 transition-all">
-                  اكتشف الفوائد
-                  <ArrowRight className="w-5 h-5 mr-2" />
-                </button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Leaf className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">طبيعي 100%</div>
-                    <div className="text-sm text-gray-600">بدون إضافات</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">مصادر موثوقة</div>
-                    <div className="text-sm text-gray-600">جودة مضمونة</div>
-                  </div>
-                </div>
-              </div>
+      {/* Benefits Section */}
+      <section id="benefits" className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">فوائد الأعشاب الطبية</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            اكتشف الفوائد الصحية والعلاجية للأعشاب الطبية التي نقدمها
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+              <Leaf className="w-6 h-6 text-green-600" />
             </div>
-
-            {/* Right Side - Visual */}
-            <div className="relative min-h-[400px] lg:min-h-full bg-gradient-to-br from-green-100 to-emerald-50 p-8 flex items-center justify-center">
-              <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
-              
-              {/* Special Offers Card */}
-              <div className="relative z-10 bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform hover:scale-105 transition-transform">
+            <h3 className="font-bold text-gray-900 mb-2">تعزيز المناعة</h3>
+            <p className="text-gray-700 text-sm">الأعشاب الطبية تقوي جهاز المناعة وتحمي الجسم من الأمراض</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+              <ShieldCheck className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">مضاد للأكسدة</h3>
+            <p className="text-gray-700 text-sm">تحتوي على مضادات أكسدة طبيعية تحارب الجذور الحرة</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+              <Zap className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">زيادة الطاقة</h3>
+            <p className="text-gray-700 text-sm">تزيد من مستويات الطاقة والحيوية بشكل طبيعي</p>
+          </div>
+        </div>
+      </section>
                 <div className="absolute -top-4 -right-4 bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold">
                   عضوي
                 </div>

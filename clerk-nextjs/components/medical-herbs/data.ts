@@ -36,12 +36,12 @@ export const medicalHerbsQuickCategories: MedicalHerbsQuickCategory[] = [
 ];
 
 export const medicalHerbsBrands: MedicalHerbsBrand[] = [
-  { id: 'atlas', name: 'Atlas Herbs', logo: '/images/brands/herbs-1.png' },
-  { id: 'sahara', name: 'Sahara Botanics', logo: '/images/brands/herbs-2.png' },
-  { id: 'rif', name: 'Rif Naturals', logo: '/images/brands/herbs-3.png' },
-  { id: 'bio', name: 'BioHerb', logo: '/images/brands/herbs-4.png' },
-  { id: 'organic', name: 'Organic Garden', logo: '/images/brands/herbs-5.png' },
-  { id: 'tea', name: 'Herbal Tea', logo: '/images/brands/herbs-6.png' }
+  { id: 'atlas', name: 'Atlas Herbs', logo: '/images/brands/additional/dabur-logo.png' },
+  { id: 'sahara', name: 'Sahara Botanics', logo: '/images/brands/additional/himalaya-logo.png' },
+  { id: 'rif', name: 'Rif Naturals', logo: '/images/brands/additional/himani-logo.png' },
+  { id: 'bio', name: 'BioHerb', logo: '/images/brands/additional/patanjali-logo.png' },
+  { id: 'organic', name: 'Organic Garden', logo: '/images/brands/additional/zandu-logo.png' },
+  { id: 'tea', name: 'Herbal Tea', logo: '/images/brands/additional/shahnaz-hussain-logo.png' }
 ];
 
 export const getHerbsPromoProducts = (products: Product[]): Product[] => {

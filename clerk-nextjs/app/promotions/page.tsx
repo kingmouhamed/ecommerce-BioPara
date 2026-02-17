@@ -16,7 +16,7 @@ export default function PromotionsPage() {
       category: "العناية بالبشرة",
       validUntil: "2026-03-31",
       code: "SKIN20",
-      image: "/products1.png",
+      image: "/images/banners/promo-banner.jpg",
       type: "percentage"
     },
     {
@@ -27,7 +27,7 @@ export default function PromotionsPage() {
       category: "جميع المنتجات",
       validUntil: "2026-12-31",
       code: "FREESHIP",
-      image: "/products2.png",
+      image: "/images/banners/seasonal-banner.jpg",
       type: "shipping"
     },
     {
@@ -38,7 +38,7 @@ export default function PromotionsPage() {
       category: "الزيوت العطرية",
       validUntil: "2026-02-28",
       code: "OILS3X2",
-      image: "/products3.png",
+      image: "/images/banners/promo-banner.jpg",
       type: "bogo"
     },
     {
@@ -49,7 +49,7 @@ export default function PromotionsPage() {
       category: "جميع المنتجات",
       validUntil: "2026-12-31",
       code: "NEW15",
-      image: "/products4.png",
+      image: "/images/banners/seasonal-banner.jpg",
       type: "newuser"
     },
     {
@@ -60,7 +60,7 @@ export default function PromotionsPage() {
       category: "جميع المنتجات",
       validUntil: "2026-02-15",
       code: "FIRST50",
-      image: "/products5.png",
+      image: "/images/banners/promo-banner.jpg",
       type: "fixed"
     },
     {
@@ -71,7 +71,7 @@ export default function PromotionsPage() {
       category: "الأعشاب الطبية",
       validUntil: "2026-03-15",
       code: "HERBS30",
-      image: "/products6.png",
+      image: "/images/banners/seasonal-banner.jpg",
       type: "percentage"
     }
   ];

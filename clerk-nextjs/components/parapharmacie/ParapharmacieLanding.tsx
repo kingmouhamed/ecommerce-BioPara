@@ -35,6 +35,7 @@ import { useCart } from '../../contexts/CartContext';
 import { parapharmacieProductsUnified } from '../../data';
 import ParapharmacieProductCard from './ParapharmacieProductCard';
 import CategoryHeader from '../category-landing/CategoryHeader';
+import HeroSection from '../HeroSection';
 import {
   getPromoProducts,
   parapharmacieBrands,
@@ -140,65 +141,29 @@ export default function ParapharmacieLanding() {
         whatsappNumber="+212 673020264"
       />
 
-      {/* Enhanced Hero Section */}
-      <section className="container mx-auto px-4 pt-6">
-        <div className="bg-gradient-to-br from-emerald-50 via-white to-emerald-50 rounded-3xl overflow-hidden border border-emerald-100 shadow-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Side - Content */}
-            <div className="p-8 lg:p-12 flex flex-col justify-center">
-              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-2 rounded-full text-sm font-bold mb-6 w-fit">
-                <Zap className="w-4 h-4" />
-                عروض حصرية لفترة محدودة
-              </div>
-              
-              <h1 className="text-4xl lg:text-5xl font-black text-gray-900 leading-tight mb-6">
-                البارافارماسي
-                <span className="block text-emerald-600 text-3xl lg:text-4xl">العناية الطبية المتكاملة</span>
-              </h1>
-              
-              <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                اكتشف أفضل المنتجات الطبية والتجميلية من أشهر العلامات التجارية العالمية. 
-                ضمان الجودة الأصلية والتوصيل السريع لجميع المدن المغربية.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button className="group inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-4 rounded-2xl transition-all transform hover:scale-105 shadow-lg">
-                  تسوق الآن
-                  <ChevronLeft className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <button className="group inline-flex items-center justify-center bg-white hover:bg-gray-50 text-gray-800 font-bold px-8 py-4 rounded-2xl border-2 border-gray-200 hover:border-emerald-300 transition-all">
-                  عرض الكتالوج
-                  <ArrowRight className="w-5 h-5 mr-2" />
-                </button>
-              </div>
-
-              {/* Trust Indicators */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">منتجات أصلية</div>
-                    <div className="text-sm text-gray-600">ضمان 100%</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <Truck className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900">توصيل سريع</div>
-                    <div className="text-sm text-gray-600">24-48 ساعة</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Side - Visual */}
-            <div className="relative min-h-[400px] lg:min-h-full bg-gradient-to-br from-emerald-100 to-emerald-50 p-8 flex items-center justify-center">
-              <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
-              
+      {/* Hero Section */}
+      <HeroSection
+        backgroundImage="/images/backgrounds/parapharmacie-bg.jpg"
+        title={
+          <>
+            البارافارماسي
+            <span className="block text-emerald-600">العناية الطبية المتكاملة</span>
+          </>
+        }
+        subtitle="اكتشف أفضل المنتجات الطبية والتجميلية من أشهر العلامات التجارية العالمية. ضمان الجودة الأصلية والتوصيل السريع لجميع المدن المغربية."
+        badge={{
+          text: "عروض حصرية لفترة محدودة",
+          icon: <Zap className="w-4 h-4" />
+        }}
+        primaryAction={{
+          text: "تسوق الآن",
+          href: "/products?category=parapharmacie"
+        }}
+        secondaryAction={{
+          text: "عرض الكتالوج",
+          href: "#catalog"
+        }}
+      />
               {/* Special Offers Card */}
               <div className="relative z-10 bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full transform hover:scale-105 transition-transform">
                 <div className="absolute -top-4 -right-4 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
