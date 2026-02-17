@@ -132,6 +132,8 @@ export default function ProductDetailPage() {
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="w-8 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center justify-center"
+                      aria-label="إنقاص الكمية"
+                      title="إنقاص الكمية"
                     >
                       -
                     </button>
@@ -139,6 +141,8 @@ export default function ProductDetailPage() {
                     <button
                       onClick={() => setQuantity(quantity + 1)}
                       className="w-8 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center justify-center"
+                      aria-label="زيادة الكمية"
+                      title="زيادة الكمية"
                     >
                       +
                     </button>
