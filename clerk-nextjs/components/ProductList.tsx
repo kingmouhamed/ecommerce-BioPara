@@ -5,7 +5,6 @@ import ProductCard from './ProductCard';
 import Pagination from './Pagination';
 import { useCart } from '../contexts/CartContext';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
-import { getParapharmacieImage } from '../data/parapharmacie-images';
 import { getHerbalImage } from '../data/herbal-images';
 import { Product as UnifiedProduct } from '../data/index';
 
@@ -32,13 +31,8 @@ export default function ProductList({
 
   // Function to get product image
   const getProductImage = (product: Product) => {
-    if (product.category.includes('Parapharmacie') || product.category.includes('العناية')) {
-      const image = getParapharmacieImage(product.id);
-      return image?.imageUrl || product.image;
-    } else {
-      const image = getHerbalImage(product.id);
-      return image?.imageUrl || product.image;
-    }
+    const image = getHerbalImage(product.id);
+    return image?.imageUrl || product.image;
   };
 
   const productsPerPage = viewMode === 'grid' ? 12 : 8;

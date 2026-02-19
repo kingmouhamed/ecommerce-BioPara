@@ -22,20 +22,12 @@ const categories: Category[] = [
     image: '/images/categories/medical-herbs.jpg',
     href: '/products?category=medical-herbs',
     icon: <Leaf className="w-8 h-8" />
-  },
-  {
-    id: 'parapharmacie',
-    name: 'البارافارماسي',
-    description: 'منتجات العناية بالبشرة والشعر',
-    image: '/images/categories/parapharmacie.jpg',
-    href: '/products?category=parapharmacie',
-    icon: <Sparkles className="w-8 h-8" />
   }
 ];
 
 export default function CategoriesGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-2xl mx-auto">
       {categories.map((category) => (
         <Link
           key={category.id}
@@ -59,7 +51,7 @@ export default function CategoriesGrid() {
                   parent.innerHTML = `
                     <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-emerald-50 to-emerald-100">
                       <div class="text-emerald-600 mb-4">
-                        ${category.id === 'medical-herbs' ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       </div>
                       <div class="text-emerald-700 font-bold text-lg">${category.name}</div>
                     </div>
