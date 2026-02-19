@@ -15,7 +15,16 @@ import {
   Package,
   Clock,
   Award,
-  Users
+  Users,
+  CheckCircle,
+  Calendar,
+  MapPin,
+  Mail,
+  Globe,
+  Target,
+  Lightbulb,
+  TrendingUp,
+  UserCheck
 } from 'lucide-react';
 import HeroSection from '../components/HeroSection';
 import TestimonialCard from '../components/TestimonialCard';
@@ -197,6 +206,47 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* About Us Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">من نحن</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              نحن فريق متخصص في الأعشاب الطبية الطبيعية، نقدم لكم أفضل المنتجات من مصادر موثوقة
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors">
+                <CheckCircle className="w-10 h-10 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">جودة موثوقة</h3>
+              <p className="text-gray-600 leading-relaxed">
+                نضمن جودة جميع منتجاتنا من مصادر طبيعية 100%
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors">
+                <Target className="w-10 h-10 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">أهدافنا</h3>
+              <p className="text-gray-600 leading-relaxed">
+                نهدف لتوفير أفضل الأعشاب الطبية لصحة أفضل
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors">
+                <Lightbulb className="w-10 h-10 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">خبرة طويلة</h3>
+              <p className="text-gray-600 leading-relaxed">
+                أكثر من 15 عاماً في مجال الأعشاب الطبية
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
@@ -227,6 +277,118 @@ export default function HomePage() {
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-2">24/7</div>
             <div className="text-gray-600">دعم فني</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">خدماتنا</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              نقدم مجموعة شاملة من الخدمات لضمان رضا عملائنا
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
+                <Truck className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">توصيل سريع</h3>
+              <p className="text-gray-600 leading-relaxed">
+                توصيل لجميع أنحاء المغرب خلال 24-48 ساعة
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
+                <ShieldCheck className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">ضمان الجودة</h3>
+              <p className="text-gray-600 leading-relaxed">
+                جميع منتجاتنا مضمونة 100% ويمكن إرجاعها
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
+                <MessageCircle className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">استشارات مجانية</h3>
+              <p className="text-gray-600 leading-relaxed">
+                فريق متخصص لتقديم النصائح الطبية المجانية
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
+                <TrendingUp className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">أسعار تنافسية</h3>
+              <p className="text-gray-600 leading-relaxed">
+                أفضل الأسعار في السوق مع ضمان الجودة
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">فريق العمل</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              تعرف على فريقنا المتخصص في الأعشاب الطبية
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center group">
+              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                  <UserCheck className="w-16 h-16 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">د. أحمد محمد</h3>
+              <p className="text-green-600 font-medium mb-3">مدير طبي</p>
+              <p className="text-gray-600 text-sm">
+                خبير في الأعشاب الطبية بأكثر من 20 عاماً خبرة
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                  <UserCheck className="w-16 h-16 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">فاطمة علي</h3>
+              <p className="text-green-600 font-medium mb-3">خبيرة تغذية</p>
+              <p className="text-gray-600 text-sm">
+                متخصصة في التغذية العلاجية والأعشاب الطبيعية
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                  <UserCheck className="w-16 h-16 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">محمد سعيد</h3>
+              <p className="text-green-600 font-medium mb-3">صيدلاني</p>
+              <p className="text-gray-600 text-sm">
+                متخصص في الأدوية العشبية والمكملات الغذائية
+              </p>
+            </div>
+            <div className="text-center group">
+              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                  <UserCheck className="w-16 h-16 text-white" />
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">سارة أحمد</h3>
+              <p className="text-green-600 font-medium mb-3">مستشارة طبية</p>
+              <p className="text-gray-600 text-sm">
+                خبيرة في الطب البديل والعلاج بالأعشاب
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -290,6 +452,77 @@ export default function HomePage() {
                   <h4 className="font-bold text-gray-900">سارة محمد</h4>
                   <p className="text-gray-600 text-sm">عميلة جديدة</p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog/News Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">آخر الأخبار</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              اطّلع على آخر المقالات والأخبار عن الأعشاب الطبية
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-green-200 to-emerald-200 flex items-center justify-center">
+                <Calendar className="w-16 h-16 text-green-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-green-600 font-medium text-sm">15 مارس 2024</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-600 text-sm">5 دقائق قراءة</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">فوائد الزعتر الطبية</h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  اكتشف الفوائد المذهلة للزعتر في علاج العديد من الأمراض وتقوية المناعة
+                </p>
+                <Link href="#" className="text-green-600 font-medium hover:text-green-700 transition-colors">
+                  قراءة المزيد ←
+                </Link>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-blue-200 to-blue-300 flex items-center justify-center">
+                <Leaf className="w-16 h-16 text-blue-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-green-600 font-medium text-sm">10 مارس 2024</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-600 text-sm">7 دقائق قراءة</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">الخزامى وتأثيرها المهدئ</h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  كيف يمكن للخزامى أن تساعد في تحسين جودة النوم وتقليل التوتر
+                </p>
+                <Link href="#" className="text-green-600 font-medium hover:text-green-700 transition-colors">
+                  قراءة المزيد ←
+                </Link>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-purple-200 to-purple-300 flex items-center justify-center">
+                <Heart className="w-16 h-16 text-purple-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-green-600 font-medium text-sm">5 مارس 2024</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-gray-600 text-sm">6 دقائق قراءة</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">البابونج للجهاز الهضمي</h3>
+                <p className="text-gray-600 mb-4 leading-relaxed">
+                  فوائد البابونج في تحسين الهضم وعلاج مشاكل المعدة
+                </p>
+                <Link href="#" className="text-green-600 font-medium hover:text-green-700 transition-colors">
+                  قراءة المزيد ←
+                </Link>
               </div>
             </div>
           </div>
