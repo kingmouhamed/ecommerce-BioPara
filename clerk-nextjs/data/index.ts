@@ -1,4 +1,3 @@
-import { parapharmacieProducts } from './parapharmacie-images';
 import { herbalProducts } from './herbal-images';
 
 // Unified Product interface
@@ -13,7 +12,7 @@ export interface Product {
   image: string;
   category: string;
   badge?: string;
-  type: 'para' | 'herbal';
+  type: 'herbal';
   isNew?: boolean;
   description: string; // Make required
   brand?: string;
@@ -29,19 +28,13 @@ const convertToUnifiedProduct = (product: any): Product => ({
   name: product.title, // استخدام title كـ name
   oldPrice: product.originalPrice || product.oldPrice,
   reviews: product.reviews || 0, // تغيير من [] إلى 0
-  description: product.description || '' // Provide default description
+  description: product.description || '', // Provide default description
+  type: 'herbal' // All products are now herbal
 });
 
-// 1. تصدير المنتجات منفصلة (لمن يحتاجها منفصلة)
-export const parapharmacieProductsUnified: Product[] = parapharmacieProducts.map(convertToUnifiedProduct);
+// Export only herbal products
 export const herbalProductsUnified: Product[] = herbalProducts.map(convertToUnifiedProduct);
 
-// 2. تصدير الكل معاً (للصفحات التي تعرض كل شيء مثل البحث)
-export const allProducts = [
-  ...parapharmacieProductsUnified,
-  ...herbalProductsUnified
-];
-
-// 3. للتوافق مع الاستيرادات القديمة
-export { parapharmacieProductsUnified as parapharmacieProducts };
+// For compatibility with existing imports
+export const allProducts = herbalProductsUnified;
 export { herbalProductsUnified as herbalProducts };

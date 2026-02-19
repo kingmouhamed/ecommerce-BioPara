@@ -13,7 +13,7 @@ type NavCategory = {
 };
 
 interface CategoryHeaderProps {
-  categoryKey: "parapharmacie" | "medical-herbs";
+  categoryKey: "medical-herbs";
   categoryLabel: string;
   navCategories: NavCategory[];
   query: string;

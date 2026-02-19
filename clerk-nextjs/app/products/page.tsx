@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ProductFilters from '../../components/ProductFilters';
 import ProductList from '../../components/ProductList';
-import ParapharmacieLanding from '../../components/parapharmacie/ParapharmacieLanding';
 import MedicalHerbsLanding from '../../components/medical-herbs/MedicalHerbsLanding';
 import { allProducts, Product } from '../../data/index';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
@@ -19,9 +18,7 @@ export default function ProductsPage() {
 
   const getCategoryLabel = (category: string) => {
     const categoryLabels: Record<string, string> = {
-      parapharmacie: 'البارافارماسي',
       'medical-herbs': 'الأعشاب الطبية',
-      Parapharmacie: 'البارافارماسي',
       'Herbal Medicine': 'الأعشاب الطبية'
     };
 
@@ -111,10 +108,6 @@ export default function ProductsPage() {
 
     return filtered;
   }, [searchQuery, selectedCategory, sortBy]);
-
-  if (selectedCategory === 'parapharmacie') {
-    return <ParapharmacieLanding />;
-  }
 
   if (selectedCategory === 'medical-herbs') {
     return <MedicalHerbsLanding />;

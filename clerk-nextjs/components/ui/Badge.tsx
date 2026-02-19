@@ -232,7 +232,6 @@ export const CategoryBadge: React.FC<{
 }> = ({ category, color, size = "sm" }) => {
   const categoryColors: Record<string, string> = {
     "الأعشاب الطبية": "success",
-    "Parapharmacie": "primary",
     "مستحضرات التجميل": "secondary",
     "منتجات عضوية": "info",
   };

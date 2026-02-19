@@ -28,9 +28,7 @@ export default function ProductCard({ product, onAddToCart, onQuickView }: Produ
 
   const getCategoryLabel = (category: string) => {
     const categoryLabels: Record<string, string> = {
-      parapharmacie: 'البارافارماسي',
       'medical-herbs': 'الأعشاب الطبية',
-      Parapharmacie: 'البارافارماسي',
       'Herbal Medicine': 'الأعشاب الطبية'
     };
 

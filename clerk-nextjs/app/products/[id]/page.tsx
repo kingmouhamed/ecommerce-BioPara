@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '../../../contexts/CartContext';
 import { allProducts, Product } from '../../../data/index';
-import { getParapharmacieImage } from '../../../data/parapharmacie-images';
 import { getHerbalImage } from '../../../data/herbal-images';
 import { ArrowRight, ShoppingCart, Heart, Star, Shield, Truck } from 'lucide-react';
 import Link from 'next/link';
@@ -39,9 +38,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const productImage = product.category === 'parapharmacie' 
-    ? getParapharmacieImage(product.id)
-    : getHerbalImage(product.id);
+  const productImage = getHerbalImage(product.id);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
