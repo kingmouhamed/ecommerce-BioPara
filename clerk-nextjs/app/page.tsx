@@ -232,93 +232,127 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">آراء عملائنا</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            ماذا يقول عملاؤنا عن تجربتهم مع أعشابنا الطبية
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <TestimonialCard
-            name="فاطمة أحمد"
-            role="عميلة منتظمة"
-            avatar="/images/testimonials/testimonial-1.jpg"
-            content="الأعشاب الطبية أصلية 100% والنتائج مذهلة. أنصح الجميع بالتعامل مع BioPara"
-            rating={5}
-          />
-          <TestimonialCard
-            name="محمد علي"
-            role="عميل دائم"
-            avatar="/images/testimonials/testimonial-2.jpg"
-            content="جودة عالية وأسعار مناسبة جداً. الأعشاب ساعدتني كثيراً في تحسين صحتي"
-            rating={5}
-          />
-          <TestimonialCard
-            name="سارة محمد"
-            role="عميلة جديدة"
-            avatar="/images/testimonials/testimonial-3.jpg"
-            content="خدمة ممتازة ومنتجات متنوعة. سأستمر في التعامل معكم دائماً"
-            rating={5}
-          />
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">آراء عملائنا</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              ماذا يقول عملاؤنا عن تجربتهم مع أعشابنا الطبية
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+              <div className="flex mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                "الأعشاب الطبية أصلية 100% والنتائج مذهلة. أنصح الجميع بالتعامل مع BioPara"
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                <div>
+                  <h4 className="font-bold text-gray-900">فاطمة أحمد</h4>
+                  <p className="text-gray-600 text-sm">عميلة منتظمة</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+              <div className="flex mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                "جودة عالية وأسعار مناسبة جداً. الأعشاب ساعدتني كثيراً في تحسين صحتي"
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                <div>
+                  <h4 className="font-bold text-gray-900">محمد علي</h4>
+                  <p className="text-gray-600 text-sm">عميل دائم</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+              <div className="flex mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                "خدمة ممتازة ومنتجات متنوعة. سأستمر في التعامل معكم دائماً"
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                <div>
+                  <h4 className="font-bold text-gray-900">سارة محمد</h4>
+                  <p className="text-gray-600 text-sm">عميلة جديدة</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Newsletter Section */}
-      <section className="container mx-auto px-4 py-16">
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl p-8 max-w-2xl mx-auto shadow-2xl transform hover:scale-105 transition-all duration-300">
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-extrabold text-white mb-2">اشترك في النشرة الإخبارية</h3>
-            <p className="text-green-100">عروض حصرية على الأعشاب الطبية ومنتجات جديدة تصل إلى بريدك</p>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (email.trim()) {
-                setEmail('');
-              }
-            }}
-            className="flex flex-col sm:flex-row gap-3"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="flex-1 h-12 rounded-2xl border border-green-400 bg-white/90 backdrop-blur px-4 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent text-gray-900 placeholder-gray-500"
-              required
-            />
-            <button
-              type="submit"
-              className="h-12 px-6 rounded-2xl bg-white text-green-700 font-bold transition-colors transform hover:scale-105 hover:shadow-lg"
+      <section className="py-20 bg-gradient-to-r from-green-600 to-emerald-600">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">اشترك في النشرة الإخبارية</h2>
+            <p className="text-green-100 text-lg mb-8">
+              عروض حصرية على الأعشاب الطبية ومنتجات جديدة تصل إلى بريدك
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (email.trim()) {
+                  setEmail('');
+                }
+              }}
+              className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
             >
-              اشتراك
-            </button>
-          </form>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="flex-1 h-12 rounded-xl border border-green-400 bg-white/90 backdrop-blur px-4 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent text-gray-900 placeholder-gray-500"
+                required
+              />
+              <button
+                type="submit"
+                className="h-12 px-6 rounded-xl bg-white text-green-700 font-bold hover:bg-gray-100 transition-colors"
+              >
+                اشتراك
+              </button>
+            </form>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gradient-to-br from-gray-900 to-gray-800 text-white">
-        <div className="container mx-auto px-4 py-16">
+      <footer className="bg-gray-900 text-white py-16">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <h4 className="font-bold text-lg mb-4">BioPara</h4>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              <h3 className="text-2xl font-bold mb-4">BioPara</h3>
+              <p className="text-gray-400 mb-6 leading-relaxed">
                 منصة متخصصة في بيع الأعشاب الطبية بجودة عالية وأسعار مناسبة. نقدم لك أفضل المنتجات الطبيعية من مصادر موثوقة.
               </p>
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors cursor-pointer">
-                  <MessageCircle className="w-5 h-5" />
+                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center hover:bg-green-700 transition-colors cursor-pointer">
+                  <MessageCircle className="w-6 h-6" />
                 </div>
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
-                  <Phone className="w-5 h-5" />
+                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors cursor-pointer">
+                  <Phone className="w-6 h-6" />
                 </div>
               </div>
             </div>
             <div>
               <h4 className="font-bold text-lg mb-4">روابط سريعة</h4>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-2">
                 <li><Link href="/products?category=medical-herbs" className="text-gray-400 hover:text-green-400 transition-colors">الأعشاب الطبية</Link></li>
                 <li><Link href="/promotions" className="text-gray-400 hover:text-green-400 transition-colors">العروض</Link></li>
                 <li><Link href="/about" className="text-gray-400 hover:text-green-400 transition-colors">من نحن</Link></li>
@@ -328,7 +362,7 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-bold text-lg mb-4">تواصل معنا</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2 text-gray-400">
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-green-400" />
                   +212 673020264
@@ -344,7 +378,7 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
-          <div className="mt-12 pt-6 border-t border-gray-800 text-center text-sm text-gray-400">
+          <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
             <div>© {new Date().getFullYear()} BioPara. جميع الحقوق محفوظة.</div>
             <div className="mt-2">صنع بـ ❤️ في المغرب | متخصص في الأعشاب الطبية</div>
           </div>
