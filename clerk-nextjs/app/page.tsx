@@ -21,7 +21,6 @@ export default function HomePage() {
   const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
@@ -58,7 +57,6 @@ export default function HomePage() {
             <nav className="hidden md:flex items-center space-x-reverse space-x-8">
               <Link href="/" className="text-gray-700 hover:text-green-600">الرئيسية</Link>
               
-              {/* Products Dropdown */}
               <div className="relative">
                 <button
                   onMouseEnter={() => setProductsDropdownOpen(true)}
@@ -100,7 +98,6 @@ export default function HomePage() {
             </nav>
 
             <div className="hidden md:flex items-center space-x-reverse space-x-4">
-              {/* Search Button */}
               <div className="relative">
                 <button 
                   onClick={() => setSearchOpen(!searchOpen)}
@@ -128,7 +125,6 @@ export default function HomePage() {
                       </button>
                     </form>
                     
-                    {/* Search Results Dropdown */}
                     {searchQuery && (
                       <div className="mt-3 max-h-64 overflow-y-auto">
                         {filteredProducts.length > 0 ? (
@@ -164,12 +160,10 @@ export default function HomePage() {
                 )}
               </div>
 
-              {/* User Button */}
               <Link href="/auth/login" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <User className="w-5 h-5" />
               </Link>
 
-              {/* Cart Button */}
               <Link href="/cart" className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
                 <ShoppingCart className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">
@@ -235,8 +229,32 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Stats Section */}
       <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">15+</div>
+              <div className="text-gray-600">سنة خبرة</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
+              <div className="text-gray-600">منتج طبي</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">10K+</div>
+              <div className="text-gray-600">عميل راض</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-2">24/7</div>
+              <div className="text-gray-600">دعم فني</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">منتجاتنا المميزة</h2>
@@ -290,13 +308,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Us Section */}
+      {/* Features Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">من نحن</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">لماذا تختار BioPara؟</h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              نحن فريق متخصص في الأعشاب الطبية الطبيعية، نقدم لكم أفضل المنتجات من مصادر موثوقة
+              نقدم لكم أفضل جودة وأسعار تنافسية في الأعشاب الطبية
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -326,183 +344,6 @@ export default function HomePage() {
               <p className="text-gray-600 leading-relaxed">
                 أكثر من 15 عاماً في مجال الأعشاب الطبية
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">خدماتنا</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              نقدم مجموعة شاملة من الخدمات لضمان رضا عملائنا
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-                <Truck className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">توصيل سريع</h3>
-              <p className="text-gray-600 leading-relaxed">
-                توصيل لجميع أنحاء المغرب خلال 24-48 ساعة
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-                <Shield className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">ضمان الجودة</h3>
-              <p className="text-gray-600 leading-relaxed">
-                جميع منتجاتنا مضمونة 100% ويمكن إرجاعها
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-                <Heart className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">استشارات مجانية</h3>
-              <p className="text-gray-600 leading-relaxed">
-                فريق متخصص لتقديم النصائح الطبية المجانية
-              </p>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow group">
-              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
-                <Clock className="w-8 h-8 text-green-600 group-hover:text-white transition-colors" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">دعم 24/7</h3>
-              <p className="text-gray-600 leading-relaxed">
-                فريق دعم متخصص جاهز لمساعدتك في أي وقت
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">فريق العمل</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              تعرف على فريقنا المتخصص في الأعشاب الطبية
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center group">
-              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">د. أحمد محمد</h3>
-              <p className="text-green-600 font-medium mb-3">مدير طبي</p>
-              <p className="text-gray-600 text-sm">
-                خبير في الأعشاب الطبية بأكثر من 20 عاماً خبرة
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">فاطمة علي</h3>
-              <p className="text-green-600 font-medium mb-3">خبيرة تغذية</p>
-              <p className="text-gray-600 text-sm">
-                متخصصة في التغذية العلاجية والأعشاب الطبيعية
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">محمد سعيد</h3>
-              <p className="text-green-600 font-medium mb-3">صيدلاني</p>
-              <p className="text-gray-600 text-sm">
-                متخصص في الأدوية العشبية والمكملات الغذائية
-              </p>
-            </div>
-            <div className="text-center group">
-              <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 overflow-hidden">
-                <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-white" />
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">سارة أحمد</h3>
-              <p className="text-green-600 font-medium mb-3">مستشارة طبية</p>
-              <p className="text-gray-600 text-sm">
-                خبيرة في الطب البديل والعلاج بالأعشاب
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">آراء عملائنا</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              ماذا يقول عملاؤنا عن تجربتهم مع أعشابنا الطبية
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "الأعشاب الطبية أصلية 100% والنتائج مذهلة. أنصح الجميع بالتعامل مع BioPara"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                <div>
-                  <h4 className="font-bold text-gray-900">فاطمة أحمد</h4>
-                  <p className="text-gray-600 text-sm">عميلة منتظمة</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "جودة عالية وأسعار مناسبة جداً. الأعشاب ساعدتني كثيراً في تحسين صحتي"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                <div>
-                  <h4 className="font-bold text-gray-900">محمد علي</h4>
-                  <p className="text-gray-600 text-sm">عميل دائم</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-              <div className="flex mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                "خدمة ممتازة ومنتجات متنوعة. سأستمر في التعامل معكم دائماً"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                <div>
-                  <h4 className="font-bold text-gray-900">سارة محمد</h4>
-                  <p className="text-gray-600 text-sm">عميلة جديدة</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
