@@ -1,88 +1,100 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { HelpCircle, MessageCircle, Phone, ChevronLeft } from "lucide-react";
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 
 export default function HelpPage() {
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+
+  const faqs = [
+    {
+      id: '1',
+      question: 'كيف أطلب المنتجات؟',
+      answer: 'يمكنك البحث عن المنتجات المطلوبة والضغط على "أضف للسلة" ثم الانتقال للدفع والشراء.',
+    },
+    {
+      id: '2',
+      question: 'ما هي طرق الدفع المتاحة؟',
+      answer: 'نوفر عدة طرق دفع آمنة منها: بطاقات الائتمان، التحويل البنكي، والدفع عند الاستلام.',
+    },
+    {
+      id: '3',
+      question: 'كم مدة التوصيل؟',
+      answer: 'التوصيل العادي يأخذ من 3 إلى 5 أيام عمل، بينما التوصيل السريع يأخذ يوم أو يومين.',
+    },
+    {
+      id: '4',
+      question: 'هل التوصيل مجاني؟',
+      answer: 'نعم، التوصيل مجاني للطلبات التي تزيد عن 100 ريال سعودي.',
+    },
+    {
+      id: '5',
+      question: 'كيف أسترجع المنتج؟',
+      answer: 'يمكنك استرجاع المنتج خلال 14 يوم من استلامك للطلب، شريطة أن يكون بحالته الأصلية.',
+    },
+    {
+      id: '6',
+      question: 'هل المنتجات آمنة للاستخدام؟',
+      answer: 'نعم، جميع المنتجات طبيعية وآمنة 100%، لكن يفضل استشارة الطبيب قبل الاستخدام.',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-8">
-            <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold">
-              <HelpCircle className="w-4 h-4" />
-              مركز المساعدة
+    <div className="min-h-screen py-12 bg-gray-50">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">المساعدة والأسئلة الشائعة</h1>
+          <p className="text-gray-600">إجابات على الأسئلة الشائعة حول المتجر والمنتجات</p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-md p-8 space-y-4">
+          {faqs.map((faq) => (
+            <div
+              key={faq.id}
+              className="border border-gray-200 rounded-lg overflow-hidden"
+            >
+              <button
+                onClick={() =>
+                  setExpandedFaq(expandedFaq === faq.id ? null : faq.id)
+                }
+                className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <h3 className="font-bold text-gray-900 text-lg text-right">
+                  {faq.question}
+                </h3>
+                <ChevronDown
+                  size={24}
+                  className={`text-primary-600 transition-transform ${
+                    expandedFaq === faq.id ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {expandedFaq === faq.id && (
+                <div className="bg-gray-50 p-4 border-t border-gray-200">
+                  <p className="text-gray-700 text-lg leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              )}
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mt-4">كيف يمكننا مساعدتك؟</h1>
-            <p className="text-gray-600 mt-3">
-              هنا ستجد إجابات سريعة وروابط مفيدة. إذا احتجت دعمًا مباشرًا تواصل معنا عبر واتساب.
-            </p>
-          </div>
+          ))}
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Link
-              href="/faq"
-              className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
-            >
-              <div className="font-bold text-gray-900">الأسئلة الشائعة</div>
-              <div className="text-sm text-gray-600 mt-1">أجوبة لأكثر الأسئلة تكرارًا.</div>
-            </Link>
-
-            <Link
-              href="/delivery"
-              className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
-            >
-              <div className="font-bold text-gray-900">التوصيل</div>
-              <div className="text-sm text-gray-600 mt-1">معلومات الشحن والمدة والمدن.</div>
-            </Link>
-
-            <Link
-              href="/payment"
-              className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
-            >
-              <div className="font-bold text-gray-900">طرق الدفع</div>
-              <div className="text-sm text-gray-600 mt-1">شرح طريقة الدفع عبر واتساب.</div>
-            </Link>
-
-            <Link
-              href="/contact"
-              className="bg-white rounded-2xl border border-gray-200 p-5 hover:border-emerald-200 hover:bg-emerald-50/30 transition-colors"
-            >
-              <div className="font-bold text-gray-900">اتصل بنا</div>
-              <div className="text-sm text-gray-600 mt-1">دعم سريع ومباشر.</div>
-            </Link>
-          </div>
-
-          <div className="mt-8 bg-white rounded-2xl border border-gray-200 p-6">
-            <h2 className="text-xl font-extrabold text-gray-900 mb-4">تواصل سريع</h2>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href="tel:+212673020264"
-                className="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold px-5 py-3 rounded-2xl transition-colors"
-              >
-                <Phone className="w-5 h-5" />
-                +212 673020264
-              </a>
-              <a
-                href="https://wa.me/212673020264"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-3 rounded-2xl transition-colors"
-              >
-                <MessageCircle className="w-5 h-5" />
-                تواصل عبر واتساب
-              </a>
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 font-semibold px-5 py-3 rounded-2xl transition-colors"
-              >
-                العودة للرئيسية
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-            </div>
-          </div>
+        {/* Contact Section */}
+        <div className="mt-12 bg-white rounded-xl shadow-md p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            هل لم تجد إجابتك؟
+          </h2>
+          <p className="text-gray-600 mb-6">
+            تواصل معنا مباشرة وفريق الدعم سيساعدك فوراً
+          </p>
+          <a
+            href="/contact"
+            className="inline-block bg-primary-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-primary-700 transition-all"
+          >
+            اتصل بنا
+          </a>
         </div>
       </div>
     </div>
