@@ -39,7 +39,7 @@ export default function TestimonialCard({ name, role, avatar, content, rating, c
           </span>
         ))}
       </div>
-      <p className="text-gray-700 leading-relaxed">"{content}"</p>
+      <p className="text-gray-700 leading-relaxed">&ldquo;{content}&rdquo;</p>
     </div>
   );
 }
