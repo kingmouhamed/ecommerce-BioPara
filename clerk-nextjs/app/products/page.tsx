@@ -108,10 +108,6 @@ export default function ProductsPage() {
     return filtered;
   }, [searchQuery, selectedCategory, sortBy]);
 
-  if (selectedCategory === 'medical-herbs') {
-    return <MedicalHerbsLanding />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <div className="container mx-auto px-4 pt-6">
@@ -174,6 +170,7 @@ export default function ProductsPage() {
 
             {/* Category Filter */}
             <select
+              aria-label="التصفية حسب الفئة"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -187,6 +184,7 @@ export default function ProductsPage() {
 
             {/* Sort */}
             <select
+              aria-label="الترتيب حسب"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -201,6 +199,7 @@ export default function ProductsPage() {
             {/* View Mode */}
             <div className="flex items-center gap-2">
               <button
+                aria-label="عرض شبكي"
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'grid' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
@@ -209,6 +208,7 @@ export default function ProductsPage() {
                 <Grid className="w-5 h-5" />
               </button>
               <button
+                aria-label="عرض قائمة"
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'list' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
