@@ -1,22 +1,51 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Search, ShoppingCart, User, Menu, X, Star, ChevronLeft, 
   Shield, Truck, Clock, Award, Heart, Leaf, CheckCircle, 
   Calendar, UserCheck, ShieldCheck, MessageCircle, Phone, 
-  Package, Users, Target, Lightbulb, TrendingUp, Sparkles
+  Package, Users, Target, Lightbulb, TrendingUp, Sparkles,
+  ChevronDown
 } from 'lucide-react';
 import { herbalProductsUnified } from '../data';
 
 export default function HomePage() {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [productsDropdownOpen, setProductsDropdownOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
+    }
+  }, []);
 
   const featuredProducts = herbalProductsUnified
     .filter(p => p.category === 'medical-herbs')
     .slice(0, 8);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+      setSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
+
+  const filteredProducts = herbalProductsUnified.filter(product =>
+    product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  ).slice(0, 5);
 
   return (
     <div className="min-h-screen bg-white font-sans" dir="rtl">
@@ -28,27 +57,130 @@ export default function HomePage() {
             
             <nav className="hidden md:flex items-center space-x-reverse space-x-8">
               <Link href="/" className="text-gray-700 hover:text-green-600">الرئيسية</Link>
-              <Link href="/products" className="text-gray-700 hover:text-green-600">المنتجات</Link>
+              
+              {/* Products Dropdown */}
+              <div className="relative">
+                <button
+                  onMouseEnter={() => setProductsDropdownOpen(true)}
+                  onMouseLeave={() => setProductsDropdownOpen(false)}
+                  className="flex items-center gap-1 text-gray-700 hover:text-green-600 transition-colors"
+                >
+                  المنتجات
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                
+                {productsDropdownOpen && (
+                  <div 
+                    className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2"
+                    onMouseEnter={() => setProductsDropdownOpen(true)}
+                    onMouseLeave={() => setProductsDropdownOpen(false)}
+                  >
+                    <Link href="/products?category=medical-herbs" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                      الأعشاب الطبية
+                    </Link>
+                    <Link href="/products?category=essential-oils" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                      الزيوت العطرية
+                    </Link>
+                    <Link href="/products?category=herbal-teas" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                      الشاي العشبي
+                    </Link>
+                    <Link href="/products?category=supplements" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600">
+                      المكملات الغذائية
+                    </Link>
+                    <hr className="my-2 border-gray-200" />
+                    <Link href="/products" className="block px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 font-medium">
+                      جميع المنتجات
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
               <Link href="/about" className="text-gray-700 hover:text-green-600">من نحن</Link>
               <Link href="/contact" className="text-gray-700 hover:text-green-600">اتصل بنا</Link>
             </nav>
 
             <div className="hidden md:flex items-center space-x-reverse space-x-4">
-              <button className="p-2 text-gray-600 hover:text-green-600">
-                <Search className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-green-600">
+              {/* Search Button */}
+              <div className="relative">
+                <button 
+                  onClick={() => setSearchOpen(!searchOpen)}
+                  className="p-2 text-gray-600 hover:text-green-600 transition-colors"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+                
+                {searchOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+                    <form onSubmit={handleSearch} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="ابحث عن منتج..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+                        autoFocus
+                      />
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        بحث
+                      </button>
+                    </form>
+                    
+                    {/* Search Results Dropdown */}
+                    {searchQuery && (
+                      <div className="mt-3 max-h-64 overflow-y-auto">
+                        {filteredProducts.length > 0 ? (
+                          filteredProducts.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/products/${product.id}`}
+                              className="block p-3 hover:bg-gray-50 border-b border-gray-100"
+                              onClick={() => {
+                                setSearchOpen(false);
+                                setSearchQuery('');
+                              }}
+                            >
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={product.image || '/images/placeholders/product-placeholder.jpg'}
+                                  alt={product.title}
+                                  className="w-12 h-12 object-cover rounded"
+                                />
+                                <div>
+                                  <h4 className="font-medium text-gray-900">{product.title}</h4>
+                                  <p className="text-sm text-gray-600">{product.price} درهم</p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-center py-4">لا توجد نتائج</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* User Button */}
+              <Link href="/auth/login" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <User className="w-5 h-5" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-green-600 relative">
+              </Link>
+
+              {/* Cart Button */}
+              <Link href="/cart" className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
                 <ShoppingCart className="w-5 h-5" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">0</span>
-              </button>
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">
+                  {cartItems.length}
+                </span>
+              </Link>
             </div>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-green-600"
+              className="md:hidden p-2 text-gray-600 hover:text-green-600 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -57,10 +189,12 @@ export default function HomePage() {
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-gray-200 py-4">
               <nav className="flex flex-col space-y-4">
-                <Link href="/" className="text-gray-700 hover:text-green-600">الرئيسية</Link>
-                <Link href="/products" className="text-gray-700 hover:text-green-600">المنتجات</Link>
-                <Link href="/about" className="text-gray-700 hover:text-green-600">من نحن</Link>
-                <Link href="/contact" className="text-gray-700 hover:text-green-600">اتصل بنا</Link>
+                <Link href="/" className="text-gray-700 hover:text-green-600 transition-colors">الرئيسية</Link>
+                <Link href="/products" className="text-gray-700 hover:text-green-600 transition-colors">المنتجات</Link>
+                <Link href="/about" className="text-gray-700 hover:text-green-600 transition-colors">من نحن</Link>
+                <Link href="/contact" className="text-gray-700 hover:text-green-600 transition-colors">اتصل بنا</Link>
+                <Link href="/cart" className="text-gray-700 hover:text-green-600 transition-colors">سلة التسوق</Link>
+                <Link href="/auth/login" className="text-gray-700 hover:text-green-600 transition-colors">تسجيل الدخول</Link>
               </nav>
             </div>
           )}

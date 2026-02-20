@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ProductFilters from '../../components/ProductFilters';
 import ProductList from '../../components/ProductList';
-import MedicalHerbsLanding from '../../components/medical-herbs/MedicalHerbsLanding';
 import { allProducts, Product } from '../../data/index';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
 
