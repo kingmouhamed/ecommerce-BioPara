@@ -1,97 +1,51 @@
-"use client";
+'use client';
 
-import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, Sparkles } from 'lucide-react';
-import BackgroundPattern from './BackgroundPattern';
+import { ShoppingCart, Leaf } from 'lucide-react';
 
-interface HeroSectionProps {
-  title: React.ReactNode;
-  subtitle: string;
-  backgroundImage?: string;
-  primaryAction?: {
-    text: string;
-    href: string;
-  };
-  secondaryAction?: {
-    text: string;
-    href: string;
-  };
-  badge?: {
-    text: string;
-    icon: React.ReactNode;
-  };
-}
-
-export default function HeroSection({
-  title,
-  subtitle,
-  backgroundImage = '/images/backgrounds/hero-bg.jpg',
-  primaryAction,
-  secondaryAction,
-  badge
-}: HeroSectionProps) {
+export default function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden">
-      <div className="absolute inset-0">
-        <Image
-          src={backgroundImage}
-          alt="Hero Background"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-            const target = e.currentTarget;
-            target.src = '/images/backgrounds/hero-bg.jpg';
-          }}
-          unoptimized={backgroundImage.endsWith('.png')}
-        />
-        <BackgroundPattern opacity={0.4} />
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 to-emerald-100/60"></div>
-      </div>
-      
-      <div className="container mx-auto px-4 py-16 md:py-24 relative">
-        <div className="text-center max-w-3xl mx-auto">
-          {badge && (
-            <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-bold mb-6">
-              {badge.icon}
-              {badge.text}
+    <div className="w-full bg-gradient-to-b from-primary-500 to-primary-600 text-white py-20">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-6 text-center md:text-right">
+            <div className="space-y-2">
+              <h1 className="text-5xl md:text-6xl font-bold text-white">BioParaa</h1>
+              <p className="text-xl text-green-100">الأعشاب الطبية الطبيعية 100%</p>
             </div>
-          )}
-          
-          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6">
-            {title}
-          </h1>
-          
-          <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
-            {subtitle}
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {primaryAction && (
+
+            <p className="text-lg text-green-50 max-w-xl mx-auto md:mx-0">
+              اكتشف قوة الطبيعة مع أفضل الأعشاب والنباتات الطبية المختارة بعناية. منتجات طبيعية خالصة لصحتك وعافيتك.
+            </p>
+
+            <div className="flex gap-4 justify-center md:justify-start">
               <Link
-                href={primaryAction.href}
-                className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-2xl transition-colors transform hover:scale-105"
+                href="/products"
+                className="flex items-center gap-2 bg-white text-primary-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all"
               >
-                {primaryAction.text}
-                <ChevronLeft className="w-5 h-5" />
+                <ShoppingCart size={20} />
+                تسوق الآن
               </Link>
-            )}
-            
-            {secondaryAction && (
+
               <Link
-                href={secondaryAction.href}
-                className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 font-bold px-6 py-3 rounded-2xl border border-gray-200 transition-colors transform hover:scale-105"
+                href="/category"
+                className="flex items-center gap-2 border-2 border-white text-white px-8 py-3 rounded-lg font-bold hover:bg-white hover:text-primary-600 transition-all"
               >
-                {secondaryAction.text}
-                <ChevronLeft className="w-5 h-5" />
+                <Leaf size={20} />
+                الفئات
               </Link>
-            )}
+            </div>
+          </div>
+
+          <div className="hidden md:block">
+            <img
+              src="https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="أعشاب طبية"
+              className="rounded-2xl shadow-2xl w-full h-96 object-cover"
+            />
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

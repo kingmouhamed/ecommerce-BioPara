@@ -131,6 +131,7 @@ export default function ProductsPage() {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              aria-label="تصفية حسب الفئة"
             >
               <option value="all">جميع الفئات</option>
               {categories.map((category) => (
@@ -145,6 +146,7 @@ export default function ProductsPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              aria-label="ترتيب المنتجات"
             >
               <option value="name">ترتيب حسب الاسم</option>
               <option value="price_low">السعر: من الأقل إلى الأعلى</option>
@@ -160,6 +162,7 @@ export default function ProductsPage() {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'grid' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
+                aria-label="عرض شبكي"
               >
                 <Grid className="w-5 h-5" />
               </button>
@@ -168,6 +171,7 @@ export default function ProductsPage() {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'list' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
+                aria-label="عرض قائمة"
               >
                 <List className="w-5 h-5" />
               </button>
@@ -192,27 +196,16 @@ export default function ProductsPage() {
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               : "space-y-4"
           }>
-            {sortedProducts.map((product) => {
-              const category = categories.find(c => c.id === product.category_id);
-              return (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    id: parseInt(product.id),
-                    title: product.name,
-                    price: product.price,
-                    rating: product.rating,
-                    image: product.image_url,
-                    category: category?.name || 'غير محدد',
-                    badge: product.rating >= 4.5 ? 'مميز' : undefined
-                  }}
-                  onAddToCart={(p) => {
-                    // Will implement cart functionality
-                    console.log('Added to cart:', p);
-                  }}
-                />
-              );
-            })}
+            {sortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={(p) => {
+                  // Will implement cart functionality
+                  console.log('Added to cart:', p);
+                }}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center py-12">
