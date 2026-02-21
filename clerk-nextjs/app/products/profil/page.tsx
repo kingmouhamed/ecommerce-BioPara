@@ -119,7 +119,10 @@ export default function ProfilePage() {
                   <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <User className="w-12 h-12 text-emerald-600" />
                   </div>
-                  <button className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow">
+                  <button 
+                    className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow"
+                    aria-label="تغيير الصورة الشخصية"
+                  >
                     <Camera className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
