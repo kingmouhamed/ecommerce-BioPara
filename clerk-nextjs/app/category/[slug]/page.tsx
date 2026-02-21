@@ -108,6 +108,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'grid' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
+                aria-label="عرض شبكي"
               >
                 <Grid className="w-5 h-5" />
               </button>
@@ -116,6 +117,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'list' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
                 }`}
+                aria-label="عرض قائمة"
               >
                 <List className="w-5 h-5" />
               </button>
@@ -135,6 +137,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            aria-label="ترتيب المنتجات"
           >
             <option value="name">ترتيب حسب الاسم</option>
             <option value="price_low">السعر: من الأقل إلى الأعلى</option>
@@ -153,15 +156,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
-                product={{
-                  id: parseInt(product.id),
-                  title: product.name,
-                  price: product.price,
-                  rating: product.rating,
-                  image: product.image_url,
-                  category: category.name,
-                  badge: product.rating >= 4.5 ? 'مميز' : undefined
-                }}
+                product={product}
                 onAddToCart={(p) => {
                   // Will implement cart functionality
                   console.log('Added to cart:', p);

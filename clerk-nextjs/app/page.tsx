@@ -64,10 +64,7 @@ export default function Home() {
 
   return (
     <>
-      <HeroSection 
-        title="صيدليتك الطبيعية"
-        subtitle="أعشاب ومنتجات عضوية عالية الجودة لحياة صحية."
-      />
+      <HeroSection />
 
       {/* Features Section */}
       <section className="py-16 bg-gray-50">
