@@ -40,7 +40,10 @@ export default function Navigation({ cartCount = 0, isAuthenticated = false }: N
 
           {/* Right Icons */}
           <div className="flex items-center gap-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full">
+            <button 
+              className="p-2 hover:bg-gray-100 rounded-full"
+              aria-label="بحث عن المنتجات"
+            >
               <Search size={20} className="text-gray-700" />
             </button>
 
@@ -67,6 +70,7 @@ export default function Navigation({ cartCount = 0, isAuthenticated = false }: N
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 hover:bg-gray-100 rounded-full"
+              aria-label={isMenuOpen ? "إغلاق القائمة" : "فتح القائمة"}
             >
               {isMenuOpen ? (
                 <X size={20} className="text-gray-700" />
