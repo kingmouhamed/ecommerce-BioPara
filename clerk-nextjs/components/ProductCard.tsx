@@ -61,6 +61,7 @@ export default function ProductCard({
           <button
             onClick={handleToggleFavorite}
             className="absolute top-3 left-3 bg-white rounded-full p-2 hover:bg-gray-100 transition-all"
+            aria-label={isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة"}
           >
             <Heart
               size={20}
