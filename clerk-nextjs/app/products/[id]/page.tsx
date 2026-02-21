@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import { supabase, Tables } from '../../../lib/supabase-client';
 import ProductCard from '@/components/ProductCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { Star, Filter, Grid, List } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -116,10 +117,12 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative bg-gray-100 rounded-lg overflow-hidden aspect-square">
-              <img
+              <Image
                 src={allImages[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
               />
               {product.rating >= 4.5 && (
                 <div className="absolute top-4 right-4 bg-emerald-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
@@ -138,11 +141,13 @@ export default function ProductDetailPage() {
                     className={`relative w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
                       selectedImage === index ? 'border-emerald-600' : 'border-gray-200'
                     }`}
+                    aria-label={`عرض الصورة ${index + 1}`}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </button>
                 ))}
@@ -247,7 +252,10 @@ export default function ProductDetailPage() {
                 >
                   أضف إلى السلة
                 </button>
-                <button className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button 
+                  className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  aria-label="إضافة للمفضلة"
+                >
                   <Star className="w-5 h-5 text-gray-400" />
                 </button>
               </div>
@@ -270,15 +278,7 @@ export default function ProductDetailPage() {
               {relatedProducts.map((relatedProduct) => (
                 <ProductCard
                   key={relatedProduct.id}
-                  product={{
-                    id: parseInt(relatedProduct.id),
-                    title: relatedProduct.name,
-                    price: relatedProduct.price,
-                    rating: relatedProduct.rating,
-                    image: relatedProduct.image_url,
-                    category: category?.name || 'غير محدد',
-                    badge: relatedProduct.rating >= 4.5 ? 'مميز' : undefined
-                  }}
+                  product={relatedProduct}
                   onAddToCart={(p) => {
                     console.log('Added to cart:', p);
                   }}
