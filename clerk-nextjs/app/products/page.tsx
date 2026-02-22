@@ -1,64 +1,256 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { supabase, Tables } from '../../lib/supabase-client';
 import ProductCard from '@/components/ProductCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { Star, Filter, Grid, List, Search, SlidersHorizontal } from 'lucide-react';
 
+// بيانات الأعشاب الطبية مع الصور
+const medicalHerbsProducts = [
+  {
+    id: '1',
+    name: 'نعناع طازج',
+    description: 'نعناع عضوي طازج غني بالزيوت العطرية، مثالي للشاي والعلاج الطبيعي',
+    long_description: null,
+    price: 25.99,
+    rating: 4.8,
+    review_count: 156,
+    image_url: '/images/medical-herbs/mint-herb.jpg',
+    images: ['/images/medical-herbs/mint-herb.jpg'],
+    category_id: 'medical-herbs',
+    stock_quantity: 50,
+    sku: null,
+    is_featured: true,
+    is_active: true,
+    benefits: ['يساعد على الهضم', 'يطرد الانتفاخ', 'يخفف الصداع', 'منعش طبيعي'],
+    usage_instructions: 'يمكن استخدامه طازجاً أو مجففاً لإعداد الشاي أو كتوابل للطعام',
+    ingredients: 'نعناع طازج 100% عضوي',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '2',
+    name: 'البابونج العلاجي',
+    description: 'أزهار البابونج الطبيعية المفيدة للاسترخاء والنوم الجيد',
+    long_description: null,
+    price: 32.50,
+    rating: 4.9,
+    review_count: 203,
+    image_url: '/images/medical-herbs/camomile-herb.jpg',
+    images: ['/images/medical-herbs/camomile-herb.jpg'],
+    category_id: 'medical-herbs',
+    stock_quantity: 75,
+    sku: null,
+    is_featured: true,
+    is_active: true,
+    benefits: ['يساعد على النوم', 'يخفف التوتر', 'مضاد للالتهابات', 'هادئ للأعصاب'],
+    usage_instructions: 'ينقع ملعقة صغيرة من الأزهار في ماء ساخن لمدة 5-10 دقائق',
+    ingredients: 'أزهار البابونج 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '3',
+    name: 'خزامى عطري',
+    description: 'زهور الخزامى العطرية ذات الفوائد العلاجية والاسترخائية',
+    price: 45.00,
+    rating: 4.7,
+    review_count: 89,
+    image_url: '/images/medical-herbs/lavender-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 60,
+    is_featured: true,
+    is_active: true,
+    benefits: ['يخفف القلق', 'يساعد على النوم', 'طارد للحشرات', 'عطري جميل'],
+    usage_instructions: 'يستخدم في الزيوت العطرية أو كأكياس شاي عشبي',
+    ingredients: 'زهور الخزامى 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '4',
+    name: 'زنجبيل عضوي',
+    description: 'زنجبيل طازج عضوي غني بالمواد الفعالة للعلاج الطبيعي',
+    price: 28.75,
+    rating: 4.6,
+    review_count: 142,
+    image_url: '/images/medical-herbs/ginger-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 80,
+    is_featured: true,
+    is_active: true,
+    benefits: ['يخفف الغثيان', 'مضاد للالتهابات', 'يحسن الهضم', 'يخفف الآلام'],
+    usage_instructions: 'يضاف للطعام أو المشروبات الساخنة كمنشط طبيعي',
+    ingredients: 'جذور الزنجبيل 100% عضوية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '5',
+    name: 'كركم ذهبي',
+    description: 'كركم عضوي عالي الجودة غني بالكركمين ومضادات الأكسدة',
+    price: 38.90,
+    rating: 4.8,
+    review_count: 178,
+    image_url: '/images/medical-herbs/turmeric-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 45,
+    is_featured: true,
+    is_active: true,
+    benefits: ['مضاد للأكسدة', 'مضاد للالتهابات', 'يحسن المناعة', 'صحي للقلب'],
+    usage_instructions: 'يضاف للطعام أو المشروبات الصحية',
+    ingredients: 'مسحوق الكركم 100% عضوي',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '6',
+    name: 'إكليل الجبل',
+    description: 'إكليل الجبل الطازج المعروف بفوائده العلاجية والعطرية',
+    price: 26.50,
+    rating: 4.5,
+    review_count: 96,
+    image_url: '/images/medical-herbs/rosemary-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 55,
+    is_featured: true,
+    is_active: true,
+    benefits: ['يحسن الذاكرة', 'يخفف التوتر', 'طارد للحشرات', 'عطري منعش'],
+    usage_instructions: 'يستخدم طازجاً في الطهي أو كتوابل عطرية',
+    ingredients: 'أوراق إكليل الجبل 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '7',
+    name: 'زعتر بري',
+    description: 'زعتر بري عضوي عطري ومفيد للصحة',
+    price: 24.50,
+    rating: 4.6,
+    review_count: 124,
+    image_url: '/images/medical-herbs/thyme-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 65,
+    is_featured: false,
+    is_active: true,
+    benefits: ['مضاد للميكروبات', 'يحسن التنفس', 'طارد للحشرات', 'عطري جميل'],
+    usage_instructions: 'يستخدم في الطهي أو كشاي عشبي',
+    ingredients: 'أوراق الزعتر 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '8',
+    name: 'حكيم طبي',
+    description: 'حكيم طازج عضوي ذو فوائد علاجية متعددة',
+    price: 23.00,
+    rating: 4.3,
+    review_count: 54,
+    image_url: '/images/medical-herbs/sage-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 45,
+    is_featured: false,
+    is_active: true,
+    benefits: ['يحسن الذاكرة', 'يخفف التوتر', 'طارد للحشرات', 'عطري منعش'],
+    usage_instructions: 'يستخدم طازجاً في الطهي أو كشاي عشبي',
+    ingredients: 'أوراق الحكيم 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '9',
+    name: 'يانسون طبي',
+    description: 'يانسون عضوي عطري ومفيد للاسترخاء والنوم',
+    price: 29.00,
+    rating: 4.5,
+    review_count: 78,
+    image_url: '/images/medical-herbs/anise-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 50,
+    is_featured: false,
+    is_active: true,
+    benefits: ['يساعد على النوم', 'يخفف التوتر', 'يحسن الهضم', 'طارد للغازات'],
+    usage_instructions: 'ينقع في ماء ساخن لتحضير الشاي العشبي',
+    ingredients: 'بذور اليانسون 100% طبيعية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '10',
+    name: 'قرفة طبية',
+    description: 'قرفة عضوية عالية الجودة ذات فوائد صحية متعددة',
+    price: 31.50,
+    rating: 4.8,
+    review_count: 145,
+    image_url: '/images/medical-herbs/cinnamon-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 70,
+    is_featured: false,
+    is_active: true,
+    benefits: ['تنظم السكر', 'مضاد للأكسدة', 'تخفف الالتهابات', 'تحسن الهضم'],
+    usage_instructions: 'تضاف للمشروبات الساخنة أو الحلويات',
+    ingredients: 'لحاء القرفة 100% عضوي',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '11',
+    name: 'قرنفل طبي',
+    description: 'قرنفل عضوي طازج ذو فوائد طبية وعطرية',
+    price: 35.00,
+    rating: 4.7,
+    review_count: 87,
+    image_url: '/images/medical-herbs/clove-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 30,
+    is_featured: false,
+    is_active: true,
+    benefits: ['مخدر للألم', 'مضاد للبكتيريا', 'يحسن صحة الفم', 'طارد للحشرات'],
+    usage_instructions: 'يستخدم في الطهي أو كعلاج طبيعي',
+    ingredients: 'براعم القرنفل 100% طبيعي',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: '12',
+    name: 'مردقوش طبي',
+    description: 'مردقوش طازج عضوي ذو فوائد علاجية متعددة',
+    price: 22.00,
+    rating: 4.4,
+    review_count: 67,
+    image_url: '/images/medical-herbs/mint-herb.jpg',
+    category_id: 'medical-herbs',
+    stock_quantity: 40,
+    is_featured: false,
+    is_active: true,
+    benefits: ['مضاد للبكتيريا', 'يحسن الهضم', 'يخفف السعال', 'غني بمضادات الأكسدة'],
+    usage_instructions: 'يضاف للطعام الإيطالي أو كشاي عشبي',
+    ingredients: 'أوراق المردقوش 100% عضوية',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+];
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Tables['products'][]>([]);
-  const [categories, setCategories] = useState<Tables['categories'][]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch categories
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .order('name');
-
-        if (categoriesError) {
-          console.error('Error fetching categories:', categoriesError);
-        } else {
-          setCategories(categoriesData || []);
-        }
-
-        // Fetch products
-        const { data: productsData, error: productsError } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .order('name');
-
-        if (productsError) {
-          console.error('Error fetching products:', productsError);
-        } else {
-          setProducts(productsData || []);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    // استخدام بيانات الأعشاب الطبية المحلية
+    setProducts(medicalHerbsProducts as Tables['products'][]);
+    setLoading(false);
   }, []);
 
-  // Filter products based on search and category
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category_id === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Filter products based on search
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -94,7 +286,7 @@ export default function ProductsPage() {
           <Breadcrumbs
             items={[
               { label: 'الرئيسية', href: '/' },
-              { label: 'المنتجات', href: '/products' }
+              { label: 'الأعشاب الطبية', href: '/products' }
             ]}
           />
         </div>
@@ -103,8 +295,8 @@ export default function ProductsPage() {
       {/* Page Header */}
       <div className="bg-white">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">جميع المنتجات</h1>
-          <p className="text-gray-600">اكتشف مجموعة واسعة من الأعشاب الطبية الطبيعية</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">الأعشاب الطبية</h1>
+          <p className="text-gray-600">اكتشف مجموعة واسعة من الأعشاب الطبية الطبيعية 100%</p>
         </div>
       </div>
 
@@ -118,7 +310,7 @@ export default function ProductsPage() {
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="ابحث عن منتج..."
+                  placeholder="ابحث عن عشب طبي..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -126,27 +318,11 @@ export default function ProductsPage() {
               </div>
             </div>
 
-            {/* Category Filter */}
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              aria-label="تصفية حسب الفئة"
-            >
-              <option value="all">جميع الفئات</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-
             {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              aria-label="ترتيب المنتجات"
             >
               <option value="name">ترتيب حسب الاسم</option>
               <option value="price_low">السعر: من الأقل إلى الأعلى</option>
@@ -201,7 +377,6 @@ export default function ProductsPage() {
                 key={product.id}
                 product={product}
                 onAddToCart={(p) => {
-                  // Will implement cart functionality
                   console.log('Added to cart:', p);
                 }}
               />
