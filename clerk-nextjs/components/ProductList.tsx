@@ -193,12 +193,7 @@ export default function ProductList({
             {paginatedProducts.map((product) => (
               <ProductCard
                 key={product.id}
-                product={{
-                  ...product,
-                  title: product.name,
-                  originalPrice: product.oldPrice,
-                  image: getProductImage(product)
-                }}
+                product={product}
                 onAddToCart={handleAddToCart}
               />
             ))}
