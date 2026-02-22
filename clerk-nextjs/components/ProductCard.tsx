@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
-import { Tables } from '@/lib/supabase-client';
+import { Product as UnifiedProduct } from '@/data/index';
 import { useState, useCallback, useEffect } from 'react';
 
 interface ProductCardProps {
-  product: Tables['products'];
-  onAddToCart?: (product: Tables['products']) => void;
+  product: UnifiedProduct;
+  onAddToCart?: (product: UnifiedProduct) => void;
   onToggleFavorite?: (productId: string, isFavorite: boolean) => void;
   isFavorite?: boolean;
 }
@@ -38,7 +38,7 @@ export default function ProductCard({
   const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     if (onToggleFavorite) {
-      onToggleFavorite(product.id, !isFavorite);
+      onToggleFavorite(product.id.toString(), !isFavorite);
     }
   }, [onToggleFavorite, product.id, isFavorite]);
 
@@ -48,7 +48,7 @@ export default function ProductCard({
         {/* Product Image */}
         <div className="relative overflow-hidden bg-gray-100 h-48">
           <Image
-            src={product.image_url}
+            src={product.image}
             alt={product.name}
             width={300}
             height={192}
@@ -56,91 +56,78 @@ export default function ProductCard({
           />
 
           {/* Badge */}
-          {product.is_featured && (
+          {product.badge && (
             <div className="absolute top-3 right-3 bg-primary-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-              مميز
+              {product.badge}
             </div>
           )}
 
-          {/* Favorite Button */}
-          <button
-            onClick={handleToggleFavorite}
-            className="absolute top-3 left-3 bg-white rounded-full p-2 hover:bg-gray-100 transition-all"
-            aria-label={isFavorite ? "إزالة من المفضلة" : "إضافة إلى المفضلة"}
-          >
-            <Heart
-              size={20}
-              className={isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}
-            />
-          </button>
-
-          {/* Stock Status */}
-          {product.stock_quantity === 0 && (
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white font-bold">غير متوفر</span>
+          {/* Stock Badge */}
+          {product.inStock === false && (
+            <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+              نفد المخزون
             </div>
           )}
         </div>
 
         {/* Product Info */}
-        <div className="p-4 flex-1 flex flex-col justify-between">
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg text-gray-800 line-clamp-2">
-              {product.name}
-            </h3>
+        <div className="p-4 flex-grow">
+          <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+          
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+              ))}
+            </div>
+            <span className="text-sm text-gray-600">{product.rating}</span>
+            {product.reviews && (
+              <span className="text-sm text-gray-500">({product.reviews} تقييم)</span>
+            )}
+          </div>
 
-            <p className="text-sm text-gray-600 line-clamp-2">
-              {product.description}
-            </p>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    className={
-                      i < Math.round(product.rating)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
-                    }
-                  />
-                ))}
-              </div>
-              <span className="text-xs text-gray-500">
-                ({product.review_count})
-              </span>
+          {/* Price */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <span className="text-xl font-bold text-green-600">{product.price} درهم</span>
+              {product.originalPrice && (
+                <span className="text-gray-400 line-through text-sm mr-2">{product.originalPrice} درهم</span>
+              )}
             </div>
           </div>
 
-          {/* Price and Button */}
-          <div className="space-y-3 mt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-primary-600">
-                {product.price.toFixed(2)} ر.س
-              </span>
-            </div>
-
+          {/* Actions */}
+          <div className="flex gap-2">
             <button
               onClick={handleAddToCart}
-              disabled={product.stock_quantity === 0 || isAdding}
-              className="w-full bg-primary-500 text-white py-2 rounded-lg font-bold hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={isAdding || product.inStock === false}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg font-bold transition-all ${
+                isAdding || product.inStock === false
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
             >
-              <ShoppingCart size={18} />
-              أضف للسلة
+              <ShoppingCart className="w-4 h-4" />
+              {isAdding ? 'جاري الإضافة...' : product.inStock === false ? 'نفد المخزون' : 'أضف للسلة'}
+            </button>
+            
+            <button
+              onClick={handleToggleFavorite}
+              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
             </button>
           </div>
-        </div>
 
-        {/* Add to Cart Notification */}
-        {showNotification && (
-          <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
-            <div className="bg-white px-4 py-2 rounded-lg text-green-600 font-bold">
-              تمت الإضافة!
+          {/* Notification */}
+          {showNotification && (
+            <div className="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-lg z-10">
+              تمت الإضافة للسلة!
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </Link>
   );

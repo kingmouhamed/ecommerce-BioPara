@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { supabase, Tables } from '../lib/supabase-client';
-import { Zap, Shield, Leaf, Heart, Star, ShoppingCart, ChevronLeft, Menu, X, Search, User } from 'lucide-react';
+import { Zap, Shield, Leaf, Heart, Star, ShoppingCart, ChevronLeft, Menu, X, Search, User, Truck, Lock, RefreshCw, Award, Clock, TrendingUp, CheckCircle, MessageCircle } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 
 export default function Home() {
@@ -16,6 +16,17 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItems, setCartItems] = useState([]);
   const [mounted, setMounted] = useState(false);
+  const [bestSellers, setBestSellers] = useState<Tables['products'][]>([]);
+  
+  interface Testimonial {
+    id: number;
+    name: string;
+    rating: number;
+    comment: string;
+    avatar: string;
+  }
+  
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -24,7 +35,7 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
+        const [productsRes, categoriesRes, bestSellersRes] = await Promise.all([
           supabase
             .from('products')
             .select('*')
@@ -35,10 +46,49 @@ export default function Home() {
             .from('categories')
             .select('*')
             .limit(6),
+          supabase
+            .from('products')
+            .select('*')
+            .eq('is_active', true)
+            .order('rating', { ascending: false })
+            .limit(6),
         ]);
 
         if (productsRes.data) setFeaturedProducts(productsRes.data);
         if (categoriesRes.data) setCategories(categoriesRes.data);
+        if (bestSellersRes.data) setBestSellers(bestSellersRes.data);
+        
+        // Mock testimonials data
+        setTestimonials([
+          {
+            id: 1,
+            name: "فاطمة أحمد",
+            rating: 5,
+            comment: "منتجات ممتازة وجودة عالية. استخدمت زيت الأرغان وكانت النتائج رائعة!",
+            avatar: "/images/avatars/avatar1.jpg"
+          },
+          {
+            id: 2,
+            name: "محمد العلي",
+            rating: 5,
+            comment: "خدمة سريعة ومنتجات أصلية 100%. أنصح بالتعامل معهم",
+            avatar: "/images/avatars/avatar2.jpg"
+          },
+          {
+            id: 3,
+            name: "نورا سعيد",
+            rating: 4,
+            comment: "الأعشاب الطبية ساعدتني كثيراً في تحسين صحتي. شكراً لكم",
+            avatar: "/images/avatars/avatar3.jpg"
+          },
+          {
+            id: 4,
+            name: "عبدالله خالد",
+            rating: 5,
+            comment: "أسعار مناسبة وجودة ممتازة. سأستمر في الشراء من هذا المتجر",
+            avatar: "/images/avatars/avatar4.jpg"
+          }
+        ]);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -223,6 +273,17 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Promotional Banner */}
+      <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white py-3 text-center">
+        <div className="container mx-auto px-4">
+          <p className="text-sm font-bold flex items-center justify-center gap-2">
+            <Clock className="w-4 h-4" />
+            عرض خاص: خصم 20% على جميع المنتجات هذا الأسبوع فقط!
+            <span className="bg-white text-red-600 px-2 py-1 rounded text-xs font-bold">محدود الوقت</span>
+          </p>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <section className="relative py-16 md:py-24">
         <div className="absolute inset-0">
@@ -238,121 +299,356 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                أعشاب طبية
-                <span className="block text-green-300">طبيعية 100%</span>
-              </h1>
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-white font-bold">4.8/5</span>
+                  <span className="text-green-200">(2,156 تقييم)</span>
+                </div>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+                  أعشاب طبية
+                  <span className="block text-green-300">طبيعية 100%</span>
+                </h1>
+              </div>
               <p className="text-lg text-green-100 mb-8 leading-relaxed">
                 نقدم أفضل أنواع الأعشاب الطبية الطبيعية من مصادر موثوقة لضمان صحتك وسعادتك
               </p>
+              
+              {/* Trust Badges */}
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                  <Lock className="w-6 h-6 mx-auto mb-1 text-green-300" />
+                  <p className="text-xs text-white">دفع آمن</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                  <Truck className="w-6 h-6 mx-auto mb-1 text-green-300" />
+                  <p className="text-xs text-white">توصيل سريع</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                  <RefreshCw className="w-6 h-6 mx-auto mb-1 text-green-300" />
+                  <p className="text-xs text-white">ضمان استرجاع</p>
+                </div>
+              </div>
+              
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-green-600 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl"
                 >
+                  <ShoppingCart size={20} />
                   تسوق الآن
-                  <ChevronLeft className="w-5 h-5" />
                 </Link>
                 <Link
                   href="/about"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-900 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white hover:text-green-600 transition-all"
                 >
-                  معرفة المزيد
+                  <Leaf size={20} />
+                  المزيد
                 </Link>
               </div>
             </div>
+            
+            {/* Featured Product in Hero */}
             <div className="relative">
-              <div className="grid grid-cols-3 gap-2">
-                <Image src="/images/medical-herbs/mint-herb.jpg" alt="نعناع" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-                <Image src="/images/medical-herbs/camomile-herb.jpg" alt="البابونج" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-                <Image src="/images/medical-herbs/lavender-herb.jpg" alt="خزامى" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-                <Image src="/images/medical-herbs/ginger-herb.jpg" alt="زنجبيل" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-                <Image src="/images/medical-herbs/turmeric-herb.jpg" alt="كركم" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-                <Image src="/images/medical-herbs/rosemary-herb.jpg" alt="إكليل الجبل" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
-              </div>
+              {bestSellers.length > 0 && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                  <div className="absolute -top-3 -right-3 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
+                    الأكثر مبيعاً
+                  </div>
+                  <div className="relative">
+                    <Image
+                      src={bestSellers[0].image_url}
+                      alt={bestSellers[0].name}
+                      width={400}
+                      height={400}
+                      className="w-full h-80 object-cover rounded-xl mb-4"
+                    />
+                    <div className="absolute top-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold">
+                      {bestSellers[0].stock_quantity < 10 ? `متبقي ${bestSellers[0].stock_quantity} فقط` : 'متوفر'}
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">{bestSellers[0].name}</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <span className="text-green-200">{bestSellers[0].rating}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-2xl font-bold text-white">{bestSellers[0].price} درهم</span>
+                      <span className="text-green-200 line-through text-sm mr-2">{Math.round(bestSellers[0].price * 1.2)} درهم</span>
+                    </div>
+                    <Link
+                      href={`/products/${bestSellers[0].id}`}
+                      className="bg-white text-green-600 px-4 py-2 rounded-lg font-bold hover:bg-gray-100 transition-all"
+                    >
+                      اطلب الآن
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
-      {/* Stats Section */}
+
+      {/* Best Sellers Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-green-600 mb-2">{stat.number}</div>
-                <div className="text-gray-600">{stat.label}</div>
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <TrendingUp className="w-6 h-6 text-green-600" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">الأكثر مبيعاً</h2>
+            </div>
+            <p className="text-gray-600 text-lg">المنتجات التي يفضلها عملاؤنا</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {bestSellers.slice(0, 6).map((product) => (
+              <div key={product.id} className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div className="relative">
+                  <Image
+                    src={product.image_url}
+                    alt={product.name}
+                    width={300}
+                    height={200}
+                    className="w-full h-48 object-cover rounded-t-xl"
+                  />
+                  <div className="absolute top-3 right-3 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                    الأكثر مبيعاً
+                  </div>
+                  {product.stock_quantity < 10 && (
+                    <div className="absolute top-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold">
+                      متبقي {product.stock_quantity} فقط
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">{product.name}</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">{product.rating}</span>
+                    <span className="text-sm text-gray-500">({Math.floor(Math.random() * 200) + 50} تقييم)</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <span className="text-xl font-bold text-green-600">{product.price} درهم</span>
+                      <span className="text-gray-400 line-through text-sm mr-2">{Math.round(product.price * 1.2)} درهم</span>
+                    </div>
+                  </div>
+                  <button className="w-full bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                    <ShoppingCart className="w-4 h-4" />
+                    أضف للسلة
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Products */}
+      {/* Customer Reviews Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">منتجاتنا المميزة</h2>
-            <p className="text-gray-600 text-lg">اكتشف أفضل الأعشاب الطبية التي اخترناها لك</p>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <MessageCircle className="w-6 h-6 text-green-600" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">آراء العملاء</h2>
+            </div>
+            <p className="text-gray-600 text-lg">ماذا يقول عملاؤنا عنا</p>
           </div>
           
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-green-200 border-t-green-600"></div>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    onAddToCart={(p) => {
-                      console.log('Added to cart:', p);
-                    }}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {testimonials.map((testimonial) => (
+              <div key={testimonial.id} className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all">
+                <div className="flex items-center mb-4">
+                  <Image
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 rounded-full object-cover ml-3"
                   />
-                ))}
+                  <div>
+                    <h4 className="font-bold text-gray-900">{testimonial.name}</h4>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < testimonial.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600 italic">&ldquo;{testimonial.comment}&rdquo;</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-              <div className="text-center mt-12">
-                <Link
-                  href="/products"
-                  className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                >
-                  عرض كل المنتجات
-                  <ChevronLeft className="w-5 h-5" />
+      {/* Educational Content Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Award className="w-6 h-6 text-green-600" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">دليل الصحة</h2>
+            </div>
+            <p className="text-gray-600 text-lg">مقالات وإرشادات حول الأعشاب الطبية والصحة الطبيعية</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+              <Image
+                src="/images/blog/herbs-guide.jpg"
+                alt="دليل الأعشاب"
+                width={400}
+                height={200}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">فوائد الأعشاب الطبية</h3>
+                <p className="text-gray-600 mb-4">اكتشف الفوائد الصحية للأعشاب الطبية وكيفية استخدامها بشكل آمن وفعال</p>
+                <Link href="/blog/herbs-benefits" className="text-green-600 font-bold hover:text-green-700 transition-colors">
+                  اقرأ المزيد →
                 </Link>
               </div>
-            </>
-          )}
+            </article>
+            
+            <article className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+              <Image
+                src="/images/blog/natural-remedies.jpg"
+                alt="علاجات طبيعية"
+                width={400}
+                height={200}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">علاجات طبيعية للمناعة</h3>
+                <p className="text-gray-600 mb-4">أفضل الأعشاب لتعزيز جهاز المناعة وحماية الجسم من الأمراض</p>
+                <Link href="/blog/immunity-herbs" className="text-green-600 font-bold hover:text-green-700 transition-colors">
+                  اقرأ المزيد →
+                </Link>
+              </div>
+            </article>
+            
+            <article className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+              <Image
+                src="/images/blog/herbal-tea.jpg"
+                alt="شاي الأعشاب"
+                width={400}
+                height={200}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-3">فن تحضير شاي الأعشاب</h3>
+                <p className="text-gray-600 mb-4">طرق مثالية لتحضير شاي الأعشاب للحصول على أقصى فائدة صحية</p>
+                <Link href="/blog/herbal-tea-guide" className="text-green-600 font-bold hover:text-green-700 transition-colors">
+                  اقرأ المزيد →
+                </Link>
+              </div>
+            </article>
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
+      {/* Trust & Certification Section */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">لماذا تختار BioPara؟</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-              نقدم لكم أفضل جودة وأسعار تنافسية في الأعشاب الطبية
-            </p>
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Shield className="w-6 h-6 text-green-600" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">ضمان الجودة والثقة</h2>
+            </div>
+            <p className="text-gray-600 text-lg">نلتزم بأعلى معايير الجودة والسلامة</p>
           </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className="text-center group">
-                  <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors">
-                    <Icon className="w-10 h-10 text-green-600 group-hover:text-white transition-colors" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                </div>
-              );
-            })}
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">منتجات عضوية معتمدة</h3>
+              <p className="text-gray-600 text-sm">جميع منتجاتنا حاصلة على شهادات الجودة العضوية</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">دفع آمن ومشفر</h3>
+              <p className="text-gray-600 text-sm">نستخدم أحدث تقنيات التشفير لحماية بياناتك</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Truck className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">شحن سريع ومضمون</h3>
+              <p className="text-gray-600 text-sm">توصيل لكل أنحاء المملكة خلال 24-48 ساعة</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-20 h-20 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <RefreshCw className="w-10 h-10 text-green-600" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-2">ضمان استرجاع 100%</h3>
+              <p className="text-gray-600 text-sm">استرجاع كامل المبلغ خلال 30 يوم في حال عدم الرضا</p>
+            </div>
+          </div>
+          
+          {/* Payment Icons */}
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 mb-4">نقبل جميع وسائل الدفع الآمنة</p>
+            <div className="flex items-center justify-center gap-4">
+              <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-xs font-bold">VISA</span>
+              </div>
+              <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-xs font-bold">MC</span>
+              </div>
+              <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-xs font-bold">MADA</span>
+              </div>
+              <div className="w-16 h-10 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-xs font-bold">STC</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* WhatsApp Floating Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <a
+          href="https://wa.me/966500000000"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all transform hover:scale-110"
+          aria-label="تواصل معنا عبر واتساب"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </a>
+      </div>
+
+      {/* Free Shipping Banner */}
+      <div className="fixed bottom-6 right-6 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-40">
+        <div className="flex items-center gap-2">
+          <Truck className="w-4 h-4" />
+          <span className="text-sm font-bold">شحن مجاني للطلبات فوق 200 درهم</span>
+        </div>
+      </div>
+
       {/* Categories Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -394,13 +690,7 @@ export default function Home() {
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">اشترك في نشرتنا الإخبارية</h2>
             <p className="text-green-100 mb-8">احصل على أحدث العروض والمنتجات الجديدة</p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                alert('شكراً لاشتراكك في نشرتنا الإخبارية!');
-              }}
-              className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
-            >
+            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="بريدك الإلكتروني"
@@ -409,51 +699,54 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="px-6 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="bg-white text-green-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors"
               >
-                اشتراك
+                اشترك الآن
               </button>
             </form>
           </div>
         </div>
       </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Leaf className="w-6 h-6" />
-                BioPara
-              </h3>
-              <p className="text-gray-400 text-sm">متخصصون في الأعشاب الطبية الطبيعية</p>
+              <h3 className="text-xl font-bold mb-4">BioPara</h3>
+              <p className="text-gray-400">أفضل الأعشاب الطبية الطبيعية لصحتك وسعادتك</p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">روابط سريعة</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/products" className="hover:text-white transition-colors">المنتجات</Link></li>
-                <li><Link href="/about" className="hover:text-white transition-colors">من نحن</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors">اتصل بنا</Link></li>
+              <h4 className="text-lg font-semibold mb-4">روابط سريعة</h4>
+              <ul className="space-y-2">
+                <li><Link href="/products" className="text-gray-400 hover:text-white transition-colors">المنتجات</Link></li>
+                <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">من نحن</Link></li>
+                <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">اتصل بنا</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">خدماتنا</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link href="/shipping" className="hover:text-white transition-colors">الشحن</Link></li>
-                <li><Link href="/returns" className="hover:text-white transition-colors">الإرجاع</Link></li>
-                <li><Link href="/faq" className="hover:text-white transition-colors">الأسئلة الشائعة</Link></li>
+              <h4 className="text-lg font-semibold mb-4">الدعم</h4>
+              <ul className="space-y-2">
+                <li><Link href="/faq" className="text-gray-400 hover:text-white transition-colors">الأسئلة الشائعة</Link></li>
+                <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">الخصوصية</Link></li>
+                <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">الشروط</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">تواصل معنا</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>+212 673020264</li>
-                <li>info@biopara.ma</li>
-              </ul>
+              <h4 className="text-lg font-semibold mb-4">تواصل معنا</h4>
+              <div className="space-y-2">
+                <p className="text-gray-400">info@biopara.com</p>
+                <p className="text-gray-400">+966 50 000 000</p>
+                <div className="flex gap-2 mt-4">
+                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-            <p>© {new Date().getFullYear()} BioPara. جميع الحقوق محفوظة.</p>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+            <p className="text-gray-400">© 2024 BioPara. جميع الحقوق محفوظة.</p>
           </div>
         </div>
       </footer>
