@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { Tables } from '@/lib/supabase-client';
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 interface ProductCardProps {
   product: Tables['products'];
@@ -21,32 +22,36 @@ export default function ProductCard({
   const [isAdding, setIsAdding] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setIsAdding(true);
     if (onAddToCart) {
       onAddToCart(product);
       setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 2000);
+      const timer = setTimeout(() => setShowNotification(false), 2000);
+      return () => clearTimeout(timer);
     }
-    setTimeout(() => setIsAdding(false), 300);
-  };
+    const timer = setTimeout(() => setIsAdding(false), 300);
+    return () => clearTimeout(timer);
+  }, [onAddToCart, product]);
 
-  const handleToggleFavorite = (e: React.MouseEvent) => {
+  const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     if (onToggleFavorite) {
       onToggleFavorite(product.id, !isFavorite);
     }
-  };
+  }, [onToggleFavorite, product.id, isFavorite]);
 
   return (
     <Link href={`/products/${product.id}`}>
       <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col">
         {/* Product Image */}
         <div className="relative overflow-hidden bg-gray-100 h-48">
-          <img
+          <Image
             src={product.image_url}
             alt={product.name}
+            width={300}
+            height={192}
             className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
           />
 

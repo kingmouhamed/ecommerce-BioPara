@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { supabase, Tables } from '@/lib/supabase-client';
 
@@ -48,9 +49,11 @@ export default function CategoryPage() {
               >
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all">
                   <div className="relative h-56 overflow-hidden bg-gray-200">
-                    <img
+                    <Image
                       src={category.image_url || 'https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=400'}
                       alt={category.name}
+                      width={400}
+                      height={224}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>

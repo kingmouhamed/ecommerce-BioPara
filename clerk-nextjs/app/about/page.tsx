@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Leaf, Award, Users, Zap } from 'lucide-react';
 
 export default function AboutPage() {
@@ -8,7 +9,7 @@ export default function AboutPage() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">عن BioParaa</h1>
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">عن BioPara</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             رحلتنا لتوفير أفضل الأعشاب الطبية الطبيعية لصحتك وعافيتك
           </p>
@@ -17,16 +18,18 @@ export default function AboutPage() {
         {/* About Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
           <div>
-            <img
+            <Image
               src="https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=600"
               alt="عن المتجر"
+              width={600}
+              height={384}
               className="rounded-xl shadow-lg w-full h-96 object-cover"
             />
           </div>
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-gray-900">من نحن</h2>
             <p className="text-gray-700 text-lg leading-relaxed">
-              BioParaa هو متخصص في بيع الأعشاب الطبية الطبيعية والمنتجات الصحية بجودة عالية.
+              BioPara هو متخصص في بيع الأعشاب الطبية الطبيعية والمنتجات الصحية بجودة عالية.
               نؤمن بقوة الطبيعة وفوائدها الصحية الفعالة.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">
