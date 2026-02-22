@@ -286,7 +286,7 @@ export default function ProductsPage() {
           <Breadcrumbs
             items={[
               { label: 'الرئيسية', href: '/' },
-              { label: 'الأعشاب الطبية', href: '/products' }
+              { label: 'سوق الأعشاب الطبية', href: '/products' }
             ]}
           />
         </div>
@@ -295,7 +295,7 @@ export default function ProductsPage() {
       {/* Page Header */}
       <div className="bg-white">
         <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">الأعشاب الطبية</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">سوق الأعشاب الطبية</h1>
           <p className="text-gray-600">اكتشف مجموعة واسعة من الأعشاب الطبية الطبيعية 100%</p>
         </div>
       </div>
@@ -310,7 +310,7 @@ export default function ProductsPage() {
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type="text"
-                  placeholder="ابحث عن عشب طبي..."
+                  placeholder="ابحث في سوق الأعشاب الطبية..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
