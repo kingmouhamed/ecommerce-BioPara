@@ -27,22 +27,18 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   children?: React.ReactNode;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant = "primary",
-      size = "md",
-      loading = false,
-      fullWidth = false,
-      icon,
-      iconPosition = "left",
-      children,
-      disabled,
-      ...props
-    },
-    ref
-  ) => {
+export function Button({
+  className,
+  variant = "primary",
+  size = "md",
+  loading = false,
+  fullWidth = false,
+  icon,
+  iconPosition = "left",
+  children,
+  disabled,
+  ...props
+}: ButtonProps) {
     // خريطة الأنماط حسب النوع
     const variantClasses = {
       primary: "bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm",
@@ -94,7 +90,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={baseClasses}
-        ref={ref}
         disabled={disabled || loading}
         {...props}
       >
@@ -103,10 +98,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {iconPosition === "right" && renderIcon()}
       </button>
     );
-  }
-);
-
-Button.displayName = "Button";
+}
 
 // أزرار متخصصة
 export const AddToCartButton: React.FC<

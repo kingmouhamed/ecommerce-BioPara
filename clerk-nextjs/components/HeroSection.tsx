@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingCart, Leaf } from 'lucide-react';
 
 export default function HeroSection() {
@@ -10,7 +11,7 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6 text-center md:text-right">
             <div className="space-y-2">
-              <h1 className="text-5xl md:text-6xl font-bold text-white">BioParaa</h1>
+              <h1 className="text-5xl md:text-6xl font-bold text-white">BioPara</h1>
               <p className="text-xl text-green-100">الأعشاب الطبية الطبيعية 100%</p>
             </div>
 
@@ -38,9 +39,11 @@ export default function HeroSection() {
           </div>
 
           <div className="hidden md:block">
-            <img
+            <Image
               src="https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=600"
               alt="أعشاب طبية"
+              width={600}
+              height={384}
               className="rounded-2xl shadow-2xl w-full h-96 object-cover"
             />
           </div>
