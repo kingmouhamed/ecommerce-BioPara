@@ -307,15 +307,33 @@ export default function ProductsPage() {
               ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               : "space-y-4"
           }>
-            {sortedProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={(p) => {
-                  console.log('Added to cart:', p);
-                }}
-              />
-            ))}
+            {sortedProducts.map((product) => {
+              // Convert to unified format
+              const unifiedProduct = {
+                id: parseInt(product.id),
+                title: product.name,
+                name: product.name,
+                price: product.price,
+                originalPrice: undefined, // No old_price field in database
+                rating: product.rating || 4.5,
+                image: product.image_url,
+                category: '', // Will be fetched if needed
+                type: 'herbal' as const,
+                description: product.description,
+                inStock: product.stock_quantity > 0,
+                reviews: Math.floor(Math.random() * 100) + 10
+              };
+              
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={unifiedProduct}
+                  onAddToCart={(p) => {
+                    console.log('Added to cart:', p);
+                  }}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-12">

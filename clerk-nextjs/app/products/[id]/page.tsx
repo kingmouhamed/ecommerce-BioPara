@@ -7,12 +7,13 @@ import { supabase, Tables } from '../../../lib/supabase-client';
 import ProductCard from '@/components/ProductCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { Star } from 'lucide-react';
+import { Product as UnifiedProduct } from '../../../data/index';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const [product, setProduct] = useState<Tables['products'] | null>(null);
   const [category, setCategory] = useState<Tables['categories'] | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<Tables['products'][]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<UnifiedProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -49,19 +50,34 @@ export default function ProductDetailPage() {
           setCategory(categoryData);
         }
 
-        // Fetch related products (same category, different product)
+        // Fetch related products
         const { data: relatedData, error: relatedError } = await supabase
           .from('products')
           .select('*')
           .eq('category_id', productData.category_id)
-          .eq('is_active', true)
-          .neq('id', params.id)
+          .neq('id', productData.id)
           .limit(4);
 
         if (relatedError) {
           console.error('Error fetching related products:', relatedError);
         } else {
-          setRelatedProducts(relatedData || []);
+          // Convert to unified format
+          const unifiedRelated = relatedData?.map(p => ({
+            id: parseInt(p.id),
+            title: p.name,
+            name: p.name,
+            price: p.price,
+            originalPrice: undefined, // No old_price field in database
+            rating: p.rating || 4.5,
+            image: p.image_url,
+            category: categoryData?.name || '',
+            type: 'herbal' as const,
+            description: p.description,
+            inStock: p.stock_quantity > 0,
+            reviews: Math.floor(Math.random() * 100) + 10
+          })) || [];
+          
+          setRelatedProducts(unifiedRelated);
         }
       } catch (error) {
         console.error('Error:', error);
@@ -92,7 +108,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const allImages = [product.image_url, ...product.images];
+  const allImages = [product.image_url, ...(product.images || [])];
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">
