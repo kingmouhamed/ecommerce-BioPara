@@ -44,8 +44,14 @@ export const useCart = (): CartContextType => {
 export const CartProvider = ({ children }: CartProviderProps) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     try {
       const storedCart = localStorage.getItem('cart');
       if (storedCart) {
@@ -63,7 +69,7 @@ export const CartProvider = ({ children }: CartProviderProps) => {
         console.error("Failed to clear corrupted cart data", clearError);
       }
     }
-  }, []);
+  }, [mounted]);
 
   // Debounced localStorage write for performance
   useEffect(() => {
