@@ -257,6 +257,7 @@ export default function ProductsPage() {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              title="ترتيب المنتجات"
             >
               <option value="name">ترتيب حسب الاسم</option>
               <option value="price_low">السعر: من الأقل إلى الأعلى</option>
