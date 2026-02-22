@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { supabase, Tables } from '../../lib/supabase-client';
+import { Tables } from '../../lib/supabase-client';
 import ProductCard from '@/components/ProductCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { Star, Filter, Grid, List, Search, SlidersHorizontal } from 'lucide-react';
+import { Filter, Grid, List, Search } from 'lucide-react';
+
+// Static date to prevent hydration mismatches
+const STATIC_DATE = '2024-01-01T00:00:00.000Z';
 
 // بيانات الأعشاب الطبية مع الصور
-const medicalHerbsProducts = [
+const medicalHerbsProducts: Tables['products'][] = [
   {
     id: '1',
     name: 'نعناع طازج',
@@ -27,8 +30,8 @@ const medicalHerbsProducts = [
     benefits: ['يساعد على الهضم', 'يطرد الانتفاخ', 'يخفف الصداع', 'منعش طبيعي'],
     usage_instructions: 'يمكن استخدامه طازجاً أو مجففاً لإعداد الشاي أو كتوابل للطعام',
     ingredients: 'نعناع طازج 100% عضوي',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '2',
@@ -48,207 +51,142 @@ const medicalHerbsProducts = [
     benefits: ['يساعد على النوم', 'يخفف التوتر', 'مضاد للالتهابات', 'هادئ للأعصاب'],
     usage_instructions: 'ينقع ملعقة صغيرة من الأزهار في ماء ساخن لمدة 5-10 دقائق',
     ingredients: 'أزهار البابونج 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '3',
     name: 'خزامى عطري',
     description: 'زهور الخزامى العطرية ذات الفوائد العلاجية والاسترخائية',
+    long_description: null,
     price: 45.00,
     rating: 4.7,
     review_count: 89,
     image_url: '/images/medical-herbs/lavender-herb.jpg',
+    images: ['/images/medical-herbs/lavender-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 60,
+    sku: null,
     is_featured: true,
     is_active: true,
     benefits: ['يخفف القلق', 'يساعد على النوم', 'طارد للحشرات', 'عطري جميل'],
     usage_instructions: 'يستخدم في الزيوت العطرية أو كأكياس شاي عشبي',
     ingredients: 'زهور الخزامى 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '4',
     name: 'زنجبيل عضوي',
     description: 'زنجبيل طازج عضوي غني بالمواد الفعالة للعلاج الطبيعي',
+    long_description: null,
     price: 28.75,
     rating: 4.6,
     review_count: 142,
     image_url: '/images/medical-herbs/ginger-herb.jpg',
+    images: ['/images/medical-herbs/ginger-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 80,
+    sku: null,
     is_featured: true,
     is_active: true,
     benefits: ['يخفف الغثيان', 'مضاد للالتهابات', 'يحسن الهضم', 'يخفف الآلام'],
     usage_instructions: 'يضاف للطعام أو المشروبات الساخنة كمنشط طبيعي',
     ingredients: 'جذور الزنجبيل 100% عضوية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '5',
     name: 'كركم ذهبي',
     description: 'كركم عضوي عالي الجودة غني بالكركمين ومضادات الأكسدة',
+    long_description: null,
     price: 38.90,
     rating: 4.8,
     review_count: 178,
     image_url: '/images/medical-herbs/turmeric-herb.jpg',
+    images: ['/images/medical-herbs/turmeric-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 45,
+    sku: null,
     is_featured: true,
     is_active: true,
     benefits: ['مضاد للأكسدة', 'مضاد للالتهابات', 'يحسن المناعة', 'صحي للقلب'],
     usage_instructions: 'يضاف للطعام أو المشروبات الصحية',
     ingredients: 'مسحوق الكركم 100% عضوي',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '6',
     name: 'إكليل الجبل',
     description: 'إكليل الجبل الطازج المعروف بفوائده العلاجية والعطرية',
+    long_description: null,
     price: 26.50,
     rating: 4.5,
     review_count: 96,
     image_url: '/images/medical-herbs/rosemary-herb.jpg',
+    images: ['/images/medical-herbs/rosemary-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 55,
+    sku: null,
     is_featured: true,
     is_active: true,
     benefits: ['يحسن الذاكرة', 'يخفف التوتر', 'طارد للحشرات', 'عطري منعش'],
     usage_instructions: 'يستخدم طازجاً في الطهي أو كتوابل عطرية',
     ingredients: 'أوراق إكليل الجبل 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '7',
     name: 'زعتر بري',
     description: 'زعتر بري عضوي عطري ومفيد للصحة',
+    long_description: null,
     price: 24.50,
     rating: 4.6,
     review_count: 124,
     image_url: '/images/medical-herbs/thyme-herb.jpg',
+    images: ['/images/medical-herbs/thyme-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 65,
+    sku: null,
     is_featured: false,
     is_active: true,
     benefits: ['مضاد للميكروبات', 'يحسن التنفس', 'طارد للحشرات', 'عطري جميل'],
     usage_instructions: 'يستخدم في الطهي أو كشاي عشبي',
     ingredients: 'أوراق الزعتر 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   },
   {
     id: '8',
     name: 'حكيم طبي',
     description: 'حكيم طازج عضوي ذو فوائد علاجية متعددة',
+    long_description: null,
     price: 23.00,
     rating: 4.3,
     review_count: 54,
     image_url: '/images/medical-herbs/sage-herb.jpg',
+    images: ['/images/medical-herbs/sage-herb.jpg'],
     category_id: 'medical-herbs',
     stock_quantity: 45,
+    sku: null,
     is_featured: false,
     is_active: true,
     benefits: ['يحسن الذاكرة', 'يخفف التوتر', 'طارد للحشرات', 'عطري منعش'],
     usage_instructions: 'يستخدم طازجاً في الطهي أو كشاي عشبي',
     ingredients: 'أوراق الحكيم 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '9',
-    name: 'يانسون طبي',
-    description: 'يانسون عضوي عطري ومفيد للاسترخاء والنوم',
-    price: 29.00,
-    rating: 4.5,
-    review_count: 78,
-    image_url: '/images/medical-herbs/anise-herb.jpg',
-    category_id: 'medical-herbs',
-    stock_quantity: 50,
-    is_featured: false,
-    is_active: true,
-    benefits: ['يساعد على النوم', 'يخفف التوتر', 'يحسن الهضم', 'طارد للغازات'],
-    usage_instructions: 'ينقع في ماء ساخن لتحضير الشاي العشبي',
-    ingredients: 'بذور اليانسون 100% طبيعية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '10',
-    name: 'قرفة طبية',
-    description: 'قرفة عضوية عالية الجودة ذات فوائد صحية متعددة',
-    price: 31.50,
-    rating: 4.8,
-    review_count: 145,
-    image_url: '/images/medical-herbs/cinnamon-herb.jpg',
-    category_id: 'medical-herbs',
-    stock_quantity: 70,
-    is_featured: false,
-    is_active: true,
-    benefits: ['تنظم السكر', 'مضاد للأكسدة', 'تخفف الالتهابات', 'تحسن الهضم'],
-    usage_instructions: 'تضاف للمشروبات الساخنة أو الحلويات',
-    ingredients: 'لحاء القرفة 100% عضوي',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '11',
-    name: 'قرنفل طبي',
-    description: 'قرنفل عضوي طازج ذو فوائد طبية وعطرية',
-    price: 35.00,
-    rating: 4.7,
-    review_count: 87,
-    image_url: '/images/medical-herbs/hibiscus-herb.jpg',
-    images: ['/images/medical-herbs/hibiscus-herb.jpg'],
-    category_id: 'medical-herbs',
-    stock_quantity: 30,
-    sku: null,
-    is_featured: false,
-    is_active: true,
-    benefits: ['مخدر للألم', 'مضاد للبكتيريا', 'يحسن صحة الفم', 'طارد للحشرات'],
-    usage_instructions: 'يستخدم في الطهي أو كعلاج طبيعي',
-    ingredients: 'براعم القرنفل 100% طبيعي',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: '12',
-    name: 'مردقوش طبي',
-    description: 'مردقوش طازج عضوي ذو فوائد علاجية متعددة',
-    price: 22.00,
-    rating: 4.4,
-    review_count: 67,
-    image_url: '/images/medical-herbs/lemon-verbena-herb.jpg',
-    images: ['/images/medical-herbs/lemon-verbena-herb.jpg'],
-    category_id: 'medical-herbs',
-    stock_quantity: 40,
-    sku: null,
-    is_featured: false,
-    is_active: true,
-    benefits: ['مضاد للبكتيريا', 'يحسن الهضم', 'يخفف السعال', 'غني بمضادات الأكسدة'],
-    usage_instructions: 'يضاف للطعام الإيطالي أو كشاي عشبي',
-    ingredients: 'أوراق المردقوش 100% عضوية',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    created_at: STATIC_DATE,
+    updated_at: STATIC_DATE
   }
 ];
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Tables['products'][]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products] = useState<Tables['products'][]>(medicalHerbsProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  useEffect(() => {
-    // استخدام بيانات الأعشاب الطبية المحلية
-    setProducts(medicalHerbsProducts as Tables['products'][]);
-    setLoading(false);
-  }, []);
 
   // Filter products based on search
   const filteredProducts = products.filter(product =>
@@ -273,14 +211,6 @@ export default function ProductsPage() {
         return 0;
     }
   });
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-200 border-t-emerald-600"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50" dir="rtl">

@@ -14,6 +14,11 @@ export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItems, setCartItems] = useState([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,11 +49,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error('Failed to parse cart', e);
+      }
     }
-  }, []);
+  }, [mounted]);
 
   const features = [
     {

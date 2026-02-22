@@ -19,7 +19,7 @@ export default function Navigation({ cartCount = 0, isAuthenticated = false }: N
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-2xl text-primary-600">
             <Leaf size={28} />
-            <span>BioParaa</span>
+            <span>BioPara</span>
           </Link>
 
           {/* Desktop Menu */}
@@ -29,6 +29,9 @@ export default function Navigation({ cartCount = 0, isAuthenticated = false }: N
             </Link>
             <Link href="/category" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
               الفئات
+            </Link>
+            <Link href="/consultation" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+              حجز استشارة
             </Link>
             <Link href="/about" className="text-gray-700 hover:text-primary-600 transition-colors font-medium">
               عن المتجر
@@ -95,6 +98,12 @@ export default function Navigation({ cartCount = 0, isAuthenticated = false }: N
               className="block text-gray-700 hover:text-primary-600 transition-colors font-medium"
             >
               الفئات
+            </Link>
+            <Link
+              href="/consultation"
+              className="block text-gray-700 hover:text-primary-600 transition-colors font-medium"
+            >
+              حجز استشارة
             </Link>
             <Link
               href="/about"
