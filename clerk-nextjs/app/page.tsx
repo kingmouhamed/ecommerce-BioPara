@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase, Tables } from '../lib/supabase-client';
 import { Zap, Shield, Leaf, Heart, Star, ShoppingCart, ChevronLeft, Menu, X, Search, User } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
@@ -163,10 +164,12 @@ export default function Home() {
                               }}
                             >
                               <div className="flex items-center gap-3">
-                                <img
+                                <Image
                                   src={product.image_url}
                                   alt={product.name}
                                   className="w-12 h-12 object-cover rounded"
+                                  width={48}
+                                  height={48}
                                 />
                                 <div>
                                   <h4 className="font-medium text-gray-900">{product.name}</h4>
@@ -223,10 +226,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative py-16 md:py-24">
         <div className="absolute inset-0">
-          <img
+          <Image
             src="/images/backgrounds/hero-bg.jpg"
             alt="خلفية الأعشاب الطبية"
             className="w-full h-full object-cover"
+            layout="fill"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-emerald-900/80"></div>
         </div>
@@ -259,12 +263,12 @@ export default function Home() {
             </div>
             <div className="relative">
               <div className="grid grid-cols-3 gap-2">
-                <img src="/images/medical-herbs/mint-herb.jpg" alt="نعناع" className="w-full h-24 object-cover rounded-lg shadow-lg" />
-                <img src="/images/medical-herbs/camomile-herb.jpg" alt="البابونج" className="w-full h-24 object-cover rounded-lg shadow-lg" />
-                <img src="/images/medical-herbs/lavender-herb.jpg" alt="خزامى" className="w-full h-24 object-cover rounded-lg shadow-lg" />
-                <img src="/images/medical-herbs/ginger-herb.jpg" alt="زنجبيل" className="w-full h-24 object-cover rounded-lg shadow-lg" />
-                <img src="/images/medical-herbs/turmeric-herb.jpg" alt="كركم" className="w-full h-24 object-cover rounded-lg shadow-lg" />
-                <img src="/images/medical-herbs/rosemary-herb.jpg" alt="إكليل الجبل" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <Image src="/images/medical-herbs/mint-herb.jpg" alt="نعناع" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
+                <Image src="/images/medical-herbs/camomile-herb.jpg" alt="البابونج" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
+                <Image src="/images/medical-herbs/lavender-herb.jpg" alt="خزامى" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
+                <Image src="/images/medical-herbs/ginger-herb.jpg" alt="زنجبيل" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
+                <Image src="/images/medical-herbs/turmeric-herb.jpg" alt="كركم" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
+                <Image src="/images/medical-herbs/rosemary-herb.jpg" alt="إكليل الجبل" className="w-full h-24 object-cover rounded-lg shadow-lg" width={160} height={96}/>
               </div>
             </div>
           </div>
@@ -365,10 +369,11 @@ export default function Home() {
                 className="group overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all"
               >
                 <div className="relative h-48 overflow-hidden bg-gray-200">
-                  <img
+                  <Image
                     src={category.image_url || 'https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=400'}
                     alt={category.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    layout="fill"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
                     <div>

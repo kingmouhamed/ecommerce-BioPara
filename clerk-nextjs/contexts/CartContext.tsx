@@ -138,9 +138,9 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     );
   }, [removeFromCart]);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
   
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
