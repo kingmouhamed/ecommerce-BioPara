@@ -211,36 +211,50 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-green-50 to-emerald-50 py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      <section className="relative py-16 md:py-24">
+        <div className="absolute inset-0">
+          <img
+            src="/images/backgrounds/hero-bg.jpg"
+            alt="خلفية الأعشاب الطبية"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-emerald-900/80"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
                 أعشاب طبية
-                <span className="block text-green-600">طبيعية 100%</span>
+                <span className="block text-green-300">طبيعية 100%</span>
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-green-100 mb-8 leading-relaxed">
                 نقدم أفضل أنواع الأعشاب الطبية الطبيعية من مصادر موثوقة لضمان صحتك وسعادتك
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/products"
-                  className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
                 >
                   تسوق الآن
                   <ChevronLeft className="w-5 h-5" />
                 </Link>
                 <Link
                   href="/about"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-green-600 text-green-600 px-8 py-4 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-green-900 transition-colors"
                 >
                   معرفة المزيد
                 </Link>
               </div>
             </div>
             <div className="relative">
-              <div className="w-full h-64 md:h-96 bg-gradient-to-br from-green-200 to-emerald-200 rounded-2xl flex items-center justify-center">
-                <Leaf className="w-32 h-32 text-green-600" />
+              <div className="grid grid-cols-3 gap-2">
+                <img src="/images/medical-herbs/mint-herb.jpg" alt="نعناع" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <img src="/images/medical-herbs/camomile-herb.jpg" alt="البابونج" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <img src="/images/medical-herbs/lavender-herb.jpg" alt="خزامى" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <img src="/images/medical-herbs/ginger-herb.jpg" alt="زنجبيل" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <img src="/images/medical-herbs/turmeric-herb.jpg" alt="كركم" className="w-full h-24 object-cover rounded-lg shadow-lg" />
+                <img src="/images/medical-herbs/rosemary-herb.jpg" alt="إكليل الجبل" className="w-full h-24 object-cover rounded-lg shadow-lg" />
               </div>
             </div>
           </div>
