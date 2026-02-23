@@ -88,7 +88,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey="pk_test_YOUR_KEY_HERE">
+      {/* Replace with your actual Clerk publishable key */}
       <html lang="ar" dir="rtl">
         <head>
           <meta name="mobile-web-app-capable" content="yes" />

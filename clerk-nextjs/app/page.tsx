@@ -80,13 +80,13 @@ export default function Home() {
 
             {/* Icons */}
             <div className="flex items-center gap-4">
-              <button className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+              <button aria-label="Account" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <User className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+              <button aria-label="Wishlist" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <Heart className="w-5 h-5" />
               </button>
-              <button className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
+              <button aria-label="Shopping cart" className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
                 <ShoppingCart className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">
                   {cartCount}
@@ -96,6 +96,7 @@ export default function Home() {
               {/* Mobile Menu */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 className="md:hidden p-2 text-gray-600 hover:text-green-600 transition-colors"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -138,7 +139,7 @@ export default function Home() {
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div className="relative h-32 bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
                       src="https://images.pexels.com/photos/159581/pexels-photo-159581.jpeg?auto=compress&cs=tinysrgb&w=400"
                       alt="BioPara Product"
@@ -146,7 +147,7 @@ export default function Home() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="relative h-32 bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
                       src="https://images.pexels.com/photos/1793388/pexels-photo-1793388.jpeg?auto=compress&cs=tinysrgb&w=400"
                       alt="BioPara Product"
@@ -156,7 +157,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <div className="relative h-48 bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="relative h-48 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
                       src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400"
                       alt="Happy Customer"
@@ -164,7 +165,7 @@ export default function Home() {
                       className="object-cover"
                     />
                   </div>
-                  <div className="relative h-16 bg-white rounded-lg shadow-md overflow-hidden">
+                  <div className="relative h-16 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
                       src="https://images.pexels.com/photos/4113834/pexels-photo-4113834.jpeg?auto=compress&cs=tinysrgb&w=400"
                       alt="BioPara Product"
@@ -187,7 +188,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {bestSellers.map((product) => (
               <div key={product.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
-                <div className="relative h-40 mb-4">
+                <div className="relative h-40 w-full mb-4">
                   <Image
                     src={product.image}
                     alt={product.name}
@@ -215,6 +216,7 @@ export default function Home() {
             <div className="flex items-center justify-center gap-8">
               <button
                 onClick={prevReview}
+                aria-label="Previous review"
                 className="p-2 text-gray-400 hover:text-green-600 transition-colors"
               >
                 <ChevronRight className="w-6 h-6" />
@@ -231,7 +233,7 @@ export default function Home() {
                     <div className="flex items-center mb-4">
                       {renderStars(review.rating)}
                     </div>
-                    <p className="text-gray-600 mb-4">"{review.comment}"</p>
+                    <p className="text-gray-600 mb-4">&ldquo;{review.comment}&rdquo;</p>
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-gray-900">{review.name}</p>
                       <div className="relative w-8 h-8">
@@ -249,6 +251,7 @@ export default function Home() {
               
               <button
                 onClick={nextReview}
+                aria-label="Next review"
                 className="p-2 text-gray-400 hover:text-green-600 transition-colors"
               >
                 <ChevronLeft className="w-6 h-6" />
@@ -266,7 +269,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {blogArticles.map((article) => (
               <article key={article.id} className="group cursor-pointer">
-                <div className="relative h-48 mb-4 overflow-hidden rounded-lg">
+                <div className="relative h-48 w-full mb-4 overflow-hidden rounded-lg">
                   <Image
                     src={article.image}
                     alt={article.title}
@@ -384,10 +387,10 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4">تابعنا</h4>
               <div className="flex gap-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-white transition-colors">
                   <Facebook className="w-6 h-6" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="w-6 h-6" />
                 </a>
               </div>
