@@ -1,13 +1,91 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useCart } from "../../contexts/CartContext";
 import Link from "next/link";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from "lucide-react";
+
+interface CartItem {
+  id: number | string;
+  title: string;
+  price: number;
+  image: string;
+  quantity: number;
+  brand?: string;
+  capacity?: string;
+  inStock?: boolean;
+}
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, calculateTotal, cartItemCount } = useCart();
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Load cart from localStorage
+    try {
+      const storedCart = localStorage.getItem('cart');
+      if (storedCart) {
+        const parsedCart = JSON.parse(storedCart);
+        if (Array.isArray(parsedCart)) {
+          setCart(parsedCart);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load cart from localStorage", error);
+    }
+  }, []);
+
+  const removeFromCart = (productId: number | string) => {
+    setCart(prevCart => {
+      const newCart = prevCart.filter(item => item.id !== productId);
+      // Update localStorage
+      try {
+        if (newCart.length > 0) {
+          localStorage.setItem('cart', JSON.stringify(newCart));
+        } else {
+          localStorage.removeItem('cart');
+        }
+      } catch (error) {
+        console.error("Failed to update cart in localStorage", error);
+      }
+      return newCart;
+    });
+  };
+
+  const updateQuantity = (productId: number | string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+    if (quantity > 99) {
+      console.warn('Quantity exceeds maximum limit:', quantity);
+      return;
+    }
+
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === productId ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  };
+
+  const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-200 border-t-emerald-700 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
@@ -42,7 +120,17 @@ export default function CartPage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans" dir="rtl">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">سلة التسوق ({cartItemCount} منتجات)</h1>
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            العودة للصفحة الرئيسية
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-800">سلة التسوق ({cartItemCount} منتجات)</h1>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
@@ -186,6 +274,18 @@ export default function CartPage() {
                   <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
                     تطبيق
                   </button>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="mt-6 pt-6 border-t">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-gray-600">طرق الدفع الآمنة</p>
+                  <div className="flex justify-center gap-2">
+                    <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                    <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                    <div className="w-8 h-5 bg-gray-200 rounded"></div>
+                  </div>
                 </div>
               </div>
             </div>
