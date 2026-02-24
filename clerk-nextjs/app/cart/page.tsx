@@ -100,12 +100,7 @@ export default function CartPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/products?category=parapharmacie"
-                className="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition"
-              >
-                تسوق البارافارماسي
-              </Link>
-              <Link
-                href="/products?category=medical-herbs"
+
                 className="bg-emerald-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition"
               >
                 تسوق الأعشاب الطبية

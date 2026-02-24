@@ -119,8 +119,19 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-green-50 to-green-100 py-16 md:py-24">
-        <div className="container mx-auto px-4">
+      <section className="relative bg-gradient-to-br from-green-50 to-green-100 py-16 md:py-24">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/backgrounds/hero-bg.jpg"
+            alt="BioPara Background"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+        </div>
+        
+        <div className="relative container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Right Content */}
             <div className="text-center lg:text-right">
