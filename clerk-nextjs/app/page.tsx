@@ -126,7 +126,7 @@ export default function Home() {
             src="/images/backgrounds/hero-bg.jpg"
             alt="BioPara Background"
             fill
-            className="object-cover opacity-20"
+            className="object-cover opacity-60"
             priority
           />
         </div>
@@ -138,7 +138,7 @@ export default function Home() {
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                 BioPara: رحلتك نحو الشفاء الطبيعي والروحي
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              <p className="text-lg text-gray-700 mb-8 leading-relaxed">
                 نقدم لك أفضل المنتجات الطبيعية والعلاجات العشبية لتحسين صحتك وجسدك وروحك
               </p>
               <button className="bg-green-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-700 transition-colors shadow-lg">
@@ -146,47 +146,8 @@ export default function Home() {
               </button>
             </div>
             
-            {/* Left Imagery */}
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
-                    <Image
-                      src="/images/medical-herbs/lavender-herb.jpg"
-                      alt="BioPara Product"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
-                    <Image
-                      src="/images/medical-herbs/ginger-herb.jpg"
-                      alt="BioPara Product"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="relative h-48 w-full bg-white rounded-lg shadow-md overflow-hidden">
-                    <Image
-                      src="/images/about/team-photo.jpg"
-                      alt="Happy Customer"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="relative h-16 w-full bg-white rounded-lg shadow-md overflow-hidden">
-                    <Image
-                      src="/images/medical-herbs/camomile-herb.jpg"
-                      alt="BioPara Product"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Left Content - Empty for better background visibility */}
+            <div className="hidden lg:block"></div>
           </div>
         </div>
       </section>
