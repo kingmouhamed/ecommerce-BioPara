@@ -16,26 +16,26 @@ export default function Home() {
 
   // Mock data
   const bestSellers = [
-    { id: 1, name: "زيت الأرغان العضوي", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/159581/pexels-photo-159581.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, name: "شاي الزنجبيل الأخضر", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/1793388/pexels-photo-1793388.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 3, name: "مستخلص البابونج", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/4113834/pexels-photo-4113834.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 4, name: "زيت اللافندر الأساسي", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 5, name: "خلاصة الكركم", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/4769140/pexels-photo-4769140.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 6, name: "شاي الأعشاب المتعددة", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/4207892/pexels-photo-4207892.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 7, name: "زيت النعناع", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/4029935/pexels-photo-4029935.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 8, name: "مستخلص إشنسا", rating: 5, price: "199 د.م.", image: "https://images.pexels.com/photos/40815/immunology-blood-lymphocyte-40815.jpeg?auto=compress&cs=tinysrgb&w=400" }
+    { id: 1, name: "زيت الأرغان العضوي", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/lavender-herb.jpg" },
+    { id: 2, name: "شاي الزنجبيل الأخضر", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/ginger-herb.jpg" },
+    { id: 3, name: "مستخلص البابونج", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/camomile-herb.jpg" },
+    { id: 4, name: "زيت اللافندر الأساسي", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/lavender-herb.jpg" },
+    { id: 5, name: "خلاصة الكركم", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/turmeric-herb.jpg" },
+    { id: 6, name: "شاي الأعشاب المتعددة", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/mint-herb.jpg" },
+    { id: 7, name: "زيت النعناع", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/mint-herb.jpg" },
+    { id: 8, name: "مستخلص إشنسا", rating: 5, price: "199 د.م.", image: "/images/medical-herbs/rosemary-herb.jpg" }
   ];
 
   const customerReviews = [
-    { id: 1, name: "فاطمة أحمد", rating: 5, comment: "منتجات ممتازة وجودة عالية. استخدمت زيت الأرغان وكانت النتائج مذهلة!", productImage: "https://images.pexels.com/photos/159581/pexels-photo-159581.jpeg?auto=compress&cs=tinysrgb&w=100" },
-    { id: 2, name: "محمد العلي", rating: 5, comment: "خدمة توصيل سريعة ومنتجات أصلية 100%. أنصح بالتعامل معهم", productImage: "https://images.pexels.com/photos/1793388/pexels-photo-1793388.jpeg?auto=compress&cs=tinysrgb&w=100" },
-    { id: 3, name: "نورة سعيد", rating: 5, comment: "الأعشاب الطبية ساعدتني كثيراً في تحسين صحتي. شكراً لكم", productImage: "https://images.pexels.com/photos/4113834/pexels-photo-4113834.jpeg?auto=compress&cs=tinysrgb&w=100" }
+    { id: 1, name: "فاطمة أحمد", rating: 5, comment: "منتجات ممتازة وجودة عالية. استخدمت زيت الأرغان وكانت النتائج مذهلة!", productImage: "/images/medical-herbs/lavender-herb.jpg" },
+    { id: 2, name: "محمد العلي", rating: 5, comment: "خدمة توصيل سريعة ومنتجات أصلية 100%. أنصح بالتعامل معهم", productImage: "/images/medical-herbs/ginger-herb.jpg" },
+    { id: 3, name: "نورة سعيد", rating: 5, comment: "الأعشاب الطبية ساعدتني كثيراً في تحسين صحتي. شكراً لكم", productImage: "/images/medical-herbs/camomile-herb.jpg" }
   ];
 
   const blogArticles = [
-    { id: 1, title: "فوائد زيت الأرغان للبشرة", date: "15 يناير 2024", image: "https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, title: "كيف تقوي مناعتك طبيعياً", date: "10 يناير 2024", image: "https://images.pexels.com/photos/40815/immunology-blood-lymphocyte-40815.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 3, title: "فن تحضير شاي الأعشاب", date: "5 يناير 2024", image: "https://images.pexels.com/photos/1793388/pexels-photo-1793388.jpeg?auto=compress&cs=tinysrgb&w=400" }
+    { id: 1, title: "فوائد زيت الأرغان للبشرة", date: "15 يناير 2024", image: "/images/medical-herbs/lavender-herb.jpg" },
+    { id: 2, title: "كيف تقوي مناعتك طبيعياً", date: "10 يناير 2024", image: "/images/medical-herbs/turmeric-herb.jpg" },
+    { id: 3, title: "فن تحضير شاي الأعشاب", date: "5 يناير 2024", image: "/images/medical-herbs/mint-herb.jpg" }
   ];
 
   const whatsappChats = [
@@ -141,7 +141,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
-                      src="https://images.pexels.com/photos/159581/pexels-photo-159581.jpeg?auto=compress&cs=tinysrgb&w=400"
+                      src="/images/medical-herbs/lavender-herb.jpg"
                       alt="BioPara Product"
                       fill
                       className="object-cover"
@@ -149,7 +149,7 @@ export default function Home() {
                   </div>
                   <div className="relative h-32 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
-                      src="https://images.pexels.com/photos/1793388/pexels-photo-1793388.jpeg?auto=compress&cs=tinysrgb&w=400"
+                      src="/images/medical-herbs/ginger-herb.jpg"
                       alt="BioPara Product"
                       fill
                       className="object-cover"
@@ -159,7 +159,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="relative h-48 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
-                      src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=400"
+                      src="/images/about/team-photo.jpg"
                       alt="Happy Customer"
                       fill
                       className="object-cover"
@@ -167,7 +167,7 @@ export default function Home() {
                   </div>
                   <div className="relative h-16 w-full bg-white rounded-lg shadow-md overflow-hidden">
                     <Image
-                      src="https://images.pexels.com/photos/4113834/pexels-photo-4113834.jpeg?auto=compress&cs=tinysrgb&w=400"
+                      src="/images/medical-herbs/camomile-herb.jpg"
                       alt="BioPara Product"
                       fill
                       className="object-cover"

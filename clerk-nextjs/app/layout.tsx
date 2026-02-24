@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import Providers from "../components/Providers";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -88,23 +87,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider publishableKey="pk_test_YOUR_KEY_HERE">
-      {/* Replace with your actual Clerk publishable key */}
-      <html lang="ar" dir="rtl">
-        <head>
-          <meta name="mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-capable" content="yes" />
-          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-          <meta name="format-detection" content="telephone=no" />
-        </head>
-        <body className={`${tajawal.variable} font-sans antialiased`}>
-          <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
-            <Providers>
-              {children}
-            </Providers>
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="ar" dir="rtl">
+      <head>
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
+      </head>
+      <body className={`${tajawal.variable} font-sans antialiased`}>
+        <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
+          <Providers>
+            {children}
+          </Providers>
+        </div>
+      </body>
+    </html>
   );
 }
