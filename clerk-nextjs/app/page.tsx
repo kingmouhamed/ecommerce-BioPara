@@ -80,18 +80,18 @@ export default function Home() {
 
             {/* Icons */}
             <div className="flex items-center gap-4">
-              <button aria-label="Account" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+              <Link href="/auth/login" aria-label="Account" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <User className="w-5 h-5" />
-              </button>
-              <button aria-label="Wishlist" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
+              </Link>
+              <Link href="/wishlist" aria-label="Wishlist" className="p-2 text-gray-600 hover:text-green-600 transition-colors">
                 <Heart className="w-5 h-5" />
-              </button>
-              <button aria-label="Shopping cart" className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
+              </Link>
+              <Link href="/cart" aria-label="Shopping cart" className="p-2 text-gray-600 hover:text-green-600 transition-colors relative">
                 <ShoppingCart className="w-5 h-5" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-600 text-white text-xs rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
-              </button>
+              </Link>
               
               {/* Mobile Menu */}
               <button
