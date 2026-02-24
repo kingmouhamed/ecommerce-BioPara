@@ -19,7 +19,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
           <div>
             <Image
-              src="https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=600"
+              src="/images/about/office-photo.jpg"
               alt="عن المتجر"
               width={600}
               height={384}
