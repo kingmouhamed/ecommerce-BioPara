@@ -801,10 +801,6 @@ export const SAMPLE_PRODUCTS: Product[] = [
   }
 ];
 
-export function getCategoryBySlug(slug: string): Category | undefined {
-  return CATEGORIES.find(cat => cat.slug === slug);
-}
-
 export function getProductsByCategory(categorySlug: string): Product[] {
   return SAMPLE_PRODUCTS.filter(product => product.category === categorySlug);
 }
@@ -819,4 +815,12 @@ export function getFeaturedProducts(categorySlug: string, limit: number = 4): Pr
   return SAMPLE_PRODUCTS
     .filter(product => product.category === categorySlug)
     .slice(0, limit);
+}
+
+export function getProductBySlug(slug: string): Product | undefined {
+  return SAMPLE_PRODUCTS.find(product => product.slug === slug);
+}
+
+export function getCategoryBySlug(categorySlug: string): Category | undefined {
+  return CATEGORIES.find(category => category.slug === categorySlug);
 }
