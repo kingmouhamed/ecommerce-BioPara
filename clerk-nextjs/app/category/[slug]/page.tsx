@@ -279,69 +279,79 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             ) : (
               <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
                 {filteredAndSortedProducts.map((product) => (
-                  <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <div className="relative">
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        width={200}
-                        height={200}
-                        className="w-full h-48 object-cover rounded-t-lg"
-                      />
-                      {product.badge && (
-                        <span className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">
-                          {product.badge}
-                        </span>
-                      )}
-                      {!product.inStock && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-t-lg">
-                          <span className="text-white font-medium">نفد المخزون</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-gray-900 mb-2">{product.title}</h3>
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-600 mr-2">({product.reviewCount})</span>
-                      </div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <span className="text-lg font-bold text-gray-900">{product.price} د.م</span>
-                          {product.originalPrice && (
-                            <span className="text-sm text-gray-500 line-block mr-2">{product.originalPrice} د.م</span>
-                          )}
-                        </div>
-                        {product.inStock && product.stockCount <= 10 && (
-                          <span className="text-xs text-orange-600">متبقي {product.stockCount}</span>
+                  <Link key={product.id} href={`/products/${product.slug}`} className="block">
+                    <div className="bg-white rounded-lg shadow-sm hover:shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-200">
+                      <div className="relative">
+                        <Image
+                          src={product.image}
+                          alt={product.title}
+                          width={200}
+                          height={200}
+                          className="w-full h-48 object-cover rounded-t-lg"
+                        />
+                        {product.badge && (
+                          <span className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                            {product.badge}
+                          </span>
+                        )}
+                        {!product.inStock && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-t-lg">
+                            <span className="text-white font-medium">نفد المخزون</span>
+                          </div>
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => addToCart(product)}
-                          disabled={!product.inStock}
-                          className="flex-1 bg-green-600 text-white py-2 px-3 rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center"
-                        >
-                          <ShoppingCart className="w-4 h-4 ml-1" />
-                          أضف للسلة
-                        </button>
-                        <button
-                          onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
-                          className={`p-2 rounded-md ${isInWishlist(product.id) ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'} hover:bg-gray-200`}
-                        >
-                          <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-                        </button>
+                      <div className="p-4">
+                        <h3 className="font-medium text-gray-900 mb-2 hover:text-green-600 transition-colors">{product.title}</h3>
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                        <div className="flex items-center mb-2">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-600 mr-2">({product.reviewCount})</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <span className="text-lg font-bold text-gray-900">{product.price} د.م</span>
+                            {product.originalPrice && (
+                              <span className="text-sm text-gray-500 line-block mr-2">{product.originalPrice} د.م</span>
+                            )}
+                          </div>
+                          {product.inStock && product.stockCount <= 10 && (
+                            <span className="text-xs text-orange-600">متبقي {product.stockCount}</span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              addToCart(product);
+                            }}
+                            disabled={!product.inStock}
+                            className="flex-1 bg-green-600 text-white py-2 px-3 rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center"
+                          >
+                            <ShoppingCart className="w-4 h-4 ml-1" />
+                            أضف للسلة
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+                            }}
+                            className={`p-2 rounded-md ${isInWishlist(product.id) ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'} hover:bg-gray-200`}
+                          >
+                            <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
