@@ -148,7 +148,7 @@ export const CATEGORIES: Category[] = [
     slug: 'oils',
     description: 'Pure medicinal oils for topical use and natural healing. From black seed oil to argan oil and essential oils.',
     descriptionAr: 'زيوت طبية نقية للاستخدام الموضعي والشفاء الطبيعي. من زيت الحبة السوداء إلى زيت الأرغان والزيوت العطرية.',
-    image: '/images/categories/oils.svg',
+    image: '/images/categories/oils.jpg',
     icon: '🫙',
     productCount: 15,
     seoTitle: 'Medicinal Oils | Natural Healing Oils | BioPara',

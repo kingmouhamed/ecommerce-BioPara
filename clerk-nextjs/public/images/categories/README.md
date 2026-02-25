@@ -4,7 +4,7 @@ This directory contains category images for the three main categories:
 
 1. supplements.jpg - For Dietary Supplements category (actual image file)
 2. herbs.jpg - For Medicinal Herbs category (actual image file)
-3. oils.svg - For Medicinal Oils category (SVG placeholder)
+3. oils.jpg - For Medicinal Oils category (actual image file)
 
 Images should be:
 - High quality (minimum 1200x800px)
@@ -16,4 +16,4 @@ Images should be:
 Current Status:
 - ✅ supplements.jpg - Real image file
 - ✅ herbs.jpg - Real image file
-- 🔄 oils.svg - SVG placeholder (replace with real image)
+- ✅ oils.jpg - Real image file
