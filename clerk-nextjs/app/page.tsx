@@ -8,6 +8,7 @@ import {
   MessageCircle, ChevronLeft, ChevronRight, Mail, Phone,
   MapPin, Facebook, Instagram
 } from 'lucide-react';
+import CategorySection from '../components/sections/CategorySection';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -151,6 +152,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Category Section */}
+      <CategorySection />
 
       {/* Best Sellers Section */}
       <section className="py-16 bg-white">
