@@ -51,7 +51,7 @@ export const measurePerformance = (name: string, fn: () => void) => {
   const start = performance.now();
   fn();
   const end = performance.now();
-  console.log(`${name} took ${end - start} milliseconds`);
+  
 };
 
 // Bundle size optimization utilities
@@ -90,7 +90,7 @@ export const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered:', registration);
+      
       return registration;
     } catch (error) {
       console.error('Service Worker registration failed:', error);
@@ -208,7 +208,7 @@ export const usePerformanceMonitor = (componentName: string) => {
     return () => {
       const endTime = performance.now();
       const renderTime = endTime - startTime.current!;
-      console.log(`${componentName} rendered in ${renderTime.toFixed(2)}ms`);
+      
     };
   });
 };

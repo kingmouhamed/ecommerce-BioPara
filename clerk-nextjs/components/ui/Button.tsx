@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Loader2, ShoppingCart, Heart, Eye, Plus, Minus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/helpers";
 
 // أنواع الأزرار
 export type ButtonVariant = 

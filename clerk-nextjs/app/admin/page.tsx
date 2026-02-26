@@ -6,23 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useToast } from '../../components/ui/Toast';
 import { CATEGORIES, SAMPLE_PRODUCTS, getProductBySlug, getProductsByCategory } from '../../lib/categories';
-
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  subcategory?: string;
-  brand?: string;
-  rating: number;
-  reviewCount: number;
-  inStock: boolean;
-  stockCount?: number;
-  badge?: string;
-  tags: string[];
-}
+import { Product } from '../../types/index';
 
 interface AdminStats {
   totalProducts: number;
@@ -351,7 +335,7 @@ export default function AdminPage() {
                         <span>تعديل</span>
                       </button>
                       <button
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleDeleteProduct(product.id.toString())}
                         className="flex-1 bg-red-600 text-white py-2 px-3 rounded hover:bg-red-700 transition-colors flex items-center justify-center space-x-1 space-x-reverse"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -420,7 +404,7 @@ export default function AdminPage() {
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() => handleDeleteProduct(product.id)}
+                            onClick={() => handleDeleteProduct(product.id.toString())}
                             className="text-red-600 hover:text-red-900"
                           >
                             <Trash2 className="w-4 h-4" />

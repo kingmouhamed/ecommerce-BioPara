@@ -4,25 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Search, Filter, SlidersHorizontal, Grid, List, ChevronDown, X } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { useToast } from '../../components/ui/Toast';
-import ProductCard from '../../components/products/ProductCard';
-import { CATEGORIES, SAMPLE_PRODUCTS, getProductsByCategory, getProductsBySubcategory } from '../../lib/categories';
-
-interface Product {
-  id: string;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  subcategory?: string;
-  brand?: string;
-  rating: number;
-  reviewCount: number;
-  inStock: boolean;
-  stockCount?: number;
-  badge?: string;
-  tags: string[];
-}
+import ProductCard from '../../components/ProductCard';
+import { CATEGORIES, getProductsByCategory, getProductsBySubcategory, SAMPLE_PRODUCTS } from '../../lib/categories';
+import { Product as UnifiedProduct } from '../../data/index';
 
 interface ProductsPageProps {
   searchParams?: {
@@ -48,7 +32,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
   const [searchQuery, setSearchQuery] = useState(searchParams.search || '');
   const [inStockOnly, setInStockOnly] = useState(searchParams.inStock === 'true');
 
-  const { cartItemCount } = useCart();
+  const { cartItemCount, addToCart } = useCart();
   const { addToast } = useToast();
 
   useEffect(() => {
@@ -68,7 +52,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        (product.tags && product.tags.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase())))
       );
     }
 
@@ -103,9 +87,18 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
     setFilteredProducts(sorted);
   }, [selectedCategory, selectedSubcategory, searchQuery, priceRange, inStockOnly, sortBy]);
 
-  const handleAddToCart = (product: any) => {
-    const { addToCart } = useCart();
-    addToCart(product, 1);
+  const handleAddToCart = (product: UnifiedProduct) => {
+    // Convert UnifiedProduct to CartItem format
+    const cartItem = {
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+      brand: product.brand,
+      inStock: product.inStock
+    };
+    addToCart(cartItem, 1);
     addToast({
       type: 'success',
       title: 'تمت الإضافة للسلة',
@@ -154,12 +147,12 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
             <h1 className="text-2xl font-bold text-gray-900">
               {currentCategory ? currentCategory.nameAr : 'جميع المنتجات'}
             </h1>
-            
+
             <div className="flex items-center space-x-4 space-x-reverse">
               <span className="text-sm text-gray-600">
                 {filteredProducts.length} منتج
               </span>
-              
+
               {/* View Toggle */}
               <div className="flex items-center space-x-2 space-x-reverse">
                 <button
@@ -186,7 +179,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
                   <span>فلترة وترتيب</span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {showFilters && (
                   <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                     <div className="p-4 space-y-4">
@@ -319,14 +312,32 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'}>
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                className={viewMode === 'list' ? 'flex flex-row items-center space-x-4' : ''}
-              />
-            ))}
+            {filteredProducts.map((product) => {
+              // Convert to UnifiedProduct format for ProductCard
+              const unifiedProduct: UnifiedProduct = {
+                id: typeof product.id === 'number' ? product.id : parseInt(product.id),
+                title: product.title,
+                name: product.title, // Add name property
+                price: product.price,
+                originalPrice: product.originalPrice,
+                rating: product.rating,
+                image: product.image,
+                category: product.category,
+                badge: product.badge,
+                type: 'herbal', // Add type property
+                description: product.description,
+                inStock: product.inStock,
+                reviews: product.reviewCount
+              };
+
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={unifiedProduct}
+                  onAddToCart={handleAddToCart}
+                />
+              );
+            })}
           </div>
         )}
       </div>

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../contexts/CartContext';
 import { useToast } from '../ui/Toast';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/helpers';
 
 interface HeaderProps {
   className?: string;
@@ -79,7 +79,7 @@ function Header({ className = "" }: HeaderProps) {
                 height={40}
                 className="h-10 w-10"
               />
-              <span className="text-xl font-bold text-emerald-700">BioPara</span>
+              <span className="text-xl font-bold text-emerald-700 dark:text-emerald-600 block">BioPara</span>
             </Link>
 
             {/* Desktop Navigation */}

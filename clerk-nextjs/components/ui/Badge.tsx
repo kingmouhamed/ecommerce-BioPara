@@ -2,7 +2,7 @@
 
 import React from "react";
 import { X, Check, AlertCircle, Info, Star, TrendingUp, Clock, Tag } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/helpers";
 
 export type BadgeVariant = 
   | "default"
