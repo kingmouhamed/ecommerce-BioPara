@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { CartProvider } from '../contexts/CartContext';
+import { ToastProvider } from './ui/Toast';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -10,7 +11,9 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <CartProvider>
-      {children}
+      <ToastProvider>
+        {children}
+      </ToastProvider>
     </CartProvider>
   );
 }
