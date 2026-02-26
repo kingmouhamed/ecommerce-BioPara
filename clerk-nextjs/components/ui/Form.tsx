@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, User, Mail, Phone, MapPin, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/helpers';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;

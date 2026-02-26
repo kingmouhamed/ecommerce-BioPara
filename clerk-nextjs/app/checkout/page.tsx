@@ -57,7 +57,7 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <CheckoutForm 
             onSubmit={async (data) => {
-              console.log('Order submitted:', data);
+              
               // Here you would typically send the order to your backend
             }}
           />

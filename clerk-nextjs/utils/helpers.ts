@@ -1,23 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Tables } from "./supabase-client";
+import { Tables } from "../lib/supabase-client";
+import { ProductCardData } from "../types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-// Type for ProductCard component
-export type ProductCardData = {
-  id: number;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  image: string;
-  category: string;
-  badge?: string;
-  brand?: string;
-};
 
 // Mapper function to transform Supabase product to ProductCard format
 export function mapProductToCardData(product: Tables['products'], categoryName?: string): ProductCardData {

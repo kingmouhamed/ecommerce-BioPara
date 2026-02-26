@@ -2,7 +2,7 @@
 
 import React, { forwardRef } from "react";
 import { Eye, EyeOff, Search, Mail, Phone, User, Lock, Calendar, MapPin, CreditCard } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/helpers";
 
 export type InputType = 
   | "text"

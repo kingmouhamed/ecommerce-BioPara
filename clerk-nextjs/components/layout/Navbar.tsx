@@ -5,7 +5,7 @@ import { Search, ShoppingCart, User, Menu, X, Heart, Phone, Mail, MapPin, Facebo
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../contexts/CartContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/helpers';
 
 interface NavbarProps {
   className?: string;
@@ -62,7 +62,7 @@ export default function Navbar({ className = "" }: NavbarProps) {
                 height={40}
                 className="h-10 w-10"
               />
-              <span className="text-xl font-bold text-emerald-700">BioPara</span>
+              <span className="text-xl font-bold text-emerald-700 dark:text-emerald-600 block">BioPara</span>
             </Link>
 
             {/* Desktop Navigation */}
