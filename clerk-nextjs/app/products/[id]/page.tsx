@@ -7,7 +7,6 @@ import { getProductBySlug, getProductsByCategory, getCategoryBySlug } from '../.
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { Star, ShoppingCart, Heart, Check, Truck, Shield, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
-import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -379,13 +378,40 @@ export default function ProductDetailPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-8">منتجات ذات صلة</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
-                <ProductCard
-                  key={relatedProduct.id}
-                  product={relatedProduct}
-                  onAddToCart={(p) => {
-                    console.log('Added to cart:', p);
-                  }}
-                />
+                <Link key={relatedProduct.id} href={`/products/${relatedProduct.slug}`} className="block">
+                  <div className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow cursor-pointer">
+                    <div className="relative">
+                      <Image
+                        src={relatedProduct.image}
+                        alt={relatedProduct.title}
+                        width={200}
+                        height={200}
+                        className="w-full h-48 object-cover rounded-t-lg"
+                      />
+                      {relatedProduct.badge && (
+                        <span className="absolute top-2 right-2 bg-green-600 text-white text-xs px-2 py-1 rounded">
+                          {relatedProduct.badge}
+                        </span>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-medium text-gray-900 mb-2 hover:text-green-600 transition-colors">
+                        {relatedProduct.title}
+                      </h3>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-gray-900">{relatedProduct.price} د.م</span>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < Math.floor(relatedProduct.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
           </div>
