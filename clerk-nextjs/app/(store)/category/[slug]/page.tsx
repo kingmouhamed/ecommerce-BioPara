@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { getCategoryBySlug, getProductsByCategory } from '../../../lib/categories';
+import { getCategoryBySlug, getProductsByCategory } from '@/lib/categories';
 import { Star, Filter, Grid, List, ShoppingCart, Heart, Check } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Search, Filter, Grid, List, ShoppingCart, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '../../contexts/CartContext';
+import { useCart } from '@/contexts/CartContext';
 import { useToast } from '../ui/Toast';
 import { cn } from '@/utils/helpers';
 

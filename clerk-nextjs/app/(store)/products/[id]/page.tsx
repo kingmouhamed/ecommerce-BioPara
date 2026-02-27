@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { getProductBySlug, getProductsByCategory, getCategoryBySlug } from '../../../lib/categories';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import { getProductBySlug, getProductsByCategory, getCategoryBySlug } from '@/lib/categories';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import { Star, ShoppingCart, Heart, Check, Truck, Shield, RefreshCw, MessageCircle, ArrowRight, Clock, Award, Zap } from 'lucide-react';
 import Link from 'next/link';
-import { useCart } from '../../../contexts/CartContext';
-import { useToast } from '../../../components/ui/Toast';
-import EnhancedProductCard from '../../../components/EnhancedProductCard';
-import { ProductSchema } from '../../../components/SchemaMarkup';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/components/ui/Toast';
+import EnhancedProductCard from '@/components/products/EnhancedProductCard';
+import { ProductSchema } from '@/components/layout/SchemaMarkup';
 
 export default function ProductDetailPage() {
   const params = useParams();

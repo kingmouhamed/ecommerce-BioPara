@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, Filter, SlidersHorizontal, Grid, List, ChevronDown, X, 
+import {
+  Search, Filter, SlidersHorizontal, Grid, List, ChevronDown, X,
   ShoppingCart, Heart, Star, MessageCircle, ArrowRight, Shield, Award,
   Truck, Clock, Zap
 } from 'lucide-react';
-import { useCart } from '../../contexts/CartContext';
-import { useToast } from '../../components/ui/Toast';
-import EnhancedProductCard from '../../components/EnhancedProductCard';
-import { CATEGORIES, getProductsByCategory, getProductsBySubcategory, SAMPLE_PRODUCTS } from '../../lib/categories';
-import { Product as UnifiedProduct } from '../../data/index';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/components/ui/Toast';
+import EnhancedProductCard from '@/components/products/EnhancedProductCard';
+import { CATEGORIES, getProductsByCategory, getProductsBySubcategory, SAMPLE_PRODUCTS } from '@/lib/categories';
+import { Product as UnifiedProduct } from '../../../data/index';
 
 interface ProductsPageProps {
   searchParams?: {
@@ -96,7 +96,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
   const handleAddToCart = (product: UnifiedProduct, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     addToCart({
       id: product.id,
       title: product.title,
@@ -105,7 +105,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
       brand: product.brand,
       inStock: product.inStock
     }, 1);
-    
+
     addToast({
       type: 'success',
       title: 'تمت الإضافة للسلة',
@@ -116,7 +116,7 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
   const handleWhatsAppOrder = (product: UnifiedProduct, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const message = `مرحباً، أود طلب المنتج: ${product.title}\nالسعر: ${product.price} درهم\nالرابط: ${window.location.href}/products/${product.id}`;
     const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -363,8 +363,8 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
             )}
 
             {/* Products Display */}
-            <div className={viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+            <div className={viewMode === 'grid'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
               : 'space-y-4'
             }>
               {filteredProducts.map((product) => (
@@ -378,10 +378,10 @@ export default function ProductsPage({ searchParams = {} }: ProductsPageProps) {
                       className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                     />
                   </div>
-                  
+
                   {/* Product Card */}
-                  <EnhancedProductCard 
-                    product={product} 
+                  <EnhancedProductCard
+                    product={product}
                     className={viewMode === 'list' ? 'flex flex-row' : ''}
                   />
                 </div>

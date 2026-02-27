@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Leaf, Droplet, Heart, Calendar, Phone, User, MessageSquare, Clock, Shield, CheckCircle } from 'lucide-react';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function ConsultationPage() {
   const [formData, setFormData] = useState({

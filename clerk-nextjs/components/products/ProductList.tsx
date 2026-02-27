@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import ProductCard from './ProductCard';
-import Pagination from './Pagination';
-import { useCart } from '../contexts/CartContext';
+import Pagination from '../ui/Pagination';
+import { useCart } from '@/contexts/CartContext';
 import { Search, SlidersHorizontal, Grid, List } from 'lucide-react';
 import { getHerbalImage } from '../data/herbal-images';
 import { Product as UnifiedProduct } from '../data/index';
@@ -18,10 +18,10 @@ interface ProductListProps {
   viewMode?: 'grid' | 'list';
 }
 
-export default function ProductList({ 
-  products, 
-  loading = false, 
-  viewMode: initialViewMode = 'grid' 
+export default function ProductList({
+  products,
+  loading = false,
+  viewMode: initialViewMode = 'grid'
 }: ProductListProps) {
   const { addToCart } = useCart();
   const [currentPage, setCurrentPage] = useState(1);
@@ -149,18 +149,16 @@ export default function ProductList({
           <button
             onClick={() => setViewMode('grid')}
             aria-label="عرض شبكي"
-            className={`p-2 rounded-lg transition-colors ${
-              viewMode === 'grid' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
-            }`}
+            className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
+              }`}
           >
             <Grid className="w-5 h-5" />
           </button>
           <button
             onClick={() => setViewMode('list')}
             aria-label="عرض قائمة"
-            className={`p-2 rounded-lg transition-colors ${
-              viewMode === 'list' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
-            }`}
+            className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-emerald-100 text-emerald-600' : 'text-gray-400 hover:text-gray-600'
+              }`}
           >
             <List className="w-5 h-5" />
           </button>

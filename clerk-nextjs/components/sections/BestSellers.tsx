@@ -6,9 +6,9 @@ import Link from 'next/link';
 import { Star, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProductSkeleton from '../ui/ProductSkeleton';
-import { Product } from '../../types';
-import { getMixedBestSellers } from '../../services/api';
-import { useCart } from '../../contexts/CartContext';
+import { Product } from '@/types';
+import { getMixedBestSellers } from '@/services/api';
+import { useCart } from '@/contexts/CartContext';
 import { useToast } from '../ui/Toast';
 
 export default function BestSellers() {
