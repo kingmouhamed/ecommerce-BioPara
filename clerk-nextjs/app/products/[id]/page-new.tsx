@@ -156,7 +156,7 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             <h4 className="font-semibold text-gray-900">الفوائد الرئيسية:</h4>
             <ul className="space-y-2">
-              {product?.tags?.map((benefit: string, index: number) => (
+              {product?.benefits?.map((benefit: string, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
                   <span>{benefit}</span>
@@ -169,14 +169,14 @@ export default function ProductDetailPage() {
         return (
           <div className="space-y-4">
             <h4 className="font-semibold text-gray-900">طريقة الاستخدام:</h4>
-            <p>{product?.description}</p>
+            <p>{product?.usageInstructions}</p>
           </div>
         );
       case 'ingredients':
         return (
           <div className="space-y-4">
             <h4 className="font-semibold text-gray-900">المكونات:</h4>
-            <p>مكونات طبيعية 100% - {product?.category === 'supplements' && 'فيتامينات ومعادن'}{product?.category === 'herbs' && 'أعشاب مجففة'}{product?.category === 'oils' && 'زيوت مستخلصة'}</p>
+            <p>{product?.ingredients}</p>
           </div>
         );
       default:
@@ -309,11 +309,11 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="flex items-center gap-4">
               <div className="text-3xl font-bold text-emerald-600">
-                {product.price} درهم
+                {product.price} ر.س
               </div>
               {product.originalPrice && product.originalPrice > product.price && (
                 <div className="text-lg text-gray-500 line-through">
-                  {product.originalPrice} درهم
+                  {product.originalPrice} ر.س
                 </div>
               )}
               {product.inStock && (

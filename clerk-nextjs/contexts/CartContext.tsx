@@ -1,4 +1,5 @@
 "use client";
+
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 
 // --- Type Definitions ---
@@ -23,6 +24,9 @@ interface CartContextType {
   isCartOpen: boolean;
   setIsCartOpen: (isOpen: boolean) => void;
   calculateTotal: () => string;
+  calculateSubtotal: () => number;
+  calculateShipping: () => number;
+  calculateTotalWithShipping: () => number;
 }
 
 interface CartProviderProps {
@@ -141,12 +145,31 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   const clearCart = useCallback(() => {
     setCart([]);
   }, []);
-  
+
   const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
-  const calculateTotal = useCallback((): string => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+  const calculateSubtotal = useCallback((): number => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   }, [cart]);
+
+  const calculateShipping = useCallback((): number => {
+    const subtotal = calculateSubtotal();
+    // Free shipping for orders over 299 درهم
+    if (subtotal >= 299) {
+      return 0;
+    }
+    // Standard shipping fee
+    return 30; // 30 درهم
+  }, [calculateSubtotal]);
+
+  const calculateTotalWithShipping = useCallback((): number => {
+    return calculateSubtotal() + calculateShipping();
+  }, [calculateSubtotal, calculateShipping]);
+
+  const calculateTotal = useCallback((): string => {
+    const total = calculateTotalWithShipping();
+    return total.toFixed(2);
+  }, [calculateTotalWithShipping]);
 
   const value = useMemo<CartContextType>(() => ({
     cart,
@@ -158,7 +181,10 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     isCartOpen,
     setIsCartOpen,
     calculateTotal,
-  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, cartItemCount, isCartOpen, setIsCartOpen, calculateTotal]);
+    calculateSubtotal,
+    calculateShipping,
+    calculateTotalWithShipping,
+  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, cartItemCount, isCartOpen, setIsCartOpen, calculateTotal, calculateSubtotal, calculateShipping, calculateTotalWithShipping]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

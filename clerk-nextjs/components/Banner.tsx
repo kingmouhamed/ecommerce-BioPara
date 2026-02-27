@@ -23,12 +23,13 @@ export default function Banner({ title, subtitle, image, href, className = '' }:
         <Image
           src={image}
           alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          width={600}
+          height={320}
+          className="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full"
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             const target = e.currentTarget;
-            target.src = '/images/placeholders/banner-placeholder.jpg';
+            target.src = '/images/backgrounds/hero-bg.jpg';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>

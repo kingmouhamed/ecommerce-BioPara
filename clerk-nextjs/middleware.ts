@@ -1,7 +1,8 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from 'next/server';
 
-const isPublicRoute = createRouteMatcher([
+export default authMiddleware({
+  publicRoutes: [
     '/',
     '/api/webhook(.*)',
     '/sign-in(.*)',
@@ -15,38 +16,31 @@ const isPublicRoute = createRouteMatcher([
     '/delivery(.*)',
     '/terms(.*)',
     '/privacy(.*)',
-]);
+    '/auth/login(.*)',
+    '/auth/signup(.*)',
+    '/auth/terms(.*)',
+    '/promotions(.*)',
+    '/wishlist(.*)',
+    '/help(.*)',
+    '/payment(.*)',
+    '/returns(.*)',
+    '/consultation(.*)',
+    '/order-success(.*)',
+    '/checkout(.*)',
+  ],
+  afterAuth(auth, req) {
+    // Handle admin routes
+    if (req.nextUrl.pathname.startsWith('/admin')) {
+      if (!auth.userId) {
+        return redirectToSignIn({ returnBackUrl: req.url });
+      }
 
-const isAdminRoute = createRouteMatcher([
-    '/admin(.*)'
-]);
-
-export default clerkMiddleware(async (auth, req) => {
-    // If the route matches the admin paths, check the role
-    if (isAdminRoute(req)) {
-        const authObject = await auth();
-        // Protect the route: if user is not signed in or not an admin
-        if (!authObject.userId) {
-            return authObject.redirectToSignIn({ returnBackUrl: req.url });
-        }
-
-        // Role-based Access Control (Fallback to primary email if needed)
-        // Here we check if `role` is defined in public metadata, otherwise restrict
-        const role = (authObject.sessionClaims?.metadata as any)?.role;
-
-        // In many setups, if role isn't defined, you might want a hardcoded admin email list for a workaround until clerk roles are configured
-        // ex: const isAdmin = (authObject.sessionClaims?.email === "admin@myecommerce.com");
-        // We enforce only role === "admin"
-        if (role !== 'admin') {
-            // Redirect to home or show a 403 Forbidden
-            const unauthorizedUrl = new URL('/', req.url);
-            return NextResponse.redirect(unauthorizedUrl);
-        }
+      const role = (auth.sessionClaims?.metadata as any)?.role;
+      if (role !== 'admin') {
+        return NextResponse.redirect(new URL('/', req.url));
+      }
     }
-
-    if (!isPublicRoute(req)) {
-        await auth.protect();
-    }
+  }
 });
 
 export const config = {

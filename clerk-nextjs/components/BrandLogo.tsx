@@ -25,7 +25,7 @@ export default function BrandLogo({ name, logo, href, className = '' }: BrandLog
         className="object-contain h-12 filter grayscale group-hover:grayscale-0 transition-all duration-300"
         onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
           const target = e.currentTarget;
-          target.src = '/images/placeholders/brand-placeholder.jpg';
+          target.src = '/images/logo.png';
         }}
       />
     </Link>

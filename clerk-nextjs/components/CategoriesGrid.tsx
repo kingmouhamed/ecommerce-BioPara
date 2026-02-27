@@ -19,7 +19,7 @@ const categories: Category[] = [
     id: 'medical-herbs',
     name: 'الأعشاب الطبية',
     description: 'مستحضرات طبيعية للعلاج والوقاية',
-    image: '/images/categories/medical-herbs.jpg',
+    image: '/images/categories/herbs.jpg',
     href: '/products?category=medical-herbs',
     icon: <Leaf className="w-8 h-8" />
   }
@@ -39,8 +39,9 @@ export default function CategoriesGrid() {
             <Image 
               src={category.image} 
               alt={category.name} 
-              fill
-              className="object-cover group-hover:scale-110 transition-transform duration-700"
+              width={400}
+              height={224}
+              className="object-cover group-hover:scale-110 transition-transform duration-700 w-full h-full"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
