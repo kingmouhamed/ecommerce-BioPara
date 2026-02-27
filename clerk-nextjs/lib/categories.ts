@@ -1,4 +1,4 @@
-import { Category, Product, Subcategory } from '../types';
+import { Category, Product, Subcategory } from '@/types';
 
 export const CATEGORIES: Category[] = [
   {
@@ -141,6 +141,48 @@ export const CATEGORIES: Category[] = [
         slug: 'therapeutic-blends',
         description: 'Specialized therapeutic oil blends',
         descriptionAr: 'خلائط زيت علاجية متخصصة',
+        productCount: 4
+      }
+    ]
+  },
+  {
+    id: 'honey',
+    name: 'Natural Honey',
+    nameAr: 'عسل طبيعي',
+    slug: 'honey',
+    description: 'Pure natural honey from pristine environments. Raw, unprocessed honey with all its natural enzymes and beneficial compounds preserved.',
+    descriptionAr: 'عسل طبيعي نقي من بيئات نقية. عسل خام غير معالج مع جميع إنزيماته الطبيعية ومركباته المفيدة محفوظة.',
+    image: '/images/categories/honey.jpg',
+    icon: '🍯',
+    productCount: 12,
+    seoTitle: 'Natural Honey | Pure Raw Honey | BioPara',
+    seoDescription: 'Discover premium natural honey varieties. Raw, unprocessed honey with all natural enzymes and health benefits.',
+    subcategories: [
+      {
+        id: 'wildflower',
+        name: 'Wildflower Honey',
+        nameAr: 'عسل الأزهار البرية',
+        slug: 'wildflower',
+        description: 'Multi-floral honey from wildflowers',
+        descriptionAr: 'عسل متعدد الأزهار من الأزهار البرية',
+        productCount: 4
+      },
+      {
+        id: 'monofloral',
+        name: 'Monofloral Honey',
+        nameAr: 'عسل أحادي الزهرة',
+        slug: 'monofloral',
+        description: 'Single source honey from specific flowers',
+        descriptionAr: 'عسل من مصدر واحد من زهور معينة',
+        productCount: 4
+      },
+      {
+        id: 'specialty',
+        name: 'Specialty Honey',
+        nameAr: 'عسل متخصص',
+        slug: 'specialty',
+        description: 'Rare and premium honey varieties',
+        descriptionAr: 'أنواع عسل نادرة وفاخرة',
         productCount: 4
       }
     ]

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '../../../lib/security';
+import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '@/lib/security';
 
 // Contact form API endpoint
 export async function POST(req: NextRequest) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '../../../lib/security';
+import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '@/lib/security';
 
 // Newsletter subscription endpoint
 export async function POST(req: NextRequest) {

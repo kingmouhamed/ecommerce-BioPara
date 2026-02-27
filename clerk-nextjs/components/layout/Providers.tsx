@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { CartProvider } from '../contexts/CartContext';
-import { ToastProvider } from './ui/Toast';
+import { CartProvider } from '@/contexts/CartContext';
+import { ToastProvider } from '../ui/Toast';
 
 interface ProvidersProps {
   children: React.ReactNode;

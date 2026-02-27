@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { securityHeaders, validateEnvironmentVariables } from '../../../lib/security';
+import { securityHeaders, validateEnvironmentVariables } from '@/lib/security';
 
 // Security check endpoint
 export async function GET(req: NextRequest) {

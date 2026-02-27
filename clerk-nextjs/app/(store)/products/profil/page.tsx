@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { User, ShoppingBag, Heart, Settings, LogOut, Edit2, Camera, Mail, Phone, MapPin } from 'lucide-react';
-import { useCart } from '../../../contexts/CartContext';
-import Breadcrumbs from '@/components/Breadcrumbs';
+import { useCart } from '@/contexts/CartContext';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export default function ProfilePage() {
   const [mounted, setMounted] = useState(false);

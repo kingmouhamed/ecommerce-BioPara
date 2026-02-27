@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, BookOpen } from 'lucide-react';
-import { getAllBlogPosts } from '../../lib/blog';
+import { getAllBlogPosts } from '@/lib/blog';
 
 export const metadata = {
     title: 'المدونة | BioPara',

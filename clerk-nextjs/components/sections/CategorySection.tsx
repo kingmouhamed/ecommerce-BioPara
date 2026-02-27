@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { CATEGORIES } from '../../lib/categories';
+import { CATEGORIES } from '@/lib/categories';
 
 export default function CategorySection() {
   return (

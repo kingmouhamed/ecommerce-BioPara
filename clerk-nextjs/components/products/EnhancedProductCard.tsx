@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, ShoppingCart, MessageCircle, ArrowRight, Heart, Shield, Award } from 'lucide-react';
-import { Product } from '../types';
-import { useCart } from '../contexts/CartContext';
-import { useToast } from './ui/Toast';
+import { Product } from '@/types';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '../ui/Toast';
 
 interface EnhancedProductCardProps {
   product: Product;
@@ -22,7 +22,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     addToCart({
       id: product.id,
       title: product.title,
@@ -31,7 +31,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
       brand: product.brand,
       inStock: product.inStock
     }, 1);
-    
+
     addToast({
       type: 'success',
       title: 'تمت الإضافة للسلة',
@@ -42,7 +42,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
   const handleWhatsAppOrder = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const message = `مرحباً، أود طلب المنتج: ${product.title}\nالسعر: ${product.price} درهم\nالرابط: ${window.location.href}/products/${product.id}`;
     const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -58,7 +58,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
 
   const badgeInfo = getCategoryBadgeInfo(product.category);
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount 
+  const discountPercentage = hasDiscount
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
 
@@ -91,22 +91,20 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
       {/* Product Image */}
       <div className="relative h-64 overflow-hidden bg-gray-50">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100 opacity-50"></div>
-        
+
         <Image
           src={product.image || '/images/placeholder.svg'}
           alt={product.title}
           fill
-          className={`object-cover transition-all duration-500 ${
-            imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-          } ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className={`object-cover transition-all duration-500 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            } ${isHovered ? 'scale-110' : 'scale-100'}`}
           onLoad={() => setImageLoaded(true)}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
 
         {/* Quick Actions Overlay */}
-        <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-all duration-300 ${
-          isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}>
+        <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 transition-all duration-300 ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+          }`}>
           <div className="flex gap-2">
             <button
               onClick={handleAddToCart}
@@ -163,11 +161,10 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-4 h-4 ${
-                  i < (product.rating || 5)
+                className={`w-4 h-4 ${i < (product.rating || 5)
                     ? 'fill-yellow-400 text-yellow-400'
                     : 'text-gray-300'
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -190,12 +187,10 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
 
         {/* Stock Status */}
         <div className="flex items-center gap-2 mb-4">
-          <div className={`w-2 h-2 rounded-full ${
-            product.inStock ? 'bg-green-500' : 'bg-red-500'
-          }`}></div>
-          <span className={`text-sm font-medium ${
-            product.inStock ? 'text-green-600' : 'text-red-600'
-          }`}>
+          <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'
+            }`}></div>
+          <span className={`text-sm font-medium ${product.inStock ? 'text-green-600' : 'text-red-600'
+            }`}>
             {product.inStock ? 'متوفر' : 'نفد المخزون'}
           </span>
           {product.stockCount && product.inStock && (

@@ -2,8 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, AlertCircle, Home, MessageCircle, ArrowRight } from 'lucide-react';
-import BestSellers from '../components/sections/BestSellers';
-import { getAllBlogPosts } from '../lib/blog';
+import BestSellers from '@/components/sections/BestSellers';
+import { getAllBlogPosts } from '@/lib/blog';
 
 export const metadata = {
   title: 'الصفحة غير موجودة | BioPara',

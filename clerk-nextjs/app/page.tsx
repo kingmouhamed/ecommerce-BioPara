@@ -11,8 +11,8 @@ import {
   ThumbsUp, ArrowRight, Zap, HeadphonesIcon,
   Sparkles, Gift, RefreshCw
 } from 'lucide-react';
-import CategorySection from '../components/sections/CategorySection';
-import BestSellers from '../components/sections/BestSellers';
+import CategorySection from '@/components/sections/CategorySection';
+import BestSellers from '@/components/sections/BestSellers';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

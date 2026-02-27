@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit2, Trash2, Package, TrendingUp, Users, ShoppingCart, Eye, Filter, Grid, List, X, ChevronDown, Upload, Download, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useToast } from '../../components/ui/Toast';
-import { CATEGORIES, SAMPLE_PRODUCTS, getProductBySlug, getProductsByCategory } from '../../lib/categories';
-import { Product } from '../../types/index';
+import { useToast } from '@/components/ui/Toast';
+import { CATEGORIES, SAMPLE_PRODUCTS, getProductBySlug, getProductsByCategory } from '@/lib/categories';
+import { Product } from '@/types/index';
 
 interface AdminStats {
   totalProducts: number;

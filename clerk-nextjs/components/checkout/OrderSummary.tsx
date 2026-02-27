@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { useCart } from '../../contexts/CartContext';
+import { useCart } from '@/contexts/CartContext';
 import { Truck, Shield, RefreshCw } from 'lucide-react';
 
 export default function OrderSummary() {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { rateLimit, securityHeaders, logSecurityEvent } from '../../../lib/security';
-import { SAMPLE_PRODUCTS } from '../../../lib/categories';
+import { rateLimit, securityHeaders, logSecurityEvent } from '@/lib/security';
+import { SAMPLE_PRODUCTS } from '@/lib/categories';
 
 // Search products endpoint
 export async function GET(req: NextRequest) {

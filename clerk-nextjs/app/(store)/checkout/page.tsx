@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useCart } from "../../contexts/CartContext";
+import { useCart } from '@/contexts/CartContext';
 import Link from "next/link";
 import { ShoppingCart, ArrowRight } from "lucide-react";
-import CheckoutForm from "../../components/checkout/CheckoutForm";
-import OrderSummary from "../../components/checkout/OrderSummary";
+import CheckoutForm from '@/components/checkout/CheckoutForm';
+import OrderSummary from '@/components/checkout/OrderSummary';
 
 export default function CheckoutPage() {
   const { cart, cartItemCount } = useCart();

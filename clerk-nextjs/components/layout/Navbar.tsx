@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, ShoppingCart, User, Menu, X, Heart, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart } from '../../contexts/CartContext';
+import { useCart } from '@/contexts/CartContext';
 import { cn } from '@/utils/helpers';
 import SearchBar from '../ui/SearchBar';
 

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowRight, Calendar, Clock, Share2 } from 'lucide-react';
-import { getBlogPostById, getAllBlogPosts } from '../../../lib/blog';
+import { getBlogPostById, getAllBlogPosts } from '@/lib/blog';
 
 // Pre-render pages at build time
 export async function generateStaticParams() {
