@@ -626,10 +626,10 @@ export default function Home() {
                 متجر متخصص في المنتجات الطبيعية والأعشاب والزيوت والمكملات الغذائية عالية الجودة
               </p>
               <div className="flex gap-4">
-                < href="#" title="Facebook" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Facebook className="w-5 h-5" />
-                </>
-                <a href="#" title="Instagram" className="text-gray-400 hover:text-white transition-colors">
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="w-5 h-5" />
                 </a>
               </div>

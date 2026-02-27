@@ -40,7 +40,7 @@ export default function HeroSection() {
 
           <div className="hidden md:block">
             <Image
-              src="https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=600"
+              src="/images/backgrounds/hero-herbs.svg"
               alt="أعشاب طبية"
               width={600}
               height={384}

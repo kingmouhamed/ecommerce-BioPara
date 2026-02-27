@@ -40,6 +40,8 @@ export interface Product {
     reviewCount: number;
     inStock: boolean;
     stockCount?: number;
+    best_seller?: boolean;
+    sales_count?: number;
     badge?: string;
     tags?: string[];
     specifications?: Record<string, any>;

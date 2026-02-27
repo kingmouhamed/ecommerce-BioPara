@@ -33,8 +33,9 @@ export default function CategorySection() {
                 <Image
                   src={category.image}
                   alt={category.nameAr}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  width={400}
+                  height={320}
+                  className="object-cover transition-transform duration-300 group-hover:scale-105 w-full h-full"
                 />
                 
                 {/* Overlay */}

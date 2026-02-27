@@ -24,7 +24,7 @@ export default function TestimonialCard({ name, role, avatar, content, rating, c
           className="rounded-full object-cover"
           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             const target = e.currentTarget;
-            target.src = '/images/placeholders/product-placeholder.jpg';
+            target.src = '/images/placeholder.svg';
           }}
         />
         <div>

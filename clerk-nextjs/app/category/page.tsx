@@ -50,7 +50,7 @@ export default function CategoryPage() {
                 <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all">
                   <div className="relative h-56 overflow-hidden bg-gray-200">
                     <Image
-                      src={category.image_url || 'https://images.pexels.com/photos/3962642/pexels-photo-3962642.jpeg?auto=compress&cs=tinysrgb&w=400'}
+                      src={category.image_url || '/images/categories/herbs.jpg'}
                       alt={category.name}
                       width={400}
                       height={224}
