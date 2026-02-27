@@ -222,7 +222,8 @@ export default function Home() {
 
       {/* Hero Section - Apple-level Design */}
       <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/backgrounds/pattern.svg')] opacity-5"></div>
+        <div className="absolute inset-0 bg-[url('/images/backgrounds/hero-bg.jpg')] bg-cover bg-center bg-no-repeat"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/95"></div>
         
         <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -307,20 +308,20 @@ export default function Home() {
             <div className="relative">
               <div className="relative z-10">
                 <Image
-                  src="/images/backgrounds/hero-herbs.svg"
+                  src="/images/backgrounds/hero-herbs.jpg"
                   alt="منتجات BioPara الطبيعية"
                   width={600}
                   height={400}
                   className="rounded-2xl shadow-2xl w-full"
                   priority
                 />
-              </div>
-              {/* Floating badges */}
-              <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-bold shadow-lg transform rotate-12">
-                الأكثر مبيعاً
-              </div>
-              <div className="absolute bottom-4 left-4 bg-emerald-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                جودة عضوية
+                {/* Floating badges */}
+                <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-bold shadow-lg transform rotate-12">
+                  الأكثر مبيعاً
+                </div>
+                <div className="absolute bottom-4 left-4 bg-emerald-600 text-white px-4 py-2 rounded-full font-bold shadow-lg">
+                  جودة عضوية
+                </div>
               </div>
             </div>
           </div>
@@ -626,9 +627,9 @@ export default function Home() {
                 متجر متخصص في المنتجات الطبيعية والأعشاب والزيوت والمكملات الغذائية عالية الجودة
               </p>
               <div className="flex gap-4">
-                < href="#" title="Facebook" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" title="Facebook" className="text-gray-400 hover:text-white transition-colors">
                   <Facebook className="w-5 h-5" />
-                </>
+                </a>
                 <a href="#" title="Instagram" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="w-5 h-5" />
                 </a>

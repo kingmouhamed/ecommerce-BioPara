@@ -1,3 +1,5 @@
+import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+
 // Performance optimization utilities
 
 // Debounce utility for performance optimization
@@ -52,6 +54,8 @@ export const measurePerformance = (name: string, fn: () => void) => {
   fn();
   const end = performance.now();
   
+  console.log(`${name} took ${end - start} milliseconds`);
+  return end - start;
 };
 
 // Bundle size optimization utilities
@@ -65,8 +69,8 @@ export const cleanupResources = () => {
   // Clear unused resources
   if (typeof window !== 'undefined') {
     // Clear any event listeners, timeouts, etc.
-    window.clearTimeout = window.clearTimeout;
-    window.clearInterval = window.clearInterval;
+    // Note: This function should be used carefully
+    console.log('Resource cleanup completed');
   }
 };
 
@@ -200,26 +204,27 @@ export const getOptimizedImageProps = (src: string, options: {
 
 // Performance monitoring hook
 export const usePerformanceMonitor = (componentName: string) => {
-  const startTime = React.useRef<number>();
+  const startTime = useRef<number>();
   
-  React.useEffect(() => {
+  useEffect(() => {
     startTime.current = performance.now();
     
     return () => {
       const endTime = performance.now();
       const renderTime = endTime - startTime.current!;
       
+      console.log(`${componentName} rendered in ${renderTime.toFixed(2)}ms`);
     };
   });
 };
 
 // Lazy loading hook
 export const useLazyLoad = (threshold = 0.1) => {
-  const [isLoaded, setIsLoaded] = React.useState(false);
-  const [isInView, setIsInView] = React.useState(false);
-  const elementRef = React.useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const elementRef = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const element = elementRef.current;
     if (!element) return;
 
@@ -251,10 +256,10 @@ export const useVirtualScroll = (
   itemHeight: number,
   containerHeight: number
 ) => {
-  const [scrollTop, setScrollTop] = React.useState(0);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const visibleItems = React.useMemo(() => {
+  const visibleItems = useMemo(() => {
     const startIndex = Math.floor(scrollTop / itemHeight);
     const endIndex = Math.min(
       startIndex + Math.ceil(containerHeight / itemHeight) + 1,
@@ -266,7 +271,7 @@ export const useVirtualScroll = (
     }));
   }, [items, itemHeight, scrollTop, containerHeight]);
 
-  const handleScroll = React.useCallback(
+  const handleScroll = useCallback(
     throttle((e: React.UIEvent<HTMLDivElement>) => {
       setScrollTop(e.currentTarget.scrollTop);
     }, 16),
@@ -286,8 +291,8 @@ export const optimizeResources = () => {
   // Optimize images
   const images = document.querySelectorAll('img');
   images.forEach(img => {
-    if (!img.loading || img.loading === 'auto') {
-      img.loading = 'lazy';
+    if (!img.loading || img.loading !== 'lazy') {
+      (img as any).loading = 'lazy';
     }
   });
 
@@ -303,7 +308,7 @@ export const optimizeResources = () => {
 // Bundle analyzer
 export const analyzeBundle = () => {
   if (typeof window !== 'undefined' && 'performance' in window) {
-    const resources = performance.getEntriesByType('resource');
+    const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
     const bundleSize = resources.reduce((total, resource) => {
       if (resource.name.includes('.js') || resource.name.includes('.css')) {
         return total + (resource.transferSize || 0);

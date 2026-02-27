@@ -3,9 +3,10 @@ import { Inter } from "next/font/google";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
 import Providers from "../components/Providers";
+import CookieConsent from "../components/layout/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"] });
-const tajawal = Tajawal({ 
+const tajawal = Tajawal({
   subsets: ["arabic"],
   weight: ["300", "400", "500", "700", "800"],
   variable: "--font-tajawal"
@@ -98,6 +99,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
           <Providers>
             {children}
+            <CookieConsent />
           </Providers>
         </div>
       </body>

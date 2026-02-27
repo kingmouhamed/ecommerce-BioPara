@@ -1,5 +1,9 @@
-'use client';
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'شروط الاستخدام | BioPara',
+  description: 'شروط وأحكام استخدام متجر BioPara للمنتجات الطبيعية.',
+};
 export default function TermsPage() {
   return (
     <div className="min-h-screen py-12 bg-gray-50">

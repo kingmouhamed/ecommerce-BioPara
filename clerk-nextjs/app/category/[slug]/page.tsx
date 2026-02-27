@@ -5,6 +5,7 @@ import { getCategoryBySlug, getProductsByCategory } from '../../../lib/categorie
 import { Star, Filter, Grid, List, ShoppingCart, Heart, Check } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 interface CategoryPageProps {
   params: {
@@ -67,8 +68,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const addToCart = (product: any) => {
     const existingItem = cart.find(item => item.id === product.id);
     if (existingItem) {
-      setCart(cart.map(item => 
-        item.id === product.id 
+      setCart(cart.map(item =>
+        item.id === product.id
           ? { ...item, quantity: item.quantity + 1 }
           : item
       ));
@@ -123,16 +124,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   }
 
   if (!category) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">الفئة غير موجودة</h1>
-          <Link href="/" className="text-green-600 hover:text-green-700">
-            العودة إلى الصفحة الرئيسية
-          </Link>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   return (
@@ -177,7 +169,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                 <Filter className="w-5 h-5 ml-2" />
                 فلترة المنتجات
               </h3>
-              
+
               {/* Price Range */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
