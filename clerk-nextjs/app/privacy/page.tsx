@@ -1,5 +1,9 @@
-'use client';
+import { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'سياسة الخصوصية | BioPara',
+  description: 'تعرف على سياسة الخصوصية وكيفية حماية بياناتك في BioPara.',
+};
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen py-12 bg-gray-50">

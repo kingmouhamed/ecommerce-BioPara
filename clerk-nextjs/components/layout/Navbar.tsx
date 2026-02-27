@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../contexts/CartContext';
 import { cn } from '@/utils/helpers';
+import SearchBar from '../ui/SearchBar';
 
 interface NavbarProps {
   className?: string;
@@ -81,32 +82,7 @@ export default function Navbar({ className = "" }: NavbarProps) {
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4 space-x-reverse">
               {/* Search */}
-              <div className="relative hidden md:block">
-                <button
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-                
-                {isSearchOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200">
-                    <form onSubmit={handleSearch} className="p-4">
-                      <div className="relative">
-                        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="ابحث عن منتجات..."
-                          className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:border-emerald-500 focus:outline-none"
-                          autoFocus
-                        />
-                      </div>
-                    </form>
-                  </div>
-                )}
-              </div>
+              <SearchBar />
 
               {/* Wishlist */}
               <Link href="/wishlist" className="p-2 text-gray-600 hover:text-emerald-600 transition-colors relative">
@@ -125,7 +101,7 @@ export default function Navbar({ className = "" }: NavbarProps) {
               </Link>
 
               {/* User Account */}
-              <Link href="/profile" className="p-2 text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link href="/products/profil" className="p-2 text-gray-600 hover:text-emerald-600 transition-colors">
                 <User className="w-5 h-5" />
               </Link>
 
@@ -155,7 +131,7 @@ export default function Navbar({ className = "" }: NavbarProps) {
                     {link.name}
                   </Link>
                 ))}
-                
+
                 {/* Mobile Search */}
                 <form onSubmit={handleSearch} className="mt-4">
                   <div className="relative">

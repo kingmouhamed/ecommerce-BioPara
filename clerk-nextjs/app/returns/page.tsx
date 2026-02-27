@@ -1,6 +1,10 @@
-'use client';
-
 import { RotateCcw, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'سياسة الاسترجاع والتبديل | BioPara',
+  description: 'تعرف على الشروط والسياسات الخاصة باسترجاع وتبديل المنتجات في متجر BioPara.',
+};
 
 export default function ReturnsPage() {
   return (

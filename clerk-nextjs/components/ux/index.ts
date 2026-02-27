@@ -1,14 +1,5 @@
 // UX Components
-export { default as ProductCardSkeleton } from './ProductSkeleton';
-export {
-  ProductListSkeleton,
-  ProductPageSkeleton,
-  ProductDetailSkeleton,
-  CartSkeleton,
-  CategorySkeleton,
-  ReviewSkeleton,
-  SkeletonLoader
-} from './ProductSkeleton';
+export { default as ProductSkeleton } from '../ui/ProductSkeleton';
 
 export { 
   NotificationProvider,

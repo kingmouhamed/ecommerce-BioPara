@@ -27,8 +27,8 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4">
         <Breadcrumbs
           items={[
-            { title: 'الرئيسية', href: '/' },
-            { title: 'حسابي', href: '/profile' },
+            { label: 'الرئيسية', href: '/' },
+            { label: 'حسابي', href: '/profile' },
           ]}
         />
 
