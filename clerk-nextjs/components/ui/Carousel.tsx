@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/helpers';
 
@@ -39,7 +40,7 @@ const Carousel: React.FC<CarouselProps> = ({
   }, [autoPlay, interval, isPaused, totalItems]);
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? totalItems - 1 : prevIndex - 1
     );
   };
@@ -65,14 +66,14 @@ const Carousel: React.FC<CarouselProps> = ({
   }
 
   return (
-    <div 
+    <div
       className={cn('relative w-full overflow-hidden', className)}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Carousel Container */}
       <div className="relative h-full">
-        <div 
+        <div
           className="flex transition-transform duration-500 ease-in-out h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
@@ -190,10 +191,11 @@ export const HeroCarousel: React.FC<{
     {slides.map((slide, index) => (
       <div key={index} className="relative h-full">
         <div className="absolute inset-0">
-          <img
+          <Image
             src={slide.image}
             alt={slide.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-black/40" />
         </div>

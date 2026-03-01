@@ -55,6 +55,7 @@ export default function WhatsAppButton({
           <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto max-h-[80vh] overflow-hidden">
             <button
               onClick={() => setIsOpen(false)}
+              title="Close"
               className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
             >
               <X className="w-5 h-5" />

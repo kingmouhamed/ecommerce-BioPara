@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Tajawal } from "next/font/google";
 import "./globals.css";
+
 import Providers from '@/components/layout/Providers';
 import CookieConsent from '@/components/layout/CookieConsent';
 

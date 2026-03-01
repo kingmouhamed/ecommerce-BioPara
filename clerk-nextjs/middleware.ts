@@ -5,20 +5,18 @@ export default authMiddleware({
   publicRoutes: [
     '/',
     '/api/webhook(.*)',
-    '/sign-in(.*)',
-    '/sign-up(.*)',
     '/products(.*)',
+    '/categories(.*)',
     '/category(.*)',
     '/cart(.*)',
+    '/checkout(.*)',
     '/about(.*)',
     '/contact(.*)',
+    '/blog(.*)',
     '/faq(.*)',
     '/delivery(.*)',
     '/terms(.*)',
     '/privacy(.*)',
-    '/auth/login(.*)',
-    '/auth/signup(.*)',
-    '/auth/terms(.*)',
     '/promotions(.*)',
     '/wishlist(.*)',
     '/help(.*)',
@@ -26,7 +24,6 @@ export default authMiddleware({
     '/returns(.*)',
     '/consultation(.*)',
     '/order-success(.*)',
-    '/checkout(.*)',
   ],
   afterAuth(auth, req) {
     // Handle admin routes
@@ -44,10 +41,10 @@ export default authMiddleware({
 });
 
 export const config = {
-    matcher: [
-        // Skip Next.js internals and all static files, unless found in search params
-        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-        // Always run for API routes
-        '/(api|trpc)(.*)',
-    ],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 };

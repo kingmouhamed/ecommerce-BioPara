@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
 import { CartProvider } from '@/contexts/CartContext';
 import { ToastProvider } from '../ui/Toast';
 
@@ -10,10 +11,12 @@ interface ProvidersProps {
 
 export default function Providers({ children }: ProvidersProps) {
   return (
-    <CartProvider>
-      <ToastProvider>
-        {children}
-      </ToastProvider>
-    </CartProvider>
+    <ClerkProvider>
+      <CartProvider>
+        <ToastProvider>
+          {children}
+        </ToastProvider>
+      </CartProvider>
+    </ClerkProvider>
   );
 }
