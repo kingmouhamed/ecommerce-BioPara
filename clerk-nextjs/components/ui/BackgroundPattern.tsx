@@ -3,15 +3,14 @@
 import React from 'react';
 
 interface BackgroundPatternProps {
-  opacity?: number;
+  opacityClass?: string;
   className?: string;
 }
 
-export default function BackgroundPattern({ opacity = 0.1, className = '' }: BackgroundPatternProps) {
+export default function BackgroundPattern({ opacityClass = 'opacity-10', className = '' }: BackgroundPatternProps) {
   return (
     <div 
-      className={`absolute inset-0 bg-[url('/images/backgrounds/pattern.svg')] ${className}`}
-      style={{ opacity }}
+      className={`absolute inset-0 bg-[url('/images/backgrounds/pattern.svg')] ${opacityClass} ${className}`}
     />
   );
 }

@@ -34,6 +34,10 @@ interface ToastProviderProps {
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
+
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = {
@@ -41,20 +45,16 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       duration: 5000,
       ...toast,
     };
-    
+
     setToasts(prev => [...prev, newToast]);
-    
+
     // Auto remove after duration
     if (newToast.duration && newToast.duration > 0) {
       setTimeout(() => {
         removeToast(id);
       }, newToast.duration);
     }
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const clearAllToasts = useCallback(() => {
     setToasts([]);
@@ -130,7 +130,7 @@ const ToastComponent: React.FC<ToastComponentProps> = ({ toast, onRemove }) => {
       >
         ✕
       </button>
-      
+
       <div className="flex items-start gap-3">
         <span className="text-xl flex-shrink-0">{getIcon()}</span>
         <div className="flex-1 min-w-0">

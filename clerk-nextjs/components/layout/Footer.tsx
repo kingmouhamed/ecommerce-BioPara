@@ -10,9 +10,8 @@ export default function Footer() {
 
   const footerLinks = {
     products: [
-      { name: 'المكملات الغذائية', href: '/category/supplements' },
-      { name: 'الأعشاب الطبية', href: '/category/herbs' },
-      { name: 'الزيوت الطبية', href: '/category/oils' },
+      { name: 'تصفح كل المنتجات', href: '/products' },
+      { name: 'أحدث العروض', href: '/promotions' },
     ],
     company: [
       { name: 'من نحن', href: '/about' },
@@ -27,9 +26,8 @@ export default function Footer() {
       { name: 'الشحن والتوصيل', href: '/delivery' },
     ],
     support: [
-      { name: 'تتبع الطلبات', href: '/order-tracking' },
-      { name: 'طرق الدفع', href: '/payment' },
-      { name: 'الدعم الفني', href: '/help' },
+      { name: 'تتبع الطلبات', href: '/orders' },
+      { name: 'الدعم الفني', href: '/contact' },
       { name: 'ضمان الجودة', href: '/guarantee' },
     ],
   };

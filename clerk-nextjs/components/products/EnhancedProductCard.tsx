@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, ShoppingCart, MessageCircle, ArrowRight, Heart, Shield, Award } from 'lucide-react';
-import { Product } from '@/types';
+import { Product } from '@/lib/data/products';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '../ui/Toast';
 
@@ -25,17 +25,17 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
 
     addToCart({
       id: product.id,
-      title: product.title,
+      title: product.name_ar || product.name,
       price: product.price,
-      image: product.image,
-      brand: product.brand,
-      inStock: product.inStock
+      image: (product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg',
+      brand: 'BioPara',
+      inStock: product.stock > 0
     }, 1);
 
     addToast({
       type: 'success',
       title: 'تمت الإضافة للسلة',
-      message: `${product.title} تمت إضافته بنجاح`
+      message: `${product.name_ar || product.name} تمت إضافته بنجاح`
     });
   };
 
@@ -43,7 +43,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
     e.preventDefault();
     e.stopPropagation();
 
-    const message = `مرحباً، أود طلب المنتج: ${product.title}\nالسعر: ${product.price} درهم\nالرابط: ${window.location.href}/products/${product.id}`;
+    const message = `مرحباً، أود طلب المنتج: ${product.name_ar || product.name}\nالسعر: ${product.price} درهم\nالرابط: ${window.location.href}/products/${product.slug || product.id}`;
     const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -56,11 +56,9 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
     return { label: 'منتج مميز', color: 'bg-gray-100 text-gray-800' };
   };
 
-  const badgeInfo = getCategoryBadgeInfo(product.category);
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
-    : 0;
+  const badgeInfo = getCategoryBadgeInfo(product.categories?.name_ar || product.categories?.name || '');
+  const hasDiscount = false;
+  const discountPercentage = 0;
 
   return (
     <Link
@@ -71,16 +69,6 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
     >
       {/* Badges */}
       <div className="absolute top-3 left-3 z-20 flex gap-2">
-        {product.badge && (
-          <span className="bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-            {product.badge}
-          </span>
-        )}
-        {hasDiscount && (
-          <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-            -{discountPercentage}%
-          </span>
-        )}
       </div>
 
       {/* Category Badge */}
@@ -93,8 +81,8 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100 opacity-50"></div>
 
         <Image
-          src={product.image || '/images/placeholder.svg'}
-          alt={product.title}
+          src={(product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg'}
+          alt={product.name_ar || product.name}
           fill
           className={`object-cover transition-all duration-500 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
             } ${isHovered ? 'scale-110' : 'scale-100'}`}
@@ -125,6 +113,7 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
 
         {/* Wishlist Button */}
         <button
+          title="Add to wishlist"
           className="absolute top-3 left-3 z-20 p-2 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100"
           onClick={(e) => {
             e.preventDefault();
@@ -136,22 +125,16 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
         </button>
       </div>
 
-      {/* Product Info */}
       <div className="p-5">
-        {/* Brand */}
-        {product.brand && (
-          <div className="text-xs text-gray-500 mb-1 font-medium">{product.brand}</div>
-        )}
-
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors leading-tight">
-          {product.title}
+          {product.name_ar || product.name}
         </h3>
 
         {/* Description */}
-        {product.description && (
+        {product.description_ar && (
           <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-            {product.description}
+            {product.description_ar || product.description}
           </p>
         )}
 
@@ -161,15 +144,15 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-4 h-4 ${i < (product.rating || 5)
-                    ? 'fill-yellow-400 text-yellow-400'
-                    : 'text-gray-300'
+                className={`w-4 h-4 ${i < 5
+                  ? 'fill-yellow-400 text-yellow-400'
+                  : 'text-gray-300'
                   }`}
               />
             ))}
           </div>
           <span className="text-sm text-gray-500">
-            ({product.reviewCount || 0})
+            (0)
           </span>
         </div>
 
@@ -178,24 +161,19 @@ export default function EnhancedProductCard({ product, className = '' }: Enhance
           <div className="text-2xl font-black text-emerald-600">
             {product.price} ر.س
           </div>
-          {hasDiscount && (
-            <div className="text-sm text-gray-500 line-through">
-              {product.originalPrice} ر.س
-            </div>
-          )}
         </div>
 
         {/* Stock Status */}
         <div className="flex items-center gap-2 mb-4">
-          <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'
+          <div className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'
             }`}></div>
-          <span className={`text-sm font-medium ${product.inStock ? 'text-green-600' : 'text-red-600'
+          <span className={`text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'
             }`}>
-            {product.inStock ? 'متوفر' : 'نفد المخزون'}
+            {product.stock > 0 ? 'متوفر' : 'نفد المخزون'}
           </span>
-          {product.stockCount && product.inStock && (
+          {product.stock > 0 && (
             <span className="text-xs text-gray-500">
-              ({product.stockCount} قطعة)
+              ({product.stock} قطعة)
             </span>
           )}
         </div>

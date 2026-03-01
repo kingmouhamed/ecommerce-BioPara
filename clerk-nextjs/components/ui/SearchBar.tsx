@@ -6,8 +6,7 @@ import { useDebounce } from 'use-debounce';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Product } from '@/types';
-import { getMixedBestSellers } from '@/services/api'; // Mock data search capability
+import { Product } from '@/lib/data/products';
 
 export default function SearchBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,13 +37,14 @@ export default function SearchBar() {
         const fetchResults = async () => {
             setLoading(true);
             try {
-                // In a real app we would call a specific search endpoint. We simulate this by getting all and filtering
-                const allProducts = await getMixedBestSellers(50);
-                const filtered = allProducts.filter(p =>
-                    p.title.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-                    p.category.toLowerCase().includes(debouncedQuery.toLowerCase())
-                );
-                setResults(filtered.slice(0, 5)); // Show max 5 results in auto-complete
+                const response = await fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}&limit=5`);
+                const data = await response.json();
+
+                if (data.products) {
+                    setResults(data.products);
+                } else {
+                    setResults([]);
+                }
             } catch (error) {
                 console.error("Search error:", error);
             } finally {
@@ -77,7 +77,7 @@ export default function SearchBar() {
                         placeholder="ابحث عن الأعشاب والمنتجات الطبيعية..."
                         className="w-full pr-12 pl-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                     />
-                    <button type="submit" className="absolute right-3 text-gray-400 hover:text-emerald-600 transition-colors">
+                    <button type="submit" title="Search" className="absolute right-3 text-gray-400 hover:text-emerald-600 transition-colors">
                         <Search className="w-5 h-5" />
                     </button>
                 </div>
@@ -107,15 +107,15 @@ export default function SearchBar() {
                                         >
                                             <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                                 <Image
-                                                    src={product.image || '/images/placeholder.svg'}
-                                                    alt={product.title}
+                                                    src={(product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg'}
+                                                    alt={product.name_ar || product.name}
                                                     fill
                                                     className="object-cover"
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="text-sm font-bold text-gray-900 truncate">{product.title}</h4>
-                                                <p className="text-xs text-gray-500 truncate">{product.category}</p>
+                                                <h4 className="text-sm font-bold text-gray-900 truncate">{product.name_ar || product.name}</h4>
+                                                <p className="text-xs text-gray-500 truncate">{product.categories?.name_ar || product.categories?.name}</p>
                                             </div>
                                             <div className="text-emerald-600 font-bold text-sm whitespace-nowrap">
                                                 {product.price} ر.س
@@ -129,13 +129,13 @@ export default function SearchBar() {
                                         onClick={() => setIsOpen(false)}
                                         className="block text-center text-sm text-emerald-600 font-bold py-3 hover:bg-emerald-50 transition-colors"
                                     >
-                                        عرض جميع النتائج لـ "{query}"
+                                        عرض جميع النتائج لـ &quot;{query}&quot;
                                     </Link>
                                 </li>
                             </ul>
                         ) : (
                             <div className="py-8 text-center text-gray-500 text-sm">
-                                لا توجد نتائج مطابقة لـ "{query}"
+                                لا توجد نتائج مطابقة لـ &quot;{query}&quot;
                             </div>
                         )}
                     </motion.div>

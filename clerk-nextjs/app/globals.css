@@ -623,3 +623,10 @@ input:focus, textarea:focus, select:focus {
   font-size: 0.75rem;
   font-weight: 700;
 }
+
+.bestsellers-background {
+    background-image: url(/images/backgrounds/hero-herbs.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}

@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { Star, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProductSkeleton from '../ui/ProductSkeleton';
-import { Product } from '@/types';
-import { getMixedBestSellers } from '@/services/api';
+import { Product } from '@/lib/data/products';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '../ui/Toast';
 
@@ -20,9 +19,11 @@ export default function BestSellers() {
     useEffect(() => {
         async function loadBestSellers() {
             try {
-                // Fetch 8 mixed products
-                const data = await getMixedBestSellers(8);
-                setProducts(data);
+                const response = await fetch('/api/products?limit=8');
+                const result = await response.json();
+                if (result.success && result.data?.products) {
+                    setProducts(result.data.products);
+                }
             } catch (error) {
                 console.error("Failed to load best sellers", error);
             } finally {
@@ -36,16 +37,16 @@ export default function BestSellers() {
         e.preventDefault(); // prevent navigation 
         addToCart({
             id: product.id,
-            title: product.title,
+            title: product.name_ar || product.name,
             price: product.price,
-            image: product.image,
-            brand: product.brand,
-            inStock: product.inStock
+            image: (product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg',
+            brand: 'BioPara',
+            inStock: product.stock > 0
         }, 1);
         addToast({
             type: 'success',
             title: 'تمت الإضافة للسلة',
-            message: `${product.title} تمت إضافته بنجاح`
+            message: `${product.name_ar || product.name} تمت إضافته بنجاح`
         });
     };
 
@@ -69,12 +70,7 @@ export default function BestSellers() {
     }
 
     return (
-        <section className="py-16 bg-white" style={{
-            backgroundImage: 'url(/images/backgrounds/hero-herbs.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-        }}>
+        <section className="py-16 bg-white bestsellers-background">
             <div className="container mx-auto px-4">
                 <div className="mb-12 text-center">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">الأكثر مبيعاً</h2>
@@ -90,7 +86,7 @@ export default function BestSellers() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {products.map((product, index) => {
-                            const badgeInfo = getCategoryBadgeInfo(product.category);
+                            const badgeInfo = getCategoryBadgeInfo(product.categories?.name_ar || product.categories?.name || '');
                             return (
                                 <motion.div
                                     key={product.id}
@@ -108,8 +104,8 @@ export default function BestSellers() {
                                         {/* Image */}
                                         <div className="relative h-40 md:h-48 w-full mb-4 overflow-hidden rounded-xl bg-gray-50">
                                             <Image
-                                                src={product.image || '/images/placeholder.svg'}
-                                                alt={product.title}
+                                                src={(product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg'}
+                                                alt={product.name_ar || product.name}
                                                 fill
                                                 className="object-cover group-hover:scale-110 transition-transform duration-500"
                                             />
@@ -118,13 +114,13 @@ export default function BestSellers() {
                                         {/* Content */}
                                         <div className="flex flex-col flex-1">
                                             <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 line-clamp-2 leading-relaxed group-hover:text-green-600 transition-colors">
-                                                {product.title}
+                                                {product.name_ar || product.name}
                                             </h3>
 
                                             <div className="flex items-center mb-3">
-                                                {renderStars(product.rating || 5)}
+                                                {renderStars(5)}
                                                 <span className="text-[10px] md:text-xs text-gray-500 mr-1">
-                                                    ({product.sales_count || product.reviewCount || 0})
+                                                    (0)
                                                 </span>
                                             </div>
 

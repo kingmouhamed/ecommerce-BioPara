@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Filter, Grid, List, ShoppingCart, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { Search, Filter, Grid, List, ShoppingCart, Heart, Menu, X, ChevronDown, UserSquare2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/nextjs';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '../ui/Toast';
 import { cn } from '@/utils/helpers';
@@ -20,7 +21,7 @@ function Header({ className = "" }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  
+
   const router = useRouter();
   const { cartItemCount } = useCart();
   const { addToast } = useToast();
@@ -35,15 +36,15 @@ function Header({ className = "" }: HeaderProps) {
   }, []);
 
   const categories = [
-    { name: 'المكملات الغذائية', href: '/category/supplements', icon: '💊' },
-    { name: 'الأعشاب الطبية', href: '/category/herbs', icon: '🌿' },
-    { name: 'الزيوت الطبية', href: '/category/oils', icon: '🛢️' },
+    { name: 'العسل الطبيعي', href: '/categories/natural-honey', icon: '🍯' },
+    { name: 'الأعشاب الطبية', href: '/categories/medicinal-herbs', icon: '🌿' },
+    { name: 'الزيوت العطرية', href: '/categories/essential-oils', icon: '🛢️' },
   ];
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+      router.push(`/products?q=${encodeURIComponent(searchQuery)}`);
       setIsSearchOpen(false);
     } else {
       addToast({
@@ -88,12 +89,13 @@ function Header({ className = "" }: HeaderProps) {
               <div className="relative">
                 <button
                   onClick={() => setCategoriesOpen(!categoriesOpen)}
+                  title="Product categories"
                   className="flex items-center space-x-1 text-gray-700 hover:text-emerald-600 font-medium transition-colors"
                 >
                   <span>المنتجات</span>
                   <ChevronDown className={cn("w-4 h-4 transition-transform", categoriesOpen && "rotate-180")} />
                 </button>
-                
+
                 {categoriesOpen && (
                   <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
                     {categories.map((category) => (
@@ -138,18 +140,19 @@ function Header({ className = "" }: HeaderProps) {
               {/* Search Toggle (Mobile) */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
+                title="Search"
                 className="md:hidden p-2 text-gray-600 hover:text-emerald-600 transition-colors"
               >
                 <Search className="w-5 h-5" />
               </button>
 
               {/* View Toggle */}
-              <button className="hidden sm:block p-2 text-gray-600 hover:text-emerald-600 transition-colors">
+              <button title="Grid view" className="hidden sm:block p-2 text-gray-600 hover:text-emerald-600 transition-colors">
                 <Grid className="w-5 h-5" />
               </button>
 
               {/* Filter Toggle */}
-              <button className="hidden sm:block p-2 text-gray-600 hover:text-emerald-600 transition-colors">
+              <button title="Filters" className="hidden sm:block p-2 text-gray-600 hover:text-emerald-600 transition-colors">
                 <Filter className="w-5 h-5" />
               </button>
 
@@ -169,59 +172,25 @@ function Header({ className = "" }: HeaderProps) {
                 )}
               </Link>
 
-              {/* User Menu */}
-              <div className="relative">
-                <button
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="p-2 text-gray-600 hover:text-emerald-600 transition-colors"
-                >
-                  <User className="w-5 h-5" />
-                </button>
-                
-                {userMenuOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
-                    <Link
-                      href="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-3 hover:bg-emerald-50 transition-colors text-gray-700"
-                    >
-                      حسابي
-                    </Link>
-                    <Link
-                      href="/orders"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-3 hover:bg-emerald-50 transition-colors text-gray-700"
-                    >
-                      طلباتي
-                    </Link>
-                    <hr className="my-2 border-gray-200" />
-                    <Link
-                      href="/settings"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-3 hover:bg-emerald-50 transition-colors text-gray-700"
-                    >
-                      الإعدادات
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setUserMenuOpen(false);
-                        addToast({
-                          type: 'success',
-                          title: 'تم تسجيل الخروج',
-                          message: 'تم تسجيل خروجك بنجاح'
-                        });
-                      }}
-                      className="w-full px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
-                    >
-                      تسجيل الخروج
+              {/* User Auth: Clerk Integration */}
+              <div className="flex items-center">
+                <SignedIn>
+                  <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-8 h-8" } }} />
+                </SignedIn>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="flex items-center gap-2 p-2 text-gray-600 hover:text-emerald-600 font-medium transition-colors">
+                      <UserSquare2 className="w-5 h-5" />
+                      <span className="hidden sm:inline">دخول</span>
                     </button>
-                  </div>
-                )}
+                  </SignInButton>
+                </SignedOut>
               </div>
 
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                title="Menu"
                 className="lg:hidden p-2 text-gray-600 hover:text-emerald-600 transition-colors"
               >
                 {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -260,12 +229,13 @@ function Header({ className = "" }: HeaderProps) {
                 <h2 className="text-lg font-semibold text-gray-900">القائمة</h2>
                 <button
                   onClick={() => setIsMenuOpen(false)}
+                  title="Close menu"
                   className="p-2 text-gray-600 hover:text-gray-900"
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               {/* Mobile Categories */}
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-gray-700 mb-3">المنتجات</h3>

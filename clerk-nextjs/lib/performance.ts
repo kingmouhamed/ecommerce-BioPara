@@ -8,7 +8,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -21,7 +21,7 @@ export const throttle = <T extends (...args: any[]) => any>(
   limit: number
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle: boolean;
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args);
@@ -36,7 +36,7 @@ export const memoize = <T extends (...args: any[]) => any>(
   func: T
 ): T => {
   const cache = new Map();
-  
+
   return ((...args: Parameters<T>) => {
     const key = JSON.stringify(args);
     if (cache.has(key)) {
@@ -53,7 +53,7 @@ export const measurePerformance = (name: string, fn: () => void) => {
   const start = performance.now();
   fn();
   const end = performance.now();
-  
+
   console.log(`${name} took ${end - start} milliseconds`);
   return end - start;
 };
@@ -94,7 +94,7 @@ export const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
-      
+
       return registration;
     } catch (error) {
       console.error('Service Worker registration failed:', error);
@@ -136,7 +136,7 @@ export const collectMetrics = () => {
   if ('performance' in window) {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
     const paint = performance.getEntriesByType('paint');
-    
+
     return {
       domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
       loadComplete: navigation.loadEventEnd - navigation.loadEventStart,
@@ -159,7 +159,7 @@ export const optimizeImage = (
   } = {}
 ): string => {
   const { width, height, quality = 80, format = 'webp' } = options;
-  
+
   // In production, this would generate optimized image URLs
   // For now, just return the original URL
   return src;
@@ -205,14 +205,14 @@ export const getOptimizedImageProps = (src: string, options: {
 // Performance monitoring hook
 export const usePerformanceMonitor = (componentName: string) => {
   const startTime = useRef<number>();
-  
+
   useEffect(() => {
     startTime.current = performance.now();
-    
+
     return () => {
       const endTime = performance.now();
       const renderTime = endTime - startTime.current!;
-      
+
       console.log(`${componentName} rendered in ${renderTime.toFixed(2)}ms`);
     };
   });
@@ -271,7 +271,7 @@ export const useVirtualScroll = (
     }));
   }, [items, itemHeight, scrollTop, containerHeight]);
 
-  const handleScroll = useCallback(
+  const handleScroll = useMemo(() =>
     throttle((e: React.UIEvent<HTMLDivElement>) => {
       setScrollTop(e.currentTarget.scrollTop);
     }, 16),

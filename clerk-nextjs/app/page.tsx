@@ -63,53 +63,53 @@ export default function Home() {
 
   // Mock data
   const customerReviews = [
-    { 
-      id: 1, 
-      name: "فاطمة أحمد", 
-      rating: 5, 
-      comment: "منتجات ممتازة وجودة عالية. استخدمت زيت الأرغان وكانت النتائج مذهلة!", 
+    {
+      id: 1,
+      name: "فاطمة أحمد",
+      rating: 5,
+      comment: "منتجات ممتازة وجودة عالية. استخدمت زيت الأرغان وكانت النتائج مذهلة!",
       productImage: "/images/medicinal-oils/argan-oil.jpg",
       avatar: "/images/placeholder.svg"
     },
-    { 
-      id: 2, 
-      name: "محمد العلي", 
-      rating: 5, 
-      comment: "خدمة توصيل سريعة ومنتجات أصلية 100%. أنصح بالتعامل معهم", 
+    {
+      id: 2,
+      name: "محمد العلي",
+      rating: 5,
+      comment: "خدمة توصيل سريعة ومنتجات أصلية 100%. أنصح بالتعامل معهم",
       productImage: "/images/medicinal-herbs/ginger-herb.jpg",
       avatar: "/images/placeholder.svg"
     },
-    { 
-      id: 3, 
-      name: "نورة سعيد", 
-      rating: 5, 
-      comment: "الأعشاب الطبية ساعدتني كثيراً في تحسين صحتي. شكراً لكم", 
+    {
+      id: 3,
+      name: "نورة سعيد",
+      rating: 5,
+      comment: "الأعشاب الطبية ساعدتني كثيراً في تحسين صحتي. شكراً لكم",
       productImage: "/images/medicinal-herbs/camomile-herb.jpg",
       avatar: "/images/placeholder.svg"
     }
   ];
 
   const blogArticles = [
-    { 
-      id: 1, 
-      title: "فوائد زيت الأرغان للبشرة", 
-      date: "15 يناير 2024", 
+    {
+      id: 1,
+      title: "فوائد زيت الأرغان للبشرة",
+      date: "15 يناير 2024",
       image: "/images/medicinal-oils/argan-oil.jpg",
       readTime: "5 دقائق",
       excerpt: "اكتشف فوائد زيت الأرغان المغربي الأصيل لبشرة مشرقة وصحة مثالية"
     },
-    { 
-      id: 2, 
-      title: "كيف تقوي مناعتك طبيعياً", 
-      date: "10 يناير 2024", 
+    {
+      id: 2,
+      title: "كيف تقوي مناعتك طبيعياً",
+      date: "10 يناير 2024",
       image: "/images/dietary-supplements/vitamin-d3-k2.jpg",
       readTime: "7 دقائق",
       excerpt: "دليل شامل لتعزيز جهاز المناعة بطرق طبيعية وآمنة"
     },
-    { 
-      id: 3, 
-      title: "فن تحضير شاي الأعشاب", 
-      date: "5 يناير 2024", 
+    {
+      id: 3,
+      title: "فن تحضير شاي الأعشاب",
+      date: "5 يناير 2024",
       image: "/images/medicinal-herbs/mint-herb.jpg",
       readTime: "4 دقائق",
       excerpt: "تعلم طرق تحضير شاي الأعشاب للاستفادة القصوى من فوائدها"
@@ -138,14 +138,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-3 px-4">
-        <div className="container mx-auto flex items-center justify-center gap-2 text-sm font-medium">
-          <Gift className="w-4 h-4" />
-          <span>توصيل مجاني للطلبات فوق 299 درهم - شحن خلال 24 ساعة</span>
-          <Sparkles className="w-4 h-4" />
-        </div>
-      </div>
 
       {/* Trust Bar */}
       <div className="bg-emerald-600 text-white py-2 px-4">
@@ -224,7 +216,7 @@ export default function Home() {
       <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/backgrounds/hero-bg.jpg')] bg-cover bg-center bg-no-repeat"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/95"></div>
-        
+
         <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
@@ -233,14 +225,14 @@ export default function Home() {
                 <Zap className="w-4 h-4" />
                 <span className="text-sm font-medium">جودة عضوية مضمونة</span>
               </div>
-              
+
               <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 اكتشف قوة
                 <span className="text-emerald-600"> الطبيعة</span>
                 <br />
                 <span className="text-2xl md:text-4xl font-light">لحياة أكثر صحة ونضارة</span>
               </h1>
-              
+
               <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 منتجات طبيعية خالصة معتمدة من مختبرات عالمية. نضمن لك أفضل النتائج بأمان تام وفعالية مثبتة علمياً.
               </p>
@@ -488,9 +480,8 @@ export default function Home() {
                 {customerReviews.map((review, index) => (
                   <div
                     key={review.id}
-                    className={`bg-white rounded-2xl p-8 shadow-lg transition-all duration-300 ${
-                      index === currentReviewIndex ? 'scale-105 shadow-xl border-2 border-emerald-200' : 'opacity-50 scale-95'
-                    }`}
+                    className={`bg-white rounded-2xl p-8 shadow-lg transition-all duration-300 ${index === currentReviewIndex ? 'scale-105 shadow-xl border-2 border-emerald-200' : 'opacity-50 scale-95'
+                      }`}
                   >
                     <div className="flex items-center mb-6">
                       <Image
