@@ -14,7 +14,7 @@ export default function OrderSummary() {
 
   const calculateShipping = () => {
     const subtotal = calculateSubtotal();
-    // Free shipping for orders over 200 SAR
+    // Free shipping for orders over 200 MAD
     return subtotal >= 200 ? 0 : 20;
   };
 
@@ -52,7 +52,7 @@ export default function OrderSummary() {
             </div>
             <div className="text-left">
               <p className="font-semibold text-gray-900">
-                {(item.price * item.quantity).toFixed(2)} ر.س
+                {(item.price * item.quantity).toFixed(2)} درهم
               </p>
             </div>
           </div>
@@ -63,25 +63,25 @@ export default function OrderSummary() {
       <div className="border-t border-gray-200 pt-4 space-y-3">
         <div className="flex justify-between text-gray-600">
           <span>المجموع الفرعي</span>
-          <span>{subtotal.toFixed(2)} ر.س</span>
+          <span>{subtotal.toFixed(2)} درهم</span>
         </div>
 
         <div className="flex justify-between text-gray-600">
           <span>الشحن</span>
           <span>
-            {shipping === 0 ? 'مجاني' : `${shipping.toFixed(2)} ر.س`}
+            {shipping === 0 ? 'مجاني' : `${shipping.toFixed(2)} درهم`}
           </span>
         </div>
 
         <div className="flex justify-between text-gray-600">
           <span>ضريبة القيمة المضافة (15%)</span>
-          <span>{tax.toFixed(2)} ر.س</span>
+          <span>{tax.toFixed(2)} درهم</span>
         </div>
 
         <div className="border-t border-gray-200 pt-3">
           <div className="flex justify-between text-lg font-semibold text-gray-900">
             <span>المجموع</span>
-            <span>{total.toFixed(2)} ر.س</span>
+            <span>{total.toFixed(2)} درهم</span>
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ export default function OrderSummary() {
           <div className="flex items-center space-x-2 space-x-reverse text-emerald-700">
             <Truck className="w-4 h-4" />
             <span className="text-sm">
-              أضف {(200 - subtotal).toFixed(2)} ر.س أخرى للحصول على شحن مجاني!
+              أضف {(200 - subtotal).toFixed(2)} درهم أخرى للحصول على شحن مجاني!
             </span>
           </div>
         </div>
@@ -135,3 +135,4 @@ export default function OrderSummary() {
     </div>
   );
 }
+

@@ -16,18 +16,42 @@ interface Category {
 
 const categories: Category[] = [
   {
-    id: 'medical-herbs',
+    id: 'supplements',
+    name: 'المكملات الغذائية',
+    description: 'مكملات غذائية أصلية لدعم صحتك',
+    image: '/images/categories/supplements.jpg',
+    href: '/products?category=supplements',
+    icon: <Sparkles className="w-8 h-8" />
+  },
+  {
+    id: 'herbs',
     name: 'الأعشاب الطبية',
-    description: 'مستحضرات طبيعية للعلاج والوقاية',
+    description: 'أعشاب ونباتات طبيعية للعلاج والوقاية',
     image: '/images/categories/herbs.jpg',
-    href: '/products?category=medical-herbs',
+    href: '/products?category=herbs',
     icon: <Leaf className="w-8 h-8" />
+  },
+  {
+    id: 'oils',
+    name: 'الزيوت العلاجية',
+    description: 'زيوت طبيعية وعطرية نقية للعناية والصحة',
+    image: '/images/categories/oils.jpg',
+    href: '/products?category=oils',
+    icon: <Sparkles className="w-8 h-8" />
+  },
+  {
+    id: 'honey',
+    name: 'العسل الطبيعي',
+    description: 'عسل طبيعي صافي 100% من أجود المناحل',
+    image: '/images/categories/honey.jpg',
+    href: '/products?category=honey',
+    icon: <Sparkles className="w-8 h-8" />
   }
 ];
 
 export default function CategoriesGrid() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 max-w-2xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
       {categories.map((category) => (
         <Link
           key={category.id}
@@ -36,12 +60,11 @@ export default function CategoriesGrid() {
         >
           <div className="relative w-full h-56 bg-gradient-to-br from-emerald-50 to-emerald-100 overflow-hidden">
             <div className="absolute inset-0 bg-[url('/images/backgrounds/pattern.svg')] opacity-10"></div>
-            <Image 
-              src={category.image} 
-              alt={category.name} 
-              width={400}
-              height={224}
-              className="object-cover group-hover:scale-110 transition-transform duration-700 w-full h-full"
+            <Image
+              src={category.image}
+              alt={category.name}
+              fill
+              className="object-cover group-hover:scale-110 transition-transform duration-700"
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {

@@ -19,7 +19,7 @@ export function ProductSchema({ product }: ProductSchemaProps) {
         offers: {
             '@type': 'Offer',
             url: `https://bioparaa.com/products/${product.slug || product.id}`,
-            priceCurrency: 'SAR',
+            priceCurrency: 'MAD',
             price: product.price,
             itemCondition: 'https://schema.org/NewCondition',
             availability: product.stock > 0
@@ -40,3 +40,4 @@ export function ProductSchema({ product }: ProductSchemaProps) {
         />
     );
 }
+

@@ -1,16 +1,19 @@
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/lib/data/products'
 import ProductDetail from './ProductDetail'
-import ProductDetailLoading from './loading'
+
+// Enable dynamic rendering for all product slugs
+export const dynamicParams = true
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: ProductPageProps) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
 
   if (!product) {
     return {
@@ -20,16 +23,19 @@ export async function generateMetadata({ params }: ProductPageProps) {
   }
 
   return {
-    title: `${product.name_ar || product.name} | BioPara`,
-    description: product.description_ar || product.description,
+    title: product.meta_title || `${product.name_ar || product.name} | BioPara`,
+    description: product.meta_description || product.description_ar || product.description || `اشترِ ${product.name_ar || product.name} من BioPara - منتجات طبيعية عالية الجودة`,
     keywords: [
+      ...(product.seo_keywords || []),
       product.name_ar || product.name,
       product.name,
-      ...(product.categories ? [product.categories.name_ar, product.categories.name] : [])
+      ...(product.categories ? [product.categories.name_ar, product.categories.name] : []),
+      'منتجات طبيعية',
+      'BioPara'
     ],
     openGraph: {
-      title: `${product.name_ar || product.name} | BioPara`,
-      description: product.description_ar || product.description,
+      title: product.meta_title || `${product.name_ar || product.name} | BioPara`,
+      description: product.meta_description || product.description_ar || product.description || `اشترِ ${product.name_ar || product.name} من BioPara`,
       images: product.images?.[0] ? [
         {
           url: product.images[0],
@@ -38,13 +44,20 @@ export async function generateMetadata({ params }: ProductPageProps) {
           alt: product.name_ar || product.name
         }
       ] : [],
-      type: 'product',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: product.meta_title || `${product.name_ar || product.name} | BioPara`,
+      description: product.meta_description || product.description_ar || product.description || `اشترِ ${product.name_ar || product.name} من BioPara`,
+      images: product.images?.[0] ? [product.images[0]] : [],
     },
   }
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
 
   if (!product) {
     notFound()

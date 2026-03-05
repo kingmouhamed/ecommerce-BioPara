@@ -66,10 +66,10 @@ export default function CategorySection() {
               <div className="relative h-80 w-full">
                 <Image
                   src={category.image || '/images/products/category-energizing.jpg'}
-                  alt={category.name}
-                  width={400}
-                  height={320}
-                  className="object-cover transition-transform duration-300 group-hover:scale-105 w-full h-full"
+                  alt={category.name_ar || category.name}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
 
                 {/* Overlay */}
@@ -79,11 +79,11 @@ export default function CategorySection() {
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
 
                   {/* Title */}
-                  <h3 className="text-2xl font-bold mb-2">{category.name}</h3>
+                  <h3 className="text-2xl font-bold mb-2">{category.name_ar || category.name}</h3>
 
                   {/* Description */}
                   <p className="text-sm text-white/90 mb-4 line-clamp-2">
-                    {category.description}
+                    {category.description_ar || category.description}
                   </p>
 
                   {/* Product Count */}

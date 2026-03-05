@@ -3,13 +3,14 @@ import { getCategoryWithProducts } from '@/lib/data/categories'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
 
-    const categoryData = await getCategoryWithProducts(params.slug, page)
+    const categoryData = await getCategoryWithProducts(slug, page)
 
     if (!categoryData) {
       return NextResponse.json(

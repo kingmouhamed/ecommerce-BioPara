@@ -16,17 +16,18 @@ export const metadata = {
 }
 
 interface ProductsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     q?: string
     category?: string
     page?: string
-  }
+  }>
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  const query = searchParams.q || ''
-  const category = searchParams.category || ''
-  const page = parseInt(searchParams.page || '1')
+  const resolvedSearchParams = await searchParams
+  const query = resolvedSearchParams.q || ''
+  const category = resolvedSearchParams.category || ''
+  const page = parseInt(resolvedSearchParams.page || '1')
 
   let productsData;
   let categories: any[] = [];

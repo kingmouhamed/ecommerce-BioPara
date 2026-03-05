@@ -157,7 +157,7 @@ export default function AdminPage() {
                       <td className="px-6 py-4 text-sm">{product.stock || 0} قطعة</td>
                       <td className="px-6 py-4 text-sm space-x-2 space-x-reverse">
                         <button title="Edit" className="text-blue-600 hover:text-blue-900"><Edit2 className="w-4 h-4 inline" /></button>
-                        <button title="Delete" onClick={() => handleDeleteProduct(product.id)} className="text-red-600 hover:text-red-900"><Trash2 className="w-4 h-4 inline" /></button>
+                        <button title="Delete" onClick={() => handleDeleteProduct(Number(product.id))} className="text-red-600 hover:text-red-900"><Trash2 className="w-4 h-4 inline" /></button>
                       </td>
                     </tr>
                   ))}

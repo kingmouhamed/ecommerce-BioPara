@@ -15,7 +15,7 @@ interface BannerProps {
 
 export default function Banner({ title, subtitle, image, href, className = '' }: BannerProps) {
   return (
-    <Link 
+    <Link
       href={href}
       className={`group block relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 ${className}`}
     >
@@ -23,9 +23,8 @@ export default function Banner({ title, subtitle, image, href, className = '' }:
         <Image
           src={image}
           alt={title}
-          width={600}
-          height={320}
-          className="object-cover group-hover:scale-105 transition-transform duration-500 w-full h-full"
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             const target = e.currentTarget;

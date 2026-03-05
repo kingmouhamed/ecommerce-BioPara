@@ -4,6 +4,9 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Product } from '@/lib/data/products'
+import { useCart } from '@/contexts/CartContext'
+import { useToast } from '@/components/ui/Toast'
+import RelatedProducts from '@/components/sections/RelatedProducts'
 
 interface ProductDetailProps {
   product: Product
@@ -12,16 +15,27 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
+  const { addToCart } = useCart()
+  const { addToast } = useToast()
 
-  const imageUrl = product.images?.[selectedImage] || '/images/placeholder.jpg'
+  const imageUrl = product.images?.[selectedImage] || product.image_url || '/images/placeholder.jpg'
   const categoryName = product.categories?.name_ar || product.categories?.name || 'غير مصنف'
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log('Adding to cart:', {
-      product: product.id,
-      quantity,
-      price: product.price
+    addToCart({
+      id: product.id,
+      title: product.name_ar || product.name,
+      price: product.price,
+      image: (product.images && product.images.length > 0) ? product.images[0] : product.image_url || '/images/products/product-placeholder.jpg',
+      brand: 'BioPara',
+      inStock: product.stock > 0,
+      slug: product.slug
+    }, quantity)
+
+    addToast({
+      type: 'success',
+      title: 'تمت الإضافة للسلة',
+      message: `${product.name_ar || product.name} تمت إضافته بنجاح`
     })
   }
 
@@ -77,11 +91,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     title={`صورة المنتج ${index + 1}`}
-                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-colors ${
-                      selectedImage === index
-                        ? 'border-blue-500'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className={`aspect-square overflow-hidden rounded-lg border-2 transition-colors ${selectedImage === index
+                      ? 'border-blue-500'
+                      : 'border-gray-200 hover:border-gray-300'
+                      }`}
                   >
                     <Image
                       src={image}
@@ -111,9 +124,16 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Product Name */}
-            <h1 className="text-3xl font-bold text-gray-900">
-              {product.name_ar || product.name}
-            </h1>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {product.name_ar || product.name}
+              </h1>
+              {product.short_description_ar && (
+                <p className="text-gray-600 font-medium text-lg leading-relaxed">
+                  {product.short_description_ar}
+                </p>
+              )}
+            </div>
 
             {/* Price */}
             <div className="flex items-baseline space-x-2 space-x-reverse">
@@ -145,13 +165,15 @@ export default function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Description */}
-            <div className="prose prose-gray max-w-none">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                الوصف
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-emerald-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-l from-emerald-500 to-green-400"></div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
+                <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+                وصف المنتج
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <div className="text-gray-700 leading-loose whitespace-pre-line text-base/8 font-medium">
                 {product.description_ar || product.description}
-              </p>
+              </div>
             </div>
 
             {/* Quantity and Add to Cart */}
@@ -192,11 +214,10 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <button
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-colors ${
-                  product.stock === 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-                }`}
+                className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-colors ${product.stock === 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                  }`}
               >
                 {product.stock === 0 ? 'نفد المخزون' : 'أضف للسلة'}
               </button>
@@ -227,6 +248,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* Related Products Section */}
+      <RelatedProducts
+        currentProductId={String(product.id)}
+        categorySlug={product.categories?.slug}
+      />
     </div>
   )
 }

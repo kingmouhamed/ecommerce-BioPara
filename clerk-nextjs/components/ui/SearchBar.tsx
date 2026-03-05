@@ -118,7 +118,7 @@ export default function SearchBar() {
                                                 <p className="text-xs text-gray-500 truncate">{product.categories?.name_ar || product.categories?.name}</p>
                                             </div>
                                             <div className="text-emerald-600 font-bold text-sm whitespace-nowrap">
-                                                {product.price} ر.س
+                                                {product.price} درهم
                                             </div>
                                         </Link>
                                     </li>
@@ -144,3 +144,4 @@ export default function SearchBar() {
         </div>
     );
 }
+

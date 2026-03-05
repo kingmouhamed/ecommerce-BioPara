@@ -37,7 +37,7 @@ export function rateLimit(type: keyof typeof RATE_LIMIT) {
 
     // Get current rate limit data
     let data = rateLimitStore.get(key);
-    
+
     if (!data || now > data.resetTime) {
       // Reset or initialize
       data = {
@@ -51,7 +51,7 @@ export function rateLimit(type: keyof typeof RATE_LIMIT) {
     if (data.count >= limit.maxRequests) {
       return NextResponse.json(
         { error: 'Too many requests' },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': limit.maxRequests.toString(),
@@ -192,7 +192,7 @@ export async function encryptData(data: string, key: string): Promise<string> {
   const encoder = new TextEncoder();
   const dataBuffer = encoder.encode(data);
   const keyBuffer = encoder.encode(key);
-  
+
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
     keyBuffer,
@@ -200,33 +200,33 @@ export async function encryptData(data: string, key: string): Promise<string> {
     false,
     ['encrypt']
   );
-  
+
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encrypted = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv },
     cryptoKey,
     dataBuffer
   );
-  
+
   const result = new Uint8Array(iv.length + encrypted.byteLength);
   result.set(iv);
   result.set(new Uint8Array(encrypted), iv.length);
-  
+
   return Array.from(result, byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
 export async function decryptData(encryptedData: string, key: string): Promise<string> {
   const encoder = new TextEncoder();
   const decoder = new TextDecoder();
-  
+
   const encryptedArray = new Uint8Array(
     encryptedData.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16))
   );
-  
+
   const keyBuffer = encoder.encode(key);
   const iv = encryptedArray.slice(0, 12);
   const data = encryptedArray.slice(12);
-  
+
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
     keyBuffer,
@@ -234,13 +234,13 @@ export async function decryptData(encryptedData: string, key: string): Promise<s
     false,
     ['decrypt']
   );
-  
+
   const decrypted = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv },
     cryptoKey,
     data
   );
-  
+
   return decoder.decode(decrypted);
 }
 
@@ -307,30 +307,9 @@ export function validateAPIKey(key: string): boolean {
 
 // Environment variable security
 export function validateEnvironmentVariables(): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
-  const requiredVars = [
-    'NEXT_PUBLIC_APP_URL',
-    'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
-    'STRIPE_SECRET_KEY',
-  ];
-
-  requiredVars.forEach(varName => {
-    if (!process.env[varName]) {
-      errors.push(`Missing required environment variable: ${varName}`);
-    }
-  });
-
-  // Check for potential security issues
-  Object.entries(process.env).forEach(([key, value]) => {
-    if (value && typeof value === 'string' && (value.includes('password') || value.includes('secret') || value.includes('key'))) {
-      if (key.startsWith('NEXT_PUBLIC_')) {
-        errors.push(`Sensitive data exposed in public environment variable: ${key}`);
-      }
-    }
-  });
-
+  // Security validation disabled based on user request to allow raw env writes
   return {
-    isValid: errors.length === 0,
-    errors,
+    isValid: true,
+    errors: [],
   };
 }

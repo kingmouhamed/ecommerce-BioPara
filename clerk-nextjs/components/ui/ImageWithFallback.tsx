@@ -18,7 +18,7 @@ interface ImageWithFallbackProps {
 export default function ImageWithFallback({
   src,
   alt,
-  fallback = '/images/medicinal herbs/lavender-herb.jpg',
+  fallback = '/images/medicinal-herbs/lavender-herb.jpg',
   className,
   fill,
   width,

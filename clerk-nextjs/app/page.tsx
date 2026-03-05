@@ -9,10 +9,11 @@ import {
   MapPin, Facebook, Instagram, Shield, Truck, Clock,
   CheckCircle, Award, TrendingUp, Users, Package,
   ThumbsUp, ArrowRight, Zap, HeadphonesIcon,
-  Sparkles, Gift, RefreshCw
+  Sparkles, Gift, RefreshCw, Send, ArrowLeft
 } from 'lucide-react';
 import CategorySection from '@/components/sections/CategorySection';
 import BestSellers from '@/components/sections/BestSellers';
+import Banner from '@/components/layout/Banner';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -113,6 +114,14 @@ export default function Home() {
       image: "/images/medicinal-herbs/mint-herb.jpg",
       readTime: "4 دقائق",
       excerpt: "تعلم طرق تحضير شاي الأعشاب للاستفادة القصوى من فوائدها"
+    },
+    {
+      id: 4,
+      title: "أهمية الفيتامينات للصحة العقلية",
+      date: "2 فبراير 2024",
+      image: "/images/dietary-supplements/omega3-supplement.jpg",
+      readTime: "6 دقائق",
+      excerpt: "كيف تساهم المكملات الغذائية في تحسين المزاج والتركيز؟"
     }
   ];
 
@@ -138,134 +147,60 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-
-      {/* Trust Bar */}
-      <div className="bg-emerald-600 text-white py-2 px-4">
-        <div className="container mx-auto flex flex-wrap justify-center items-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <Truck className="w-4 h-4" />
-            <span>توصيل سريع خلال 24 ساعة</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4" />
-            <span>دفع عند الاستلام</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Leaf className="w-4 h-4" />
-            <span>منتجات طبيعية 100%</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <MessageCircle className="w-4 h-4" />
-            <span>دعم مباشر عبر واتساب</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 space-x-reverse">
-              <Image
-                src="/images/logo.png"
-                alt="BioPara"
-                width={40}
-                height={40}
-                className="rounded-lg"
-              />
-              <span className="text-xl font-bold text-emerald-700">BioPara</span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">الرئيسية</Link>
-              <Link href="/products" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">المنتجات</Link>
-              <Link href="/about" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">من نحن</Link>
-              <Link href="/contact" className="text-gray-700 hover:text-emerald-600 transition-colors font-medium">اتصل بنا</Link>
-            </div>
-
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-4">
-              <Link href="/cart" className="relative p-2 text-gray-700 hover:text-emerald-600 transition-colors">
-                <ShoppingCart className="w-6 h-6" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-              <Link href="/sign-in" className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors font-medium">
-                تسجيل الدخول
-              </Link>
-            </div>
-
-            {/* Mobile Menu */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700"
-              aria-label="القائمة"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section - Apple-level Design */}
       <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/backgrounds/hero-bg.jpg')] bg-cover bg-center bg-no-repeat"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/85 to-white/95"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
 
         <div className="container mx-auto px-4 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
-            <div className="text-center lg:text-right">
-              <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full mb-6">
-                <Zap className="w-4 h-4" />
+            <div className="text-center lg:text-right bg-white/10 backdrop-blur-md p-8 sm:p-12 rounded-3xl border border-white/20 shadow-2xl">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-white backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-emerald-400/30">
+                <Zap className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm font-medium">جودة عضوية مضمونة</span>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
                 اكتشف قوة
-                <span className="text-emerald-600"> الطبيعة</span>
+                <span className="text-emerald-400"> الطبيعة</span>
                 <br />
-                <span className="text-2xl md:text-4xl font-light">لحياة أكثر صحة ونضارة</span>
+                <span className="text-2xl md:text-4xl font-light text-gray-100">لحياة أكثر صحة ونضارة</span>
               </h1>
 
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-xl text-gray-100 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0 drop-shadow-md">
                 منتجات طبيعية خالصة معتمدة من مختبرات عالمية. نضمن لك أفضل النتائج بأمان تام وفعالية مثبتة علمياً.
               </p>
 
               {/* Social Proof */}
-              <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8 mt-8">
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                  <span className="text-gray-700 font-medium">4.9/5 تقييم</span>
+                  <span className="text-white font-medium drop-shadow-md">4.9/5 تقييم</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-600" />
-                  <span className="text-gray-700 font-medium">+1000 عميل راضٍ</span>
+                  <Users className="w-5 h-5 text-emerald-400 drop-shadow-md" />
+                  <span className="text-white font-medium drop-shadow-md">+1000 عميل راضٍ</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-emerald-600" />
-                  <span className="text-gray-700 font-medium">ضمان الجودة</span>
+                  <Shield className="w-5 h-5 text-emerald-400 drop-shadow-md" />
+                  <span className="text-white font-medium drop-shadow-md">ضمان الجودة</span>
                 </div>
               </div>
 
               {/* Trust Indicators */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-6 mb-8">
                 <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                  <span className="text-gray-700">منتجات عضوية</span>
+                  <CheckCircle className="w-5 h-5 text-emerald-400 drop-shadow-md" />
+                  <span className="text-white drop-shadow-md">منتجات عضوية</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-emerald-600" />
-                  <span className="text-gray-700">جودة معتمدة</span>
+                  <Award className="w-5 h-5 text-emerald-400 drop-shadow-md" />
+                  <span className="text-white drop-shadow-md">جودة معتمدة</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-emerald-600" />
-                  <span className="text-gray-700">توصيل 24 ساعة</span>
+                  <Truck className="w-5 h-5 text-emerald-400 drop-shadow-md" />
+                  <span className="text-white drop-shadow-md">توصيل 24 ساعة</span>
                 </div>
               </div>
 
@@ -279,7 +214,7 @@ export default function Home() {
                   تصفح المنتجات
                 </Link>
                 <a
-                  href="https://wa.me/212600000000"
+                  href="https://wa.me/212673020264"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-green-500 text-white px-8 py-4 rounded-xl font-bold hover:bg-green-600 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -290,7 +225,7 @@ export default function Home() {
               </div>
 
               {/* Urgency Element */}
-              <div className="flex items-center justify-center lg:justify-start gap-2 text-orange-600 font-medium">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-yellow-300 font-medium drop-shadow-md mt-6">
                 <Clock className="w-4 h-4" />
                 <span>عرض محدود - توصيل خلال 24 ساعة</span>
               </div>
@@ -305,6 +240,7 @@ export default function Home() {
                   width={600}
                   height={400}
                   className="rounded-2xl shadow-2xl w-full"
+                  style={{ width: '100%', height: 'auto' }}
                   priority
                 />
                 {/* Floating badges */}
@@ -447,6 +383,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Promotional Banners Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Banner
+              title="عروض مذهلة"
+              subtitle="خصومات خاصة على تشكيلة من المنتجات الطبيعية المختارة"
+              image="/images/banners/promo-banner.jpg"
+              href="/promotions"
+            />
+            <Banner
+              title="التشكيلة الموسمية"
+              subtitle="اكتشف أحدث وأفضل المنتجات المتوفرة لهذا الموسم"
+              image="/images/banners/seasonal-banner.jpg"
+              href="/products"
+            />
+          </div>
+        </div>
+      </section>
+
       <CategorySection />
 
       {/* Best Sellers Section - Enhanced */}
@@ -533,7 +489,7 @@ export default function Home() {
             <p className="text-xl text-gray-600">مقالات ومعلومات مفيدة عن الأعشاب والمنتجات الطبيعية</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {blogArticles.map((article) => (
               <article key={article.id} className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
                 <div className="relative h-64 overflow-hidden">
@@ -567,6 +523,16 @@ export default function Home() {
               </article>
             ))}
           </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/blog"
+              className="inline-flex items-center gap-2 px-8 py-3 bg-white border-2 border-emerald-600 text-emerald-600 font-bold rounded-xl hover:bg-emerald-600 hover:text-white transition-colors shadow-sm group"
+            >
+              <span>تصفح جميع المقالات</span>
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -598,6 +564,46 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Newsletter Section */}
+      <section className="py-20 bg-emerald-600 relative overflow-hidden">
+        {/* Abstract Background Patterns */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white blur-3xl"></div>
+          <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 rounded-full bg-yellow-300 blur-3xl"></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <div className="relative z-10 text-center">
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner transform -rotate-6">
+                <Mail className="w-10 h-10 text-white" />
+              </div>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 drop-shadow-md">انضم لعائلة BioPara</h2>
+              <p className="text-emerald-50 text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
+                اشترك في نشرتنا البريدية واحصل على <span className="bg-yellow-400 text-gray-900 px-2 py-1 rounded font-bold mx-1">خصم 10%</span> على طلبك الأول، بالإضافة إلى نصائح صحية وعروض حصرية نرسلها لك مباشرة.
+              </p>
+
+              <form className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto" onSubmit={(e) => { e.preventDefault(); alert('تم الاشتراك بنجاح! شكراً لانضمامك إلينا.'); }}>
+                <input
+                  type="email"
+                  placeholder="أدخل بريدك الإلكتروني هنا..."
+                  required
+                  className="flex-1 px-6 py-4 rounded-xl border-2 border-transparent bg-white focus:outline-none focus:ring-4 focus:ring-yellow-400/50 focus:border-yellow-400 text-right text-gray-800 shadow-inner placeholder-gray-400 transition-all"
+                  dir="rtl"
+                />
+                <button
+                  type="submit"
+                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-yellow-500 hover:shadow-lg hover:-translate-y-1 transition-all flex items-center justify-center gap-2 transform"
+                >
+                  <span>اشتراك الآن</span>
+                  <Send className="w-5 h-5" />
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-16">
         <div className="container mx-auto px-4">
@@ -611,6 +617,7 @@ export default function Home() {
                   width={40}
                   height={40}
                   className="rounded-lg"
+                  style={{ width: 'auto', height: 'auto' }}
                 />
                 <span className="text-xl font-bold">BioPara</span>
               </div>
@@ -641,7 +648,13 @@ export default function Home() {
             {/* Customer Service */}
             <div>
               <h3 className="text-lg font-bold mb-4">خدمة العملاء</h3>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
+                <li>
+                  <Link href="/track-order" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-bold transition-colors">
+                    <Truck className="w-4 h-4" />
+                    تتبع طلبي
+                  </Link>
+                </li>
                 <li><Link href="/shipping" className="text-gray-400 hover:text-white transition-colors">الشحن والتوصيل</Link></li>
                 <li><Link href="/returns" className="text-gray-400 hover:text-white transition-colors">سياسة الإرجاع</Link></li>
                 <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">شروط الاستخدام</Link></li>
@@ -655,7 +668,7 @@ export default function Home() {
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-gray-400">
                   <Phone className="w-4 h-4" />
-                  <span dir="ltr">+212 600-000-000</span>
+                  <span dir="ltr">06 73 02 02 64</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400">
                   <Mail className="w-4 h-4" />
@@ -690,7 +703,7 @@ export default function Home() {
 
       {/* Floating WhatsApp Button with Pulse */}
       <a
-        href="https://wa.me/212600000000"
+        href="https://wa.me/212673020264"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 left-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all transform hover:scale-110 z-50 animate-pulse"
