@@ -83,6 +83,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+import Navbar from '@/components/layout/Navbar';
+
 export default function RootLayout({
   children,
 }: {
@@ -99,6 +101,7 @@ export default function RootLayout({
       <body className={`${tajawal.variable} font-sans antialiased`}>
         <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
           <Providers>
+            <Navbar />
             {children}
             <CookieConsent />
           </Providers>

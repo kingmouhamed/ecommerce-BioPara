@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getProducts } from '@/lib/data/products'
+import { generateSlug } from '@/lib/utils/slug'
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,9 +20,20 @@ export async function GET(request: NextRequest) {
       featured
     })
 
+    // Ensure all products have slugs (fallback for missing slugs)
+    const productsWithSlugs = productsData.products.map(product => ({
+      ...product,
+      slug: product.slug || generateSlug(product.name_ar || product.name)
+    }))
+
+    const responseData = {
+      ...productsData,
+      products: productsWithSlugs
+    }
+
     return NextResponse.json({
       success: true,
-      data: productsData,
+      data: responseData,
       message: 'Products fetched successfully'
     })
 

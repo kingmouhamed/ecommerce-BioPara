@@ -1,9 +1,9 @@
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Search, AlertCircle, Home, MessageCircle, ArrowRight } from 'lucide-react';
-import BestSellers from '@/components/sections/BestSellers';
-import { getAllBlogPosts } from '@/lib/blog';
+import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { Search, AlertCircle, Home, MessageCircle, ArrowRight, RefreshCw } from 'lucide-react'
+import BestSellers from '@/components/sections/BestSellers'
+import { getAllBlogPosts } from '@/lib/blog'
 
 export const metadata = {
   title: 'الصفحة غير موجودة | BioPara',
@@ -12,10 +12,10 @@ export const metadata = {
     index: false,
     follow: false,
   },
-};
+}
 
 export default function NotFoundPage() {
-  const blogArticles = getAllBlogPosts().slice(0, 3);
+  const blogArticles = getAllBlogPosts().slice(0, 3)
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -34,7 +34,15 @@ export default function NotFoundPage() {
             لكن لا تقلق، متجرنا يعج بالمنتجات الطبيعية والمقالات المفيدة.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* Possible reasons for 404 */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8 text-left">
+            <h3 className="text-lg font-semibold text-blue-900 mb-3">أسباب محتملة:</h3>
+            <ul className="text-blue-800 space-y-2 text-sm">
+              <li>• الرابط تم كتابته بشكل خاطئ</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/"
               className="flex items-center gap-2 bg-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-emerald-700 transition-all transform hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
@@ -121,5 +129,5 @@ export default function NotFoundPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }

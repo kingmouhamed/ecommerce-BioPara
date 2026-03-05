@@ -1,9 +1,9 @@
 -- ==========================================
--- BioPara: Products Table Setup & Seed Data
+-- BioPara: FULL Products Table Setup & Seed Data
 -- Run this script in the Supabase SQL Editor
 -- ==========================================
 
--- 1. Drop existing tables to ensure new columns (like name_ar) are created
+-- 1. Drop existing tables to ensure new columns are created
 DROP TABLE IF EXISTS public.products CASCADE;
 DROP TABLE IF EXISTS public.categories CASCADE;
 
@@ -29,7 +29,7 @@ CREATE TABLE public.products (
     description text,
     description_ar text,
     price numeric not null,
-    currency text default 'SAR' not null,
+    currency text default 'MAD' not null,
     stock integer default 0 not null,
     images text[] default '{}'::text[],
     category_id bigint references public.categories(id) on delete cascade,
@@ -43,32 +43,76 @@ CREATE TABLE public.products (
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
--- 5. Create Policies: Allow everyone to SELECT active products
+-- 5. Create Policies
 DROP POLICY IF EXISTS "Enable read access for all users" ON public.products;
 DROP POLICY IF EXISTS "Enable read access for all users" ON public.categories;
 
 CREATE POLICY "Enable read access for all users" 
-ON public.products 
-FOR SELECT 
-USING ( true );
+ON public.products FOR SELECT USING ( true );
 
 CREATE POLICY "Enable read access for all users" 
-ON public.categories 
-FOR SELECT 
-USING ( true );
+ON public.categories FOR SELECT USING ( true );
 
--- 6. Seed some initial categories & products
-INSERT INTO public.categories (id, name, name_ar, slug, description_ar)
-VALUES 
-    (1, 'Herbs', 'أعشاب طبية', 'herbs', 'أعشاب طبيعية لمختلف الاستخدامات'),
-    (2, 'Oils', 'زيوت طبيعية', 'oils', 'زيوت عضوية نقية')
+-- 6. Seed Categories
+INSERT INTO public.categories (id, name, name_ar, slug, description, description_ar, image)
+VALUES
+    (1, 'Dietary Supplements', 'مكملات غذائية', 'supplements', 'Real dietary supplements from catalog', 'مكملات غذائية أصلية من الكتالوج', '/images/categories/supplements.jpg'),
+    (2, 'Medicinal Herbs', 'أعشاب طبية', 'herbs', 'Organic medicinal herbs', 'أعشاب طبية عضوية', '/images/categories/herbs.jpg'),
+    (3, 'Medicinal Oils', 'زيوت علاجية', 'oils', 'Pure medicinal & essential oils', 'زيوت علاجية وعطرية نقية', '/images/categories/oils.jpg'),
+    (4, 'Natural Honey', 'عسل طبيعي', 'honey', '100% pure natural honey', 'عسل طبيعي 100%', '/images/categories/honey.jpg')
 ON CONFLICT (slug) DO NOTHING;
 
-INSERT INTO public.products (name, name_ar, slug, description, description_ar, price, stock, category_id, is_active, images)
-VALUES 
-    ('Mountain Honey', 'عسل جبلي حر', 'mountain-honey', 'Natural mountain honey from the Atlas', 'عسل جبلي طبيعي من جبال الأطلس يتميز بجودته العالية', 150.00, 50, 2, true, ARRAY['/images/categories/honey.jpg']),
-    ('Organic Argan Oil', 'زيت أركان طبيعي', 'argan-oil', '100% Pure Argan Oil', 'زيت أركان عضوي نقي 100% ممتاز للبشرة', 220.00, 30, 2, true, ARRAY['/images/categories/oils.jpg']),
-    ('Ginseng Root', 'جذور الجينسنج', 'ginseng', 'Premium Ginseng root', 'جينسنج أصلي للطاقة والحيوية', 180.00, 100, 1, true, ARRAY['/images/categories/herbs.jpg'])
+-- 7. Seed Products
+INSERT INTO public.products (name, name_ar, slug, description, description_ar, price, currency, stock, images, category_id, is_active, featured)
+VALUES
+    ('Ashwagandha', 'مكمل أشواجاندا', 'supplements-ashwagandha', 'Premium Ashwagandha for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل أشواجاندا الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 123, 'MAD', 42, ARRAY['/images/dietary-supplements/ashwagandha.jpg']::text[], 1, true, true),
+    ('Biotin', 'مكمل بيوتين', 'supplements-biotin', 'Premium Biotin for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل بيوتين الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 224, 'MAD', 58, ARRAY['/images/dietary-supplements/biotin.jpg']::text[], 1, true, true),
+    ('Collagen', 'مكمل كولاجين', 'supplements-collagen', 'Premium Collagen for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل كولاجين الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 204, 'MAD', 33, ARRAY['/images/dietary-supplements/collagen.jpg']::text[], 1, true, false),
+    ('L Glutathione', 'مكمل إل-جلوتاثيون', 'supplements-l-glutathione', 'Premium L Glutathione for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل إل-جلوتاثيون الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 141, 'MAD', 12, ARRAY['/images/dietary-supplements/l-glutathione.jpg']::text[], 1, true, false),
+    ('Magnesium', 'مكمل مغنيسيوم', 'supplements-magnesium', 'Premium Magnesium for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل مغنيسيوم الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 191, 'MAD', 35, ARRAY['/images/dietary-supplements/magnesium.jpg']::text[], 1, true, false),
+    ('Mastic Gum', 'مكمل مستكة', 'supplements-mastic-gum', 'Premium Mastic Gum for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل مستكة الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 145, 'MAD', 17, ARRAY['/images/dietary-supplements/mastic-gum.jpg']::text[], 1, true, true),
+    ('Multivitamins', 'مكمل فيتامينات متعددة', 'supplements-multivitamins', 'Premium Multivitamins for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل فيتامينات متعددة الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 92, 'MAD', 19, ARRAY['/images/dietary-supplements/multivitamins.jpg']::text[], 1, true, false),
+    ('Omega 3 Fish', 'مكمل Omega 3 Fish', 'supplements-omega-3-fish-oil', 'Premium Omega 3 Fish for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل Omega 3 Fish الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 148, 'MAD', 21, ARRAY['/images/dietary-supplements/omega-3-fish-oil.jpg']::text[], 1, true, true),
+    ('Omega3 Supplement', 'مكمل مكمل أوميغا 3', 'supplements-omega3-supplement', 'Premium Omega3 Supplement for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل مكمل أوميغا 3 الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 244, 'MAD', 34, ARRAY['/images/dietary-supplements/omega3-supplement.jpg']::text[], 1, true, false),
+    ('Probiotic', 'مكمل بروبيوتيك', 'supplements-probiotic', 'Premium Probiotic for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل بروبيوتيك الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 144, 'MAD', 37, ARRAY['/images/dietary-supplements/probiotic.jpg']::text[], 1, true, true),
+    ('Shilajit', 'مكمل شيلاجيت', 'supplements-shilajit', 'Premium Shilajit for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل شيلاجيت الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 130, 'MAD', 47, ARRAY['/images/dietary-supplements/shilajit.jpg']::text[], 1, true, true),
+    ('Vitamin D3 K2', 'مكمل فيتامين D3 + K2', 'supplements-vitamin-d3-k2', 'Premium Vitamin D3 K2 for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل فيتامين D3 + K2 الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 171, 'MAD', 26, ARRAY['/images/dietary-supplements/vitamin-d3-k2.jpg']::text[], 1, true, true),
+    ('Zinc', 'مكمل زنك', 'supplements-zinc', 'Premium Zinc for your health and wellbeing. Made with 100% natural ingredients.', 'مكمل زنك الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.', 68, 'MAD', 15, ARRAY['/images/dietary-supplements/zinc.jpg']::text[], 1, true, false),
+    ('Anise', 'أعشاب اليانسون', 'herbs-anise-herb', 'Premium Anise for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب اليانسون طبيعية وعضوية، مثالية للاستخدام اليومي.', 180, 'MAD', 49, ARRAY['/images/medicinal-herbs/anise-herb.jpg']::text[], 2, true, true),
+    ('Camomile', 'أعشاب البابونج', 'herbs-camomile-herb', 'Premium Camomile for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب البابونج طبيعية وعضوية، مثالية للاستخدام اليومي.', 249, 'MAD', 27, ARRAY['/images/medicinal-herbs/camomile-herb.jpg']::text[], 2, true, true),
+    ('Cinnamon', 'أعشاب القرفة', 'herbs-cinnamon-herb', 'Premium Cinnamon for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب القرفة طبيعية وعضوية، مثالية للاستخدام اليومي.', 47, 'MAD', 56, ARRAY['/images/medicinal-herbs/cinnamon-herb.jpg']::text[], 2, true, false),
+    ('Ginger', 'أعشاب الزنجبيل', 'herbs-ginger-herb', 'Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب الزنجبيل طبيعية وعضوية، مثالية للاستخدام اليومي.', 235, 'MAD', 35, ARRAY['/images/medicinal-herbs/ginger-herb.jpg']::text[], 2, true, true),
+    ('Hibiscus', 'أعشاب الكركديه', 'herbs-hibiscus-herb', 'Premium Hibiscus for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب الكركديه طبيعية وعضوية، مثالية للاستخدام اليومي.', 86, 'MAD', 45, ARRAY['/images/medicinal-herbs/hibiscus-herb.jpg']::text[], 2, true, true),
+    ('Lavender', 'أعشاب لافندر (خزامى)', 'herbs-lavender-herb', 'Premium Lavender for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب لافندر (خزامى) طبيعية وعضوية، مثالية للاستخدام اليومي.', 107, 'MAD', 52, ARRAY['/images/medicinal-herbs/lavender-herb.jpg']::text[], 2, true, true),
+    ('Lemon Verbena', 'أعشاب اللويزة', 'herbs-lemon-verbena-herb', 'Premium Lemon Verbena for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب اللويزة طبيعية وعضوية، مثالية للاستخدام اليومي.', 192, 'MAD', 51, ARRAY['/images/medicinal-herbs/lemon-verbena-herb.jpg']::text[], 2, true, true),
+    ('Mint', 'أعشاب النعناع', 'herbs-mint-herb', 'Premium Mint for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب النعناع طبيعية وعضوية، مثالية للاستخدام اليومي.', 110, 'MAD', 30, ARRAY['/images/medicinal-herbs/mint-herb.jpg']::text[], 2, true, false),
+    ('Rosemary', 'أعشاب إكليل الجبل', 'herbs-rosemary-herb', 'Premium Rosemary for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب إكليل الجبل طبيعية وعضوية، مثالية للاستخدام اليومي.', 96, 'MAD', 17, ARRAY['/images/medicinal-herbs/rosemary-herb.jpg']::text[], 2, true, false),
+    ('Sage', 'أعشاب المريمية', 'herbs-sage-herb', 'Premium Sage for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب المريمية طبيعية وعضوية، مثالية للاستخدام اليومي.', 205, 'MAD', 27, ARRAY['/images/medicinal-herbs/sage-herb.jpg']::text[], 2, true, true),
+    ('Thyme', 'أعشاب الزعتر', 'herbs-thyme-herb', 'Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب الزعتر طبيعية وعضوية، مثالية للاستخدام اليومي.', 143, 'MAD', 52, ARRAY['/images/medicinal-herbs/thyme-herb.jpg']::text[], 2, true, false),
+    ('Turmeric', 'أعشاب الكركم', 'herbs-turmeric-herb', 'Premium Turmeric for your health and wellbeing. Made with 100% natural ingredients.', 'أعشاب الكركم طبيعية وعضوية، مثالية للاستخدام اليومي.', 125, 'MAD', 33, ARRAY['/images/medicinal-herbs/turmeric-herb.jpg']::text[], 2, true, false),
+    ('Almond', 'زيت Almond العضوي', 'oils-almond-oil', 'Premium Almond for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Almond العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 69, 'MAD', 39, ARRAY['/images/medicinal-oils/almond-oil.jpg']::text[], 3, true, false),
+    ('Argan', 'زيت أرغان العضوي', 'oils-argan-oil', 'Premium Argan for your health and wellbeing. Made with 100% natural ingredients.', 'زيت أرغان العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 215, 'MAD', 14, ARRAY['/images/medicinal-oils/argan-oil.jpg']::text[], 3, true, false),
+    ('Black Seed', 'زيت حبة البركة العضوي', 'oils-black-seed-oil', 'Premium Black Seed for your health and wellbeing. Made with 100% natural ingredients.', 'زيت حبة البركة العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 132, 'MAD', 17, ARRAY['/images/medicinal-oils/black-seed-oil.jpg']::text[], 3, true, true),
+    ('Castor', 'زيت خروع العضوي', 'oils-castor-oil', 'Premium Castor for your health and wellbeing. Made with 100% natural ingredients.', 'زيت خروع العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 197, 'MAD', 22, ARRAY['/images/medicinal-oils/castor-oil.jpg']::text[], 3, true, false),
+    ('Ginger', 'زيت Ginger العضوي', 'oils-ginger-oil', 'Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Ginger العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 181, 'MAD', 15, ARRAY['/images/medicinal-oils/ginger-oil.jpg']::text[], 3, true, false),
+    ('Gratic', 'زيت Gratic العضوي', 'oils-gratic-oil', 'Premium Gratic for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Gratic العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 71, 'MAD', 52, ARRAY['/images/medicinal-oils/gratic-oil.jpg']::text[], 3, true, false),
+    ('Lanvender', 'زيت Lanvender العضوي', 'oils-lanvender-oil', 'Premium Lanvender for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Lanvender العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 64, 'MAD', 48, ARRAY['/images/medicinal-oils/lanvender-oil.jpg']::text[], 3, true, false),
+    ('Musk', 'زيت Musk العضوي', 'oils-musk-oil', 'Premium Musk for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Musk العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 170, 'MAD', 59, ARRAY['/images/medicinal-oils/musk-oil.jpg']::text[], 3, true, true),
+    ('Olive', 'زيت زيتون العضوي', 'oils-olive-oil', 'Premium Olive for your health and wellbeing. Made with 100% natural ingredients.', 'زيت زيتون العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 212, 'MAD', 33, ARRAY['/images/medicinal-oils/olive-oil.jpg']::text[], 3, true, false),
+    ('Rose', 'زيت Rose العضوي', 'oils-rose-oil', 'Premium Rose for your health and wellbeing. Made with 100% natural ingredients.', 'زيت Rose العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 202, 'MAD', 21, ARRAY['/images/medicinal-oils/rose-oil.jpg']::text[], 3, true, true),
+    ('Sidr', 'زيت سدر العضوي', 'oils-sidr-oil', 'Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.', 'زيت سدر العضوي النقي، مستخلص بعناية للحفاظ على فوائده.', 158, 'MAD', 36, ARRAY['/images/medicinal-oils/sidr-oil.jpg']::text[], 3, true, false),
+    ('Acacia', 'عسل طلح طبيعي', 'honey-acacia-honey', 'Premium Acacia for your health and wellbeing. Made with 100% natural ingredients.', 'عسل طلح طبيعي نقي 100%، غني بالفوائد والمغذيات.', 120, 'MAD', 20, ARRAY['/images/natural-honey/acacia-honey.jpg']::text[], 4, true, true),
+    ('Blackseed', 'عسل Blackseed طبيعي', 'honey-blackseed-honey', 'Premium Blackseed for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Blackseed طبيعي نقي 100%، غني بالفوائد والمغذيات.', 231, 'MAD', 59, ARRAY['/images/natural-honey/blackseed-honey.jpg']::text[], 4, true, false),
+    ('Carob', 'عسل Carob طبيعي', 'honey-carob-honey', 'Premium Carob for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Carob طبيعي نقي 100%، غني بالفوائد والمغذيات.', 94, 'MAD', 30, ARRAY['/images/natural-honey/carob-honey.jpg']::text[], 4, true, true),
+    ('Daghmos', 'عسل Daghmos طبيعي', 'honey-daghmos-honey', 'Premium Daghmos for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Daghmos طبيعي نقي 100%، غني بالفوائد والمغذيات.', 91, 'MAD', 28, ARRAY['/images/natural-honey/daghmos-honey.jpg']::text[], 4, true, true),
+    ('Eucalyptus', 'عسل كافور طبيعي', 'honey-eucalyptus-honey', 'Premium Eucalyptus for your health and wellbeing. Made with 100% natural ingredients.', 'عسل كافور طبيعي نقي 100%، غني بالفوائد والمغذيات.', 184, 'MAD', 34, ARRAY['/images/natural-honey/eucalyptus-honey.jpg']::text[], 4, true, false),
+    ('Flower', 'عسل Flower طبيعي', 'honey-flower-honey', 'Premium Flower for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Flower طبيعي نقي 100%، غني بالفوائد والمغذيات.', 136, 'MAD', 52, ARRAY['/images/natural-honey/flower-honey.jpg']::text[], 4, true, false),
+    ('Forest', 'عسل Forest طبيعي', 'honey-forest-honey', 'Premium Forest for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Forest طبيعي نقي 100%، غني بالفوائد والمغذيات.', 128, 'MAD', 26, ARRAY['/images/natural-honey/forest-honey.jpg']::text[], 4, true, true),
+    ('Manuka', 'عسل مانوكا طبيعي', 'honey-manuka-honey', 'Premium Manuka for your health and wellbeing. Made with 100% natural ingredients.', 'عسل مانوكا طبيعي نقي 100%، غني بالفوائد والمغذيات.', 184, 'MAD', 59, ARRAY['/images/natural-honey/manuka-honey.jpg']::text[], 4, true, false),
+    ('Orange Blossom', 'عسل Orange Blossom طبيعي', 'honey-orange-blossom-honey', 'Premium Orange Blossom for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Orange Blossom طبيعي نقي 100%، غني بالفوائد والمغذيات.', 173, 'MAD', 54, ARRAY['/images/natural-honey/orange-blossom-honey.jpg']::text[], 4, true, false),
+    ('Sidr', 'عسل سدر طبيعي', 'honey-sidr-honey', 'Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.', 'عسل سدر طبيعي نقي 100%، غني بالفوائد والمغذيات.', 119, 'MAD', 16, ARRAY['/images/natural-honey/sidr-honey.jpg']::text[], 4, true, true),
+    ('Thyme', 'عسل Thyme طبيعي', 'honey-thyme-honey', 'Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Thyme طبيعي نقي 100%، غني بالفوائد والمغذيات.', 198, 'MAD', 58, ARRAY['/images/natural-honey/thyme-honey.jpg']::text[], 4, true, true),
+    ('Wildflower', 'عسل Wildflower طبيعي', 'honey-wildflower-honey', 'Premium Wildflower for your health and wellbeing. Made with 100% natural ingredients.', 'عسل Wildflower طبيعي نقي 100%، غني بالفوائد والمغذيات.', 199, 'MAD', 50, ARRAY['/images/natural-honey/wildflower-honey.jpg']::text[], 4, true, true)
 ON CONFLICT (slug) DO NOTHING;
 
 -- Done!

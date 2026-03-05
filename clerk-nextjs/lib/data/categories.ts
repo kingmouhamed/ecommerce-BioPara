@@ -1,39 +1,65 @@
-import { supabaseServer } from '@/lib/supabase/server'
 import { Category } from './products'
+import { getSupabaseAdmin } from '../supabase-server'
 
 /**
  * جلب جميع الفئات
  */
 export async function getCategories(): Promise<Category[]> {
-  const { data, error } = await supabaseServer
-    .from('categories')
-    .select('*')
-    .order('name')
+  try {
+    // Try to get from database first
+    const supabaseAdmin = getSupabaseAdmin()
+    
+    const { data, error } = await supabaseAdmin
+      .from('categories')
+      .select('*')
+      .order('name', { ascending: true })
 
-  if (error) {
-    console.error('Error fetching categories:', error)
-    return []
+    if (error) {
+      console.warn('⚠️ Database not configured - Using demo data')
+      throw error
+    }
+
+    return data || []
+  } catch (error) {
+    console.warn('⚠️ Database not configured - Using demo data')
+    // Fallback to demo data
+    const { demoCategories } = await import('./demo-data')
+    return demoCategories
   }
-
-  return data || []
 }
 
 /**
  * جلب فئة واحدة حسب الـ slug
  */
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
-  const { data, error } = await supabaseServer
-    .from('categories')
-    .select('*')
-    .eq('slug', slug)
-    .single()
+  try {
+    // Try database first
+    const supabaseAdmin = getSupabaseAdmin()
+    
+    const { data, error } = await supabaseAdmin
+      .from('categories')
+      .select('*')
+      .eq('slug', slug.toLowerCase()) // Case-insensitive search
+      .single()
 
-  if (error) {
-    console.error('Error fetching category:', error)
-    return null
+    if (error) {
+      if (error.code !== 'PGRST116') { // Not found error
+        console.warn('⚠️ Database not configured - Using demo data')
+      }
+      throw error
+    }
+
+    return data
+  } catch (error) {
+    console.warn('⚠️ Database not configured - Using demo data')
+    // Fallback to demo data
+    const { demoCategories } = await import('./demo-data')
+    return demoCategories.find(c => 
+      c.slug.toLowerCase() === slug.toLowerCase() || 
+      c.name.toLowerCase() === slug.toLowerCase() ||
+      c.name_ar.toLowerCase() === slug.toLowerCase()
+    ) || null
   }
-
-  return data
 }
 
 /**
@@ -45,46 +71,66 @@ export async function getCategoryWithProducts(
   limit = 12
 ) {
   const category = await getCategoryBySlug(slug)
-  
+
   if (!category) {
     return null
   }
 
-  const { data: products, error, count } = await supabaseServer
-    .from('products')
-    .select('*', { count: 'exact' })
-    .eq('category_id', category.id)
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
-    .range((page - 1) * limit, page * limit - 1)
+  try {
+    // Try database first
+    const supabaseAdmin = getSupabaseAdmin()
+    
+    const offset = (page - 1) * limit
+    
+    const { data: products, error, count } = await supabaseAdmin
+      .from('products')
+      .select('*', { count: 'exact' })
+      .eq('category_id', category.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
-  if (error) {
-    console.error('Error fetching category products:', error)
+    if (error) {
+      console.warn('⚠️ Database not configured - Using demo data')
+      throw error
+    }
+
+    const totalCount = count || 0
+    const totalPages = Math.ceil(totalCount / limit)
+
     return {
       category,
-      products: [],
+      products: products || [],
       pagination: {
         currentPage: page,
-        totalPages: 0,
-        totalCount: 0,
-        hasNextPage: false,
-        hasPreviousPage: false
+        totalPages,
+        totalCount,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
       }
     }
-  }
+  } catch (error) {
+    console.warn('⚠️ Database not configured - Using demo data')
+    // Fallback to demo data
+    const { demoProducts } = await import('./demo-data')
+    const products = demoProducts.filter(p => 
+      p.category_id === category.id && 
+      p.is_active
+    )
+    const totalCount = products.length
+    const totalPages = Math.ceil(totalCount / limit)
+    const paginatedProducts = products.slice((page - 1) * limit, page * limit)
 
-  const totalCount = count || 0
-  const totalPages = Math.ceil(totalCount / limit)
-
-  return {
-    category,
-    products: products || [],
-    pagination: {
-      currentPage: page,
-      totalPages,
-      totalCount,
-      hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1
+    return {
+      category,
+      products: paginatedProducts,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1
+      }
     }
   }
 }

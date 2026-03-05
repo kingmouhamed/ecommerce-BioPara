@@ -3,17 +3,21 @@ import { getCategoryWithProducts } from '@/lib/data/categories'
 import CategoryPageClient from './CategoryPageClient'
 import CategoryPageLoading from './loading'
 
+// Enable dynamic rendering for all category slugs
+export const dynamicParams = true
+
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
-  searchParams: {
+  }>
+  searchParams: Promise<{
     page?: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: CategoryPageProps) {
-  const categoryData = await getCategoryWithProducts(params.slug)
+  const { slug } = await params
+  const categoryData = await getCategoryWithProducts(slug)
   
   if (!categoryData) {
     return {
@@ -34,8 +38,10 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const page = parseInt(searchParams.page || '1')
-  const categoryData = await getCategoryWithProducts(params.slug, page)
+  const { slug } = await params
+  const { page } = await searchParams
+  const currentPage = parseInt(page || '1')
+  const categoryData = await getCategoryWithProducts(slug, currentPage)
 
   if (!categoryData) {
     notFound()
@@ -44,7 +50,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   return (
     <CategoryPageClient 
       initialData={categoryData}
-      initialPage={page}
+      initialPage={currentPage}
     />
   )
 }

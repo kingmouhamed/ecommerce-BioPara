@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Search, Clock, Tag, Gift, Star } from "lucide-react";
 
 export default function PromotionsPage() {
@@ -190,9 +191,11 @@ export default function PromotionsPage() {
               <p className="mb-4">
                 انضم إلى برنامج الولاء واحصل على هدية خاصة بمناسبة عيد ميلادك
               </p>
-              <button className="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition">
-                انضم الآن
-              </button>
+              <Link href="/join-us">
+                <button className="bg-white text-purple-700 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50 transition">
+                  انضم الآن
+                </button>
+              </Link>
             </div>
             
             <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg p-6">
@@ -203,9 +206,11 @@ export default function PromotionsPage() {
               <p className="mb-4">
                 خصم 25% على منتج مختار كل أسبوع. تابعنا على وسائل التواصل الاجتماعي!
               </p>
-              <button className="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">
-                عرض هذا الأسبوع
-              </button>
+              <Link href="/weekly-offer">
+                <button className="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">
+                  عرض هذا الأسبوع
+                </button>
+              </Link>
             </div>
           </div>
         </div>
