@@ -5,7 +5,7 @@ export const demoCategories: Category[] = [
   {
     "id": 1,
     "slug": "supplements",
-    "name": "Dietary Supplements",
+    "name": "مكملات غذائية",
     "name_ar": "مكملات غذائية",
     "description": "Real dietary supplements from catalog",
     "description_ar": "مكملات غذائية أصلية من الكتالوج",
@@ -16,7 +16,7 @@ export const demoCategories: Category[] = [
   {
     "id": 2,
     "slug": "herbs",
-    "name": "Medicinal Herbs",
+    "name": "أعشاب طبية",
     "name_ar": "أعشاب طبية",
     "description": "Organic medicinal herbs",
     "description_ar": "أعشاب طبية عضوية",
@@ -27,7 +27,7 @@ export const demoCategories: Category[] = [
   {
     "id": 3,
     "slug": "oils",
-    "name": "Medicinal Oils",
+    "name": "زيوت علاجية",
     "name_ar": "زيوت علاجية",
     "description": "Pure medicinal & essential oils",
     "description_ar": "زيوت علاجية وعطرية نقية",
@@ -38,7 +38,7 @@ export const demoCategories: Category[] = [
   {
     "id": 4,
     "slug": "honey",
-    "name": "Natural Honey",
+    "name": "عسل طبيعي",
     "name_ar": "عسل طبيعي",
     "description": "100% pure natural honey",
     "description_ar": "عسل طبيعي 100%",
@@ -51,12 +51,13 @@ export const demoCategories: Category[] = [
 export const demoProducts: Product[] = [
   {
     "id": 1,
-    "name": "Ashwagandha",
+    "name": "مكمل أشواجاندا",
     "name_ar": "مكمل أشواجاندا",
     "slug": "supplements-ashwagandha",
     "description": "Premium Ashwagandha for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل أشواجاندا الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 123,
+    "original_price": null,
     "currency": "MAD",
     "stock": 42,
     "images": [
@@ -71,7 +72,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 2,
-    "name": "Biotin",
+    "name": "مكمل بيوتين",
     "name_ar": "مكمل بيوتين",
     "slug": "supplements-biotin",
     "description": "Premium Biotin for your health and wellbeing. Made with 100% natural ingredients.",
@@ -91,7 +92,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 3,
-    "name": "Collagen",
+    "name": "مكمل كولاجين",
     "name_ar": "مكمل كولاجين",
     "slug": "supplements-collagen",
     "description": "Premium Collagen for your health and wellbeing. Made with 100% natural ingredients.",
@@ -111,7 +112,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 4,
-    "name": "L Glutathione",
+    "name": "مكمل إل-جلوتاثيون",
     "name_ar": "مكمل إل-جلوتاثيون",
     "slug": "supplements-l-glutathione",
     "description": "Premium L Glutathione for your health and wellbeing. Made with 100% natural ingredients.",
@@ -131,7 +132,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 5,
-    "name": "Magnesium",
+    "name": "مكمل مغنيسيوم",
     "name_ar": "مكمل مغنيسيوم",
     "slug": "supplements-magnesium",
     "description": "Premium Magnesium for your health and wellbeing. Made with 100% natural ingredients.",
@@ -151,7 +152,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 6,
-    "name": "Mastic Gum",
+    "name": "مكمل مستكة",
     "name_ar": "مكمل مستكة",
     "slug": "supplements-mastic-gum",
     "description": "Premium Mastic Gum for your health and wellbeing. Made with 100% natural ingredients.",
@@ -171,7 +172,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 7,
-    "name": "Multivitamins",
+    "name": "مكمل فيتامينات متعددة",
     "name_ar": "مكمل فيتامينات متعددة",
     "slug": "supplements-multivitamins",
     "description": "Premium Multivitamins for your health and wellbeing. Made with 100% natural ingredients.",
@@ -191,7 +192,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 8,
-    "name": "Omega 3 Fish",
+    "name": "مكمل Omega 3 Fish",
     "name_ar": "مكمل Omega 3 Fish",
     "slug": "supplements-omega-3-fish-oil",
     "description": "Premium Omega 3 Fish for your health and wellbeing. Made with 100% natural ingredients.",
@@ -211,7 +212,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 9,
-    "name": "Omega3 Supplement",
+    "name": "مكمل مكمل أوميغا 3",
     "name_ar": "مكمل مكمل أوميغا 3",
     "slug": "supplements-omega3-supplement",
     "description": "Premium Omega3 Supplement for your health and wellbeing. Made with 100% natural ingredients.",
@@ -231,7 +232,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 10,
-    "name": "Probiotic",
+    "name": "مكمل بروبيوتيك",
     "name_ar": "مكمل بروبيوتيك",
     "slug": "supplements-probiotic",
     "description": "Premium Probiotic for your health and wellbeing. Made with 100% natural ingredients.",
@@ -251,7 +252,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 11,
-    "name": "Shilajit",
+    "name": "مكمل شيلاجيت",
     "name_ar": "مكمل شيلاجيت",
     "slug": "supplements-shilajit",
     "description": "Premium Shilajit for your health and wellbeing. Made with 100% natural ingredients.",
@@ -271,7 +272,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 12,
-    "name": "Vitamin D3 K2",
+    "name": "مكمل فيتامين D3 + K2",
     "name_ar": "مكمل فيتامين D3 + K2",
     "slug": "supplements-vitamin-d3-k2",
     "description": "Premium Vitamin D3 K2 for your health and wellbeing. Made with 100% natural ingredients.",
@@ -291,7 +292,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 13,
-    "name": "Zinc",
+    "name": "مكمل زنك",
     "name_ar": "مكمل زنك",
     "slug": "supplements-zinc",
     "description": "Premium Zinc for your health and wellbeing. Made with 100% natural ingredients.",
@@ -311,7 +312,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 14,
-    "name": "Anise",
+    "name": "أعشاب اليانسون",
     "name_ar": "أعشاب اليانسون",
     "slug": "herbs-anise-herb",
     "description": "Premium Anise for your health and wellbeing. Made with 100% natural ingredients.",
@@ -320,9 +321,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 49,
     "images": [
-      "/images/medicinal-herbs/anise-herb.jpg"
+      "/images/medicinal-herbs/Ashwagandha.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/anise-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Ashwagandha.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": true,
@@ -331,7 +332,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 15,
-    "name": "Camomile",
+    "name": "أعشاب البابونج",
     "name_ar": "أعشاب البابونج",
     "slug": "herbs-camomile-herb",
     "description": "Premium Camomile for your health and wellbeing. Made with 100% natural ingredients.",
@@ -351,7 +352,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 16,
-    "name": "Cinnamon",
+    "name": "أعشاب القرفة",
     "name_ar": "أعشاب القرفة",
     "slug": "herbs-cinnamon-herb",
     "description": "Premium Cinnamon for your health and wellbeing. Made with 100% natural ingredients.",
@@ -360,9 +361,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 56,
     "images": [
-      "/images/medicinal-herbs/cinnamon-herb.jpg"
+      "/images/medicinal-herbs/camomile-herb.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/cinnamon-herb.jpg",
+    "image_url": "/images/medicinal-herbs/camomile-herb.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": false,
@@ -371,7 +372,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 17,
-    "name": "Ginger",
+    "name": "أعشاب الزنجبيل",
     "name_ar": "أعشاب الزنجبيل",
     "slug": "herbs-ginger-herb",
     "description": "Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.",
@@ -391,7 +392,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 18,
-    "name": "Hibiscus",
+    "name": "أعشاب الكركديه",
     "name_ar": "أعشاب الكركديه",
     "slug": "herbs-hibiscus-herb",
     "description": "Premium Hibiscus for your health and wellbeing. Made with 100% natural ingredients.",
@@ -400,9 +401,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 45,
     "images": [
-      "/images/medicinal-herbs/hibiscus-herb.jpg"
+      "/images/medicinal-herbs/ginger-herb.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/hibiscus-herb.jpg",
+    "image_url": "/images/medicinal-herbs/ginger-herb.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": true,
@@ -411,7 +412,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 19,
-    "name": "Lavender",
+    "name": "أعشاب لافندر (خزامى)",
     "name_ar": "أعشاب لافندر (خزامى)",
     "slug": "herbs-lavender-herb",
     "description": "Premium Lavender for your health and wellbeing. Made with 100% natural ingredients.",
@@ -420,9 +421,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 52,
     "images": [
-      "/images/medicinal-herbs/lavender-herb.jpg"
+      "/images/medicinal-herbs/Eucalyptus.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/lavender-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Eucalyptus.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": true,
@@ -431,7 +432,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 20,
-    "name": "Lemon Verbena",
+    "name": "أعشاب اللويزة",
     "name_ar": "أعشاب اللويزة",
     "slug": "herbs-lemon-verbena-herb",
     "description": "Premium Lemon Verbena for your health and wellbeing. Made with 100% natural ingredients.",
@@ -440,9 +441,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 51,
     "images": [
-      "/images/medicinal-herbs/lemon-verbena-herb.jpg"
+      "/images/medicinal-herbs/Foeniculum.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/lemon-verbena-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Foeniculum.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": true,
@@ -451,7 +452,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 21,
-    "name": "Mint",
+    "name": "أعشاب النعناع",
     "name_ar": "أعشاب النعناع",
     "slug": "herbs-mint-herb",
     "description": "Premium Mint for your health and wellbeing. Made with 100% natural ingredients.",
@@ -460,9 +461,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 30,
     "images": [
-      "/images/medicinal-herbs/mint-herb.jpg"
+      "/images/medicinal-herbs/Ginseng.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/mint-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Ginseng.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": false,
@@ -471,7 +472,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 22,
-    "name": "Rosemary",
+    "name": "أعشاب إكليل الجبل",
     "name_ar": "أعشاب إكليل الجبل",
     "slug": "herbs-rosemary-herb",
     "description": "Premium Rosemary for your health and wellbeing. Made with 100% natural ingredients.",
@@ -480,9 +481,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 17,
     "images": [
-      "/images/medicinal-herbs/rosemary-herb.jpg"
+      "/images/medicinal-herbs/Maca.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/rosemary-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Maca.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": false,
@@ -491,7 +492,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 23,
-    "name": "Sage",
+    "name": "أعشاب المريمية",
     "name_ar": "أعشاب المريمية",
     "slug": "herbs-sage-herb",
     "description": "Premium Sage for your health and wellbeing. Made with 100% natural ingredients.",
@@ -500,9 +501,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 27,
     "images": [
-      "/images/medicinal-herbs/sage-herb.jpg"
+      "/images/medicinal-herbs/Saints.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/sage-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Saints.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": true,
@@ -511,7 +512,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 24,
-    "name": "Thyme",
+    "name": "أعشاب الزعتر",
     "name_ar": "أعشاب الزعتر",
     "slug": "herbs-thyme-herb",
     "description": "Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.",
@@ -520,9 +521,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 52,
     "images": [
-      "/images/medicinal-herbs/thyme-herb.jpg"
+      "/images/medicinal-herbs/Thyme.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/thyme-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Thyme.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": false,
@@ -531,7 +532,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 25,
-    "name": "Turmeric",
+    "name": "أعشاب الكركم",
     "name_ar": "أعشاب الكركم",
     "slug": "herbs-turmeric-herb",
     "description": "Premium Turmeric for your health and wellbeing. Made with 100% natural ingredients.",
@@ -540,9 +541,9 @@ export const demoProducts: Product[] = [
     "currency": "MAD",
     "stock": 33,
     "images": [
-      "/images/medicinal-herbs/turmeric-herb.jpg"
+      "/images/medicinal-herbs/Moringa.jpg"
     ],
-    "image_url": "/images/medicinal-herbs/turmeric-herb.jpg",
+    "image_url": "/images/medicinal-herbs/Moringa.jpg",
     "category_id": 2,
     "is_active": true,
     "featured": false,
@@ -551,7 +552,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 26,
-    "name": "Almond",
+    "name": "زيت Almond العضوي",
     "name_ar": "زيت Almond العضوي",
     "slug": "oils-almond-oil",
     "description": "Premium Almond for your health and wellbeing. Made with 100% natural ingredients.",
@@ -571,7 +572,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 27,
-    "name": "Argan",
+    "name": "زيت أرغان العضوي",
     "name_ar": "زيت أرغان العضوي",
     "slug": "oils-argan-oil",
     "description": "Premium Argan for your health and wellbeing. Made with 100% natural ingredients.",
@@ -591,7 +592,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 28,
-    "name": "Black Seed",
+    "name": "زيت حبة البركة العضوي",
     "name_ar": "زيت حبة البركة العضوي",
     "slug": "oils-black-seed-oil",
     "description": "Premium Black Seed for your health and wellbeing. Made with 100% natural ingredients.",
@@ -611,7 +612,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 29,
-    "name": "Castor",
+    "name": "زيت خروع العضوي",
     "name_ar": "زيت خروع العضوي",
     "slug": "oils-castor-oil",
     "description": "Premium Castor for your health and wellbeing. Made with 100% natural ingredients.",
@@ -631,7 +632,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 30,
-    "name": "Ginger",
+    "name": "زيت Ginger العضوي",
     "name_ar": "زيت Ginger العضوي",
     "slug": "oils-ginger-oil",
     "description": "Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.",
@@ -651,7 +652,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 31,
-    "name": "Gratic",
+    "name": "زيت Gratic العضوي",
     "name_ar": "زيت Gratic العضوي",
     "slug": "oils-gratic-oil",
     "description": "Premium Gratic for your health and wellbeing. Made with 100% natural ingredients.",
@@ -671,7 +672,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 32,
-    "name": "Lanvender",
+    "name": "زيت Lanvender العضوي",
     "name_ar": "زيت Lanvender العضوي",
     "slug": "oils-lanvender-oil",
     "description": "Premium Lanvender for your health and wellbeing. Made with 100% natural ingredients.",
@@ -691,7 +692,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 33,
-    "name": "Musk",
+    "name": "زيت Musk العضوي",
     "name_ar": "زيت Musk العضوي",
     "slug": "oils-musk-oil",
     "description": "Premium Musk for your health and wellbeing. Made with 100% natural ingredients.",
@@ -711,7 +712,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 34,
-    "name": "Olive",
+    "name": "زيت زيتون العضوي",
     "name_ar": "زيت زيتون العضوي",
     "slug": "oils-olive-oil",
     "description": "Premium Olive for your health and wellbeing. Made with 100% natural ingredients.",
@@ -731,7 +732,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 35,
-    "name": "Rose",
+    "name": "زيت Rose العضوي",
     "name_ar": "زيت Rose العضوي",
     "slug": "oils-rose-oil",
     "description": "Premium Rose for your health and wellbeing. Made with 100% natural ingredients.",
@@ -751,7 +752,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 36,
-    "name": "Sidr",
+    "name": "زيت سدر العضوي",
     "name_ar": "زيت سدر العضوي",
     "slug": "oils-sidr-oil",
     "description": "Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.",
@@ -771,7 +772,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 37,
-    "name": "Acacia",
+    "name": "عسل طلح طبيعي",
     "name_ar": "عسل طلح طبيعي",
     "slug": "honey-acacia-honey",
     "description": "Premium Acacia for your health and wellbeing. Made with 100% natural ingredients.",
@@ -791,7 +792,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 38,
-    "name": "Blackseed",
+    "name": "عسل Blackseed طبيعي",
     "name_ar": "عسل Blackseed طبيعي",
     "slug": "honey-blackseed-honey",
     "description": "Premium Blackseed for your health and wellbeing. Made with 100% natural ingredients.",
@@ -811,7 +812,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 39,
-    "name": "Carob",
+    "name": "عسل Carob طبيعي",
     "name_ar": "عسل Carob طبيعي",
     "slug": "honey-carob-honey",
     "description": "Premium Carob for your health and wellbeing. Made with 100% natural ingredients.",
@@ -831,7 +832,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 40,
-    "name": "Daghmos",
+    "name": "عسل Daghmos طبيعي",
     "name_ar": "عسل Daghmos طبيعي",
     "slug": "honey-daghmos-honey",
     "description": "Premium Daghmos for your health and wellbeing. Made with 100% natural ingredients.",
@@ -851,7 +852,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 41,
-    "name": "Eucalyptus",
+    "name": "عسل كافور طبيعي",
     "name_ar": "عسل كافور طبيعي",
     "slug": "honey-eucalyptus-honey",
     "description": "Premium Eucalyptus for your health and wellbeing. Made with 100% natural ingredients.",
@@ -871,7 +872,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 42,
-    "name": "Flower",
+    "name": "عسل Flower طبيعي",
     "name_ar": "عسل Flower طبيعي",
     "slug": "honey-flower-honey",
     "description": "Premium Flower for your health and wellbeing. Made with 100% natural ingredients.",
@@ -891,7 +892,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 43,
-    "name": "Forest",
+    "name": "عسل Forest طبيعي",
     "name_ar": "عسل Forest طبيعي",
     "slug": "honey-forest-honey",
     "description": "Premium Forest for your health and wellbeing. Made with 100% natural ingredients.",
@@ -911,7 +912,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 44,
-    "name": "Manuka",
+    "name": "عسل مانوكا طبيعي",
     "name_ar": "عسل مانوكا طبيعي",
     "slug": "honey-manuka-honey",
     "description": "Premium Manuka for your health and wellbeing. Made with 100% natural ingredients.",
@@ -931,7 +932,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 45,
-    "name": "Orange Blossom",
+    "name": "عسل Orange Blossom طبيعي",
     "name_ar": "عسل Orange Blossom طبيعي",
     "slug": "honey-orange-blossom-honey",
     "description": "Premium Orange Blossom for your health and wellbeing. Made with 100% natural ingredients.",
@@ -951,7 +952,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 46,
-    "name": "Sidr",
+    "name": "عسل سدر طبيعي",
     "name_ar": "عسل سدر طبيعي",
     "slug": "honey-sidr-honey",
     "description": "Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.",
@@ -971,7 +972,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 47,
-    "name": "Thyme",
+    "name": "عسل Thyme طبيعي",
     "name_ar": "عسل Thyme طبيعي",
     "slug": "honey-thyme-honey",
     "description": "Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.",
@@ -991,7 +992,7 @@ export const demoProducts: Product[] = [
   },
   {
     "id": 48,
-    "name": "Wildflower",
+    "name": "عسل Wildflower طبيعي",
     "name_ar": "عسل Wildflower طبيعي",
     "slug": "honey-wildflower-honey",
     "description": "Premium Wildflower for your health and wellbeing. Made with 100% natural ingredients.",

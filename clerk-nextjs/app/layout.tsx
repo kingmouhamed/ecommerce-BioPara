@@ -1,17 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { Tajawal } from "next/font/google";
 import "./globals.css";
 
 import Providers from '@/components/layout/Providers';
 import CookieConsent from '@/components/layout/CookieConsent';
+import CartDrawer from '@/components/cart/CartDrawer';
 
 const inter = Inter({ subsets: ["latin"] });
-const tajawal = Tajawal({
-  subsets: ["arabic"],
-  weight: ["300", "400", "500", "700", "800"],
-  variable: "--font-tajawal"
-});
 
 export const metadata: Metadata = {
   title: "BioPara - Premium Natural Wellness | Global Delivery",
@@ -84,6 +79,7 @@ export const viewport: Viewport = {
 };
 
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 export default function RootLayout({
   children,
@@ -98,12 +94,16 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={`${tajawal.variable} font-sans antialiased`}>
-        <div className="min-h-screen bg-[var(--color-background)] font-sans" dir="rtl">
+      <body className={inter.className || 'font-sans antialiased'}>
+        <div className="min-h-screen bg-[var(--color-background)] font-sans flex flex-col" dir="rtl">
           <Providers>
             <Navbar />
-            {children}
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
             <CookieConsent />
+            <CartDrawer />
           </Providers>
         </div>
       </body>

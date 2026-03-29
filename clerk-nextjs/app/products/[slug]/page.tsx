@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getProductBySlug } from '@/lib/data/products'
+import { generateProductSchema } from '@/lib/seo/generateProductSchema'
 import ProductDetail from './ProductDetail'
 
 // Enable dynamic rendering for all product slugs
@@ -63,5 +64,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  return <ProductDetail product={product} />
+  const jsonLdData = generateProductSchema(product)
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdData) }}
+      />
+      <ProductDetail product={product} />
+    </>
+  )
 }

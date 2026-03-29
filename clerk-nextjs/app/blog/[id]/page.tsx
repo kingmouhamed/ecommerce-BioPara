@@ -12,12 +12,15 @@ type BlogPost = ReturnType<typeof getBlogPostById>;
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Unwrap the params Promise using React.use()
   const resolvedParams = use(params);
   const id = resolvedParams.id;
 
   useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+
     const postData = getBlogPostById(id);
     setPost(postData);
     setLoading(false);
@@ -102,7 +105,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 md:p-12">
-            
+
             {/* Blog Content */}
             <div className="prose prose-lg max-w-none">
               <div className="text-gray-700 leading-relaxed space-y-6">
@@ -111,10 +114,10 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                     {paragraph}
                   </p>
                 )) || (
-                  <p className="text-lg leading-relaxed">
-                    {post.excerpt}
-                  </p>
-                )}
+                    <p className="text-lg leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                  )}
               </div>
             </div>
 

@@ -9,6 +9,8 @@ export interface OrderItem {
   price: number;
   stock_quantity: number;
   quantity?: number;
+  product_id?: string; // Add optional product_id for test data compatibility
+  unit_price?: number; // Add optional unit_price for test data compatibility
 }
 
 export interface ShippingAddress {

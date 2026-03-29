@@ -5,9 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/nextjs';
-import { useCart } from '@/contexts/CartContext';
+import { useCartStore, type CartStore } from '@/store/useCartStore';
+import LiveSearch from '@/components/search/LiveSearch';
 import {
-    ShoppingCart, Menu, X, Search, ChevronDown,
+    ShoppingCart, Menu, X, ChevronDown,
     Leaf, Heart, Truck, Shield, MessageCircle, UserSquare2
 } from 'lucide-react';
 
@@ -23,7 +24,8 @@ export default function Navbar() {
     const [categoriesOpen, setCategoriesOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const { cartItemCount } = useCart();
+    const cartItemCount = useCartStore((state: CartStore) => state.getCartCount());
+    const openCart = useCartStore((state: CartStore) => state.openCart);
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {
@@ -58,7 +60,7 @@ export default function Navbar() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Link href="/track-order" className="flex items-center gap-1.5 hover:text-emerald-200 transition-colors bg-white/20 px-3 py-1 rounded-full font-bold ml-4">
+                        <Link href="/track-order" className="flex items-center gap-1.5 text-white hover:text-yellow-300 transition-colors bg-white/25 hover:bg-white/35 border border-white/40 px-4 py-1.5 rounded-full font-bold ml-4 shadow-sm">
                             <Truck className="w-4 h-4" />
                             <span className="text-sm">تتبع طلبي</span>
                         </Link>
@@ -137,18 +139,7 @@ export default function Navbar() {
 
                         {/* Search Bar (Desktop) */}
                         <div className="hidden lg:flex items-center flex-1 max-w-sm mx-10">
-                            <form onSubmit={handleSearch} className="relative w-full flex">
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="ابحث عن منتج، عشب، زيت..."
-                                    className="w-full px-4 py-2.5 bg-gray-100 border-y border-r border-gray-300 rounded-r-full focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-medium text-gray-900 placeholder-gray-500"
-                                />
-                                <button type="submit" className="px-5 bg-emerald-600 text-white rounded-l-full hover:bg-emerald-700 transition-colors flex items-center justify-center border-y border-l border-emerald-600">
-                                    <Search className="w-5 h-5" />
-                                </button>
-                            </form>
+                            <LiveSearch />
                         </div>
 
                         {/* Desktop & Mobile Actions */}
@@ -159,14 +150,14 @@ export default function Navbar() {
                             </Link>
 
                             {/* Cart */}
-                            <Link href="/cart" className="relative p-2.5 bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm">
+                            <button onClick={openCart} className="relative p-2.5 bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm">
                                 <ShoppingCart className="w-5 h-5" />
                                 {cartItemCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md animate-bounce border border-white">
                                         {cartItemCount}
                                     </span>
                                 )}
-                            </Link>
+                            </button>
 
                             {/* Auth Buttons */}
                             <div className="hidden sm:block">
@@ -196,18 +187,9 @@ export default function Navbar() {
 
                     {/* Mobile Search Bar */}
                     <div className="lg:hidden pb-4">
-                        <form onSubmit={handleSearch} className="relative w-full">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="ابحث عن المنتجات..."
-                                className="w-full pr-11 pl-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all text-sm"
-                            />
-                            <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <Search className="w-5 h-5" />
-                            </button>
-                        </form>
+                        <div className="relative w-full z-40">
+                            <LiveSearch />
+                        </div>
                     </div>
                 </div>
             </header>

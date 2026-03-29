@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { User, Mail, Phone, MapPin, CreditCard, Lock } from 'lucide-react';
-import { Form, NameInput, EmailInput, PhoneInput, AddressInput, CardInput } from '../ui/Form';
+import { Lock } from 'lucide-react';
+import { Form } from '../ui/Form';
 
 interface CheckoutFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Record<string, string>) => void;
 }
 
 export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
@@ -34,7 +34,7 @@ export default function CheckoutForm({ onSubmit }: CheckoutFormProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: Record<string, string>) => {
     // Combine form data with additional fields
     const orderData = {
       ...data,

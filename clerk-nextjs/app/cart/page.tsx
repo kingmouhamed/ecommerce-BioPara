@@ -192,12 +192,12 @@ export default function CartPage() {
                   إتمام عملية الدفع
                 </Link>
 
-                <Link
+            <Link
                   href="/products"
                   className="w-full flex justify-center items-center px-6 py-4 text-lg font-bold rounded-xl text-gray-700 bg-gray-50 hover:bg-gray-100 border border-transparent hover:border-gray-200 transition-all"
                 >
                   متابعة التسوق
-                </Link>
+            </Link>
               </div>
             </div>
           </div>
@@ -206,4 +206,3 @@ export default function CartPage() {
     </div>
   )
 }
-

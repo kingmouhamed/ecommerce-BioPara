@@ -3,7 +3,7 @@ import { Product, Category } from './products';
 export const mockCategories: Category[] = [
     {
         id: 1,
-        name: 'Herbs',
+        name: 'أعشاب طبية',
         name_ar: 'أعشاب طبية',
         slug: 'herbs',
         description: null,
@@ -14,7 +14,7 @@ export const mockCategories: Category[] = [
     },
     {
         id: 2,
-        name: 'Oils',
+        name: 'زيوت طبيعية',
         name_ar: 'زيوت طبيعية',
         slug: 'oils',
         description: null,
@@ -25,7 +25,7 @@ export const mockCategories: Category[] = [
     },
     {
         id: 3,
-        name: 'Supplements',
+        name: 'مكملات غذائية',
         name_ar: 'مكملات غذائية',
         slug: 'supplements',
         description: null,
@@ -36,7 +36,7 @@ export const mockCategories: Category[] = [
     },
     {
         id: 4,
-        name: 'Natural Honey',
+        name: 'عسل طبيعي',
         name_ar: 'عسل طبيعي',
         slug: 'natural-honey',
         description: null,
@@ -50,7 +50,7 @@ export const mockCategories: Category[] = [
 export const mockProducts: Product[] = [
     {
         id: 1,
-        name: 'Mountain Honey',
+        name: 'عسل جبلي حر',
         name_ar: 'عسل جبلي حر',
         slug: 'mountain-honey',
         description: 'Natural mountain honey from the Atlas',
@@ -68,7 +68,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 2,
-        name: 'Organic Argan Oil',
+        name: 'زيت أركان طبيعي',
         name_ar: 'زيت أركان طبيعي',
         slug: 'argan-oil',
         description: '100% Pure Argan Oil',
@@ -86,7 +86,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 3,
-        name: 'Ginseng Root',
+        name: 'جذور الجينسنج',
         name_ar: 'جذور الجينسنج',
         slug: 'ginseng',
         description: 'Premium Ginseng root',
@@ -104,7 +104,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 4,
-        name: 'Chamomile Tea',
+        name: 'شاي البابونج',
         name_ar: 'شاي البابونج',
         slug: 'chamomile-tea',
         description: 'Relaxing chamomile tea for better sleep',
@@ -122,7 +122,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 5,
-        name: 'Black Seed Oil',
+        name: 'زيت الحبة السوداء',
         name_ar: 'زيت الحبة السوداء',
         slug: 'black-seed-oil',
         description: 'Pure black seed oil',
@@ -140,7 +140,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 6,
-        name: 'Vitamin D3 & K2',
+        name: 'فيتامين D3 مع K2',
         name_ar: 'فيتامين D3 مع K2',
         slug: 'vitamin-d3-k2',
         description: 'Essential vitamins for bone and immune health',
@@ -158,7 +158,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 7,
-        name: 'Ashwagandha',
+        name: 'أشواغاندا',
         name_ar: 'أشواغاندا',
         slug: 'ashwagandha',
         description: 'Natural stress relief and energy booster',
@@ -176,7 +176,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 8,
-        name: 'Biotin',
+        name: 'بيوتين',
         name_ar: 'بيوتين',
         slug: 'biotin',
         description: 'Supports healthy hair, skin, and nails',
@@ -194,7 +194,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 9,
-        name: 'Collagen',
+        name: 'كولاجين',
         name_ar: 'كولاجين',
         slug: 'collagen',
         description: 'Hydrolyzed collagen peptides for skin and joints',
@@ -212,7 +212,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 10,
-        name: 'L-Glutathione',
+        name: 'إل-جلوتاثيون',
         name_ar: 'إل-جلوتاثيون',
         slug: 'l-glutathione',
         description: 'Powerful antioxidant for skin lightening and detox',
@@ -230,7 +230,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 11,
-        name: 'Magnesium',
+        name: 'مغنيسيوم',
         name_ar: 'مغنيسيوم',
         slug: 'magnesium',
         description: 'Essential mineral for muscle and nerve function',
@@ -248,7 +248,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 12,
-        name: 'Mastic Gum',
+        name: 'مستكة',
         name_ar: 'مستكة',
         slug: 'mastic-gum',
         description: 'Supports digestive and stomach health',
@@ -266,7 +266,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 13,
-        name: 'Multivitamins',
+        name: 'فيتامينات متعددة',
         name_ar: 'فيتامينات متعددة',
         slug: 'multivitamins',
         description: 'Comprehensive daily multivitamin complex',
@@ -284,7 +284,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 14,
-        name: 'Omega 3 Fish Oil',
+        name: 'أوميجا 3 زيت السمك',
         name_ar: 'أوميجا 3 زيت السمك',
         slug: 'omega-3-fish-oil',
         description: 'High EPA/DHA for heart and brain health',
@@ -302,7 +302,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 15,
-        name: 'Probiotic',
+        name: 'بروبيوتيك',
         name_ar: 'بروبيوتيك',
         slug: 'probiotic',
         description: 'Daily probiotic for gut flora balance',
@@ -320,7 +320,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 16,
-        name: 'Shilajit',
+        name: 'شيلاجيت',
         name_ar: 'شيلاجيت',
         slug: 'shilajit',
         description: 'Pure Himalayan shilajit resin',
@@ -338,7 +338,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 17,
-        name: 'Zinc',
+        name: 'زنك',
         name_ar: 'زنك',
         slug: 'zinc',
         description: 'High-absorption zinc supplement',
@@ -355,7 +355,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 18,
-        name: 'Anise Herb',
+        name: 'اليانسون',
         name_ar: 'اليانسون',
         slug: 'anise-herb',
         description: 'Premium anise seeds for digestive health',
@@ -373,7 +373,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 19,
-        name: 'Cinnamon Sticks',
+        name: 'أعواد القرفة',
         name_ar: 'أعواد القرفة',
         slug: 'cinnamon-herb',
         description: 'Aromatic cinnamon sticks for metabolic support',
@@ -391,7 +391,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 20,
-        name: 'Ginger Root',
+        name: 'الزنجبيل المجفف',
         name_ar: 'الزنجبيل المجفف',
         slug: 'ginger-herb',
         description: 'Dried ginger root for immunity and nausea',
@@ -409,7 +409,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 21,
-        name: 'Hibiscus Flowers',
+        name: 'أزهار الكركديه',
         name_ar: 'أزهار الكركديه',
         slug: 'hibiscus-herb',
         description: 'Rich hibiscus flowers for blood pressure management',
@@ -427,7 +427,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 22,
-        name: 'Lavender Herb',
+        name: 'الخزامى (اللافندر)',
         name_ar: 'الخزامى (اللافندر)',
         slug: 'lavender-herb',
         description: 'Calming lavender herb for stress relief',
@@ -445,7 +445,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 23,
-        name: 'Lemon Verbena',
+        name: 'اللويزة',
         name_ar: 'اللويزة',
         slug: 'lemon-verbena-herb',
         description: 'Soothing lemon verbena leaves',
@@ -463,7 +463,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 24,
-        name: 'Mint Leaves',
+        name: 'النعناع المجفف',
         name_ar: 'النعناع المجفف',
         slug: 'mint-herb',
         description: 'Refreshing dried mint leaves for digestion',
@@ -481,7 +481,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 25,
-        name: 'Rosemary',
+        name: 'إكليل الجبل (الروزماري)',
         name_ar: 'إكليل الجبل (الروزماري)',
         slug: 'rosemary-herb',
         description: 'Aromatic rosemary for memory and culinary use',
@@ -499,7 +499,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 26,
-        name: 'Sage Herb',
+        name: 'المريمية',
         name_ar: 'المريمية',
         slug: 'sage-herb',
         description: 'Cleansing sage for oral and holistic health',
@@ -517,7 +517,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 27,
-        name: 'Thyme Leaves',
+        name: 'الزعتر البري',
         name_ar: 'الزعتر البري',
         slug: 'thyme-herb',
         description: 'Wild thyme leaves for respiratory support',
@@ -535,7 +535,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 28,
-        name: 'Turmeric Root',
+        name: 'الكركم',
         name_ar: 'الكركم',
         slug: 'turmeric-herb',
         description: 'Anti-inflammatory turmeric root powder',
@@ -552,7 +552,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 29,
-        name: 'Almond Oil',
+        name: 'زيت اللوز الحلو',
         name_ar: 'زيت اللوز الحلو',
         slug: 'almond-oil',
         description: 'Cold-pressed sweet almond oil for skin and hair',
@@ -570,7 +570,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 30,
-        name: 'Castor Oil',
+        name: 'زيت الخروع',
         name_ar: 'زيت الخروع',
         slug: 'castor-oil',
         description: 'Pure organic castor oil for hair growth',
@@ -588,7 +588,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 31,
-        name: 'Ginger Oil',
+        name: 'زيت الزنجبيل',
         name_ar: 'زيت الزنجبيل',
         slug: 'ginger-oil',
         description: 'Warming ginger essential oil for massage',
@@ -606,7 +606,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 32,
-        name: 'Garlic Oil',
+        name: 'زيت الثوم',
         name_ar: 'زيت الثوم',
         slug: 'gratic-oil',
         description: 'Strengthening garlic oil for scalp health',
@@ -624,7 +624,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 33,
-        name: 'Lavender Oil',
+        name: 'زيت الخزامى (اللافندر)',
         name_ar: 'زيت الخزامى (اللافندر)',
         slug: 'lanvender-oil',
         description: 'Calming lavender oil for aromatherapy and sleep',
@@ -642,7 +642,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 34,
-        name: 'Musk Oil',
+        name: 'زيت المسك',
         name_ar: 'زيت المسك',
         slug: 'musk-oil',
         description: 'Luxurious authentic musk oil',
@@ -660,7 +660,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 35,
-        name: 'Olive Oil',
+        name: 'زيت الزيتون',
         name_ar: 'زيت الزيتون',
         slug: 'olive-oil',
         description: 'Extra virgin olive oil',
@@ -678,7 +678,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 36,
-        name: 'Rose Oil',
+        name: 'زيت الورد',
         name_ar: 'زيت الورد',
         slug: 'rose-oil',
         description: 'Pure rose essential oil for skin glow',
@@ -696,7 +696,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 37,
-        name: 'Sidr Oil',
+        name: 'زيت السدر',
         name_ar: 'زيت السدر',
         slug: 'sidr-oil',
         description: 'Traditional sidr oil for holistic care',
@@ -714,7 +714,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 38,
-        name: 'Acacia Honey',
+        name: 'عسل السنط (الأكاسيا)',
         name_ar: 'عسل السنط (الأكاسيا)',
         slug: 'acacia-honey',
         description: 'Light and pure acacia honey for sweeteners',
@@ -732,7 +732,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 39,
-        name: 'Blackseed Honey',
+        name: 'عسل حبة البركة',
         name_ar: 'عسل حبة البركة',
         slug: 'blackseed-honey',
         description: 'Immunity boosting blackseed honey',
@@ -750,7 +750,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 40,
-        name: 'Carob Honey',
+        name: 'عسل الخروب',
         name_ar: 'عسل الخروب',
         slug: 'carob-honey',
         description: 'Rich and dark carob honey',
@@ -768,7 +768,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 41,
-        name: 'Daghmos Honey',
+        name: 'عسل الدغموس',
         name_ar: 'عسل الدغموس',
         slug: 'daghmos-honey',
         description: 'Rare daghmos honey for vitality',
@@ -786,7 +786,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 42,
-        name: 'Eucalyptus Honey',
+        name: 'عسل الكالبتوس (الأوكالبتوس)',
         name_ar: 'عسل الكالبتوس (الأوكالبتوس)',
         slug: 'eucalyptus-honey',
         description: 'Eucalyptus honey for soothing throats',
@@ -804,7 +804,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 43,
-        name: 'Flower Honey',
+        name: 'عسل الزهور',
         name_ar: 'عسل الزهور',
         slug: 'flower-honey',
         description: 'Sweet multi-floral honey blend',
@@ -822,7 +822,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 44,
-        name: 'Forest Honey',
+        name: 'عسل الغابة',
         name_ar: 'عسل الغابة',
         slug: 'forest-honey',
         description: 'Dark and mineral-rich forest honeydew',
@@ -840,7 +840,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 45,
-        name: 'Manuka Honey',
+        name: 'عسل المانوكا',
         name_ar: 'عسل المانوكا',
         slug: 'manuka-honey',
         description: 'Authentic high-grade Manuka honey',
@@ -858,7 +858,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 46,
-        name: 'Orange Blossom Honey',
+        name: 'عسل الليمون (زهر البرتقال)',
         name_ar: 'عسل الليمون (زهر البرتقال)',
         slug: 'orange-blossom-honey',
         description: 'Citrusy and sweet orange blossom honey',
@@ -876,7 +876,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 47,
-        name: 'Sidr Honey',
+        name: 'عسل السدر الأصلي',
         name_ar: 'عسل السدر الأصلي',
         slug: 'sidr-honey',
         description: 'Premium quality Sidr tree honey',
@@ -894,7 +894,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 48,
-        name: 'Thyme Honey',
+        name: 'عسل الزعتر',
         name_ar: 'عسل الزعتر',
         slug: 'thyme-honey',
         description: 'Herbal aromatic thyme honey',
@@ -912,7 +912,7 @@ export const mockProducts: Product[] = [
     },
     {
         id: 49,
-        name: 'Wildflower Honey',
+        name: 'عسل الزهور البرية',
         name_ar: 'عسل الزهور البرية',
         slug: 'wildflower-honey',
         description: 'Raw local wildflower honey',

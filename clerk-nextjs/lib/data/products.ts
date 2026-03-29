@@ -38,6 +38,7 @@ export type Product = {
   is_active?: boolean;
   featured?: boolean;
   is_featured?: boolean;
+  original_price: number | null;
   created_at: string;
   updated_at?: string;
   categories?: {
