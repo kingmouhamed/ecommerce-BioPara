@@ -45,6 +45,17 @@ export const mockCategories: Category[] = [
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
     }
+  ,{
+    "id": 5,
+    "slug": "herbal-tea",
+    "name": "شاي الأعشاب",
+    "name_ar": "شاي الأعشاب",
+    "description": "A selection of natural herbal teas for relaxation and health.",
+    "description_ar": "تشكيلة من شاي الأعشاب الطبيعية للاسترخاء والصحة العامة.",
+    "image": "/images/herbal tea/herb-tea-2.jpg",
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
 ];
 
 export const mockProducts: Product[] = [
@@ -56,6 +67,7 @@ export const mockProducts: Product[] = [
         description: 'Natural mountain honey from the Atlas',
         description_ar: 'عسل جبلي طبيعي من جبال الأطلس يتميز بجودته العالية',
         price: 150.00,
+        original_price: null,
         currency: 'MAD',
         stock: 50,
         category_id: 3,
@@ -74,6 +86,7 @@ export const mockProducts: Product[] = [
         description: '100% Pure Argan Oil',
         description_ar: 'زيت أركان مغربي عضوي نقي 100% ممتاز للبشرة والشعر',
         price: 220.00,
+        original_price: null,
         currency: 'MAD',
         stock: 30,
         category_id: 2,
@@ -92,6 +105,7 @@ export const mockProducts: Product[] = [
         description: 'Premium Ginseng root',
         description_ar: 'جينسنج أصلي للطاقة والحيوية',
         price: 180.00,
+        original_price: null,
         currency: 'MAD',
         stock: 100,
         category_id: 1,
@@ -110,6 +124,7 @@ export const mockProducts: Product[] = [
         description: 'Relaxing chamomile tea for better sleep',
         description_ar: 'شاي بابونج طبيعي للاسترخاء ولنوم هادئ',
         price: 45.00,
+        original_price: null,
         currency: 'MAD',
         stock: 200,
         category_id: 1,
@@ -928,5 +943,278 @@ export const mockProducts: Product[] = [
         updated_at: new Date().toISOString(),
         categories: mockCategories.find(c => c.id === 4)
     }
+  ,{
+    "id": 113,
+    "name": "Anise Herbal Tea",
+    "name_ar": "شاي اليانسون",
+    "slug": "herbal-tea-anise-herbal-tea",
+    "description": "Premium organic anise herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي اليانسون عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/anise-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/anise-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 114,
+    "name": "Chamomile Herbal Tea",
+    "name_ar": "شاي البابونج",
+    "slug": "herbal-tea-chamomile-herbal-tea",
+    "description": "Premium organic chamomile herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي البابونج عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/camomile-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/camomile-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 115,
+    "name": "Cinnamon Herbal Tea",
+    "name_ar": "شاي القرفة",
+    "slug": "herbal-tea-cinnamon-herbal-tea",
+    "description": "Premium organic cinnamon herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي القرفة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/cinnamon-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/cinnamon-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 116,
+    "name": "Ginger Herbal Tea",
+    "name_ar": "شاي الزنجبيل",
+    "slug": "herbal-tea-ginger-herbal-tea",
+    "description": "Premium organic ginger herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الزنجبيل عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 60,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/ginger-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/ginger-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 117,
+    "name": "Mixed Herbal Tea",
+    "name_ar": "شاي أعشاب مشكلة",
+    "slug": "herbal-tea-mixed-herbal-tea",
+    "description": "Premium organic mixed herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي أعشاب مشكلة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/herb-tea-2.jpg"
+    ],
+    "image_url": "/images/herbal tea/herb-tea-2.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 118,
+    "name": "Hibiscus Herbal Tea",
+    "name_ar": "شاي الكركديه",
+    "slug": "herbal-tea-hibiscus-herbal-tea",
+    "description": "Premium organic hibiscus herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الكركديه عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/hibiscus-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/hibiscus-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 119,
+    "name": "Lavender Herbal Tea",
+    "name_ar": "شاي الخزامى",
+    "slug": "herbal-tea-lavender-herbal-tea",
+    "description": "Premium organic lavender herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الخزامى عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 70,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/lavender-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/lavender-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 120,
+    "name": "Lemon Verbena Tea",
+    "name_ar": "شاي اللويزة",
+    "slug": "herbal-tea-lemon-verbena-tea",
+    "description": "Premium organic lemon verbena tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي اللويزة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/lemon-verbena-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/lemon-verbena-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 121,
+    "name": "Mint Herbal Tea",
+    "name_ar": "شاي النعناع",
+    "slug": "herbal-tea-mint-herbal-tea",
+    "description": "Premium organic mint herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي النعناع عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 40,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/mint-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/mint-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 122,
+    "name": "Rosemary Herbal Tea",
+    "name_ar": "شاي إكليل الجبل",
+    "slug": "herbal-tea-rosemary-herbal-tea",
+    "description": "Premium organic rosemary herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي إكليل الجبل عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/rosemary-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/rosemary-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 123,
+    "name": "Sage Herbal Tea",
+    "name_ar": "شاي المريمية",
+    "slug": "herbal-tea-sage-herbal-tea",
+    "description": "Premium organic sage herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي المريمية عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/sage-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/sage-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 124,
+    "name": "Thyme Herbal Tea",
+    "name_ar": "شاي الزعتر",
+    "slug": "herbal-tea-thyme-herbal-tea",
+    "description": "Premium organic thyme herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الزعتر عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/thyme-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/thyme-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 125,
+    "name": "Turmeric Herbal Tea",
+    "name_ar": "شاي الكركم",
+    "slug": "herbal-tea-turmeric-herbal-tea",
+    "description": "Premium organic turmeric herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الكركم عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/turmeric-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/turmeric-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
 ];
 
