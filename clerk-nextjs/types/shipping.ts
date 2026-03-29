@@ -17,6 +17,7 @@ export interface Parcel {
   width?: number;
   height?: number;
   distance_unit?: string;
+  mass_unit?: string;
 }
 
 export interface ShipmentRequest {

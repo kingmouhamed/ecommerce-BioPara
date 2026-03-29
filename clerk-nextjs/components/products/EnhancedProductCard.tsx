@@ -1,174 +1,149 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Star, ShoppingCart, MessageCircle, Heart, Shield, Award } from 'lucide-react';
+import { ShoppingCart, Eye, Heart, CheckCircle2 } from 'lucide-react';
+import { useCartStore, type CartStore } from '@/store/useCartStore';
+import ProductImage from '@/components/ui/ProductImage';
 import { Product } from '@/lib/data/products';
-import { useCart } from '@/contexts/CartContext';
-import { useToast } from '../ui/Toast';
 
-interface EnhancedProductCardProps {
-  product: Product;
-  className?: string;
-}
+export default function EnhancedProductCard({ product }: { product: Product }) {
+  const addItem = useCartStore((state: CartStore) => state.addItem);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
 
-export default function EnhancedProductCard({ product, className = '' }: EnhancedProductCardProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const { addToCart } = useCart();
-  const { addToast } = useToast();
+  const isOutOfStock = product.stock <= 0;
+  const hasDiscount = product.original_price && product.original_price > product.price;
+  const discountPercentage = hasDiscount
+    ? Math.round(((product.original_price! - product.price) / product.original_price!) * 100)
+    : 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); // Prevent navigating to the product page
+    if (isOutOfStock) return;
 
-    addToCart({
-      id: product.id,
-      title: product.name_ar || product.name,
+    addItem({
+      id: product.id.toString(), // Convert to string for Zustand store if it's number
+      name: product.name,
       price: product.price,
-      image: (product.images && product.images.length > 0) ? product.images[0] : product.image_url || '/images/products/product-placeholder.jpg',
-      brand: 'BioPara',
-      inStock: product.stock > 0,
-      slug: product.slug
-    }, 1);
-
-    addToast({
-      type: 'success',
-      title: 'تمت الإضافة للسلة',
-      message: `${product.name_ar || product.name} تمت إضافته بنجاح`
+      slug: product.slug,
+      image: product.images?.[0] || '/images/products/product-placeholder.jpg',
     });
+
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
   };
 
-  const handleWhatsAppOrder = (e: React.MouseEvent) => {
+  const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation();
-
-    const phoneNumber = "212673020264";
-    const message = `السلام عليكم، أود طلب المنتج التالي:\n\n*المنتج:* ${product.name_ar || product.name}\n*السعر:* ${product.price} درهم\n\nهل هذا المنتج متوفر؟`;
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, '_blank');
+    // Here you would trigger a Zustand state or Context to open a global QuickView Modal
+    console.log("Open Quick View for:", product.name);
   };
-
-  const getCategoryBadgeInfo = (category: string) => {
-    const catLower = category?.toLowerCase() || '';
-    if (catLower.includes('herb')) return { label: 'أعشاب طبية', color: 'bg-green-100 text-green-800' };
-    if (catLower.includes('oil')) return { label: 'زيوت طبية', color: 'bg-amber-100 text-amber-800' };
-    if (catLower.includes('supplement')) return { label: 'مكملات غذائية', color: 'bg-blue-100 text-blue-800' };
-    return { label: 'منتج مميز', color: 'bg-gray-100 text-gray-800' };
-  };
-
-  const badgeInfo = getCategoryBadgeInfo(product.categories?.name_ar || product.categories?.name || '');
 
   return (
     <div
-      className={`group flex flex-col bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden relative ${className}`}
+      className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 relative flex flex-col h-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      dir="rtl"
     >
-      <Link href={`/products/${product.slug || product.id}`} className="absolute inset-0 z-0" aria-label={product.name_ar || product.name} />
-
-      {/* Category Badge */}
-      <div className={`absolute top-3 right-3 z-20 px-3 py-1 rounded-full text-xs font-bold ${badgeInfo.color} pointer-events-none`}>
-        {badgeInfo.label}
+      {/* Dynamic Badges */}
+      <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
+        {isOutOfStock && (
+          <span className="bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+            نفذت الكمية
+          </span>
+        )}
+        {hasDiscount && !isOutOfStock && (
+          <span className="bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+            خصم {discountPercentage}%
+          </span>
+        )}
+        {product.featured && !isOutOfStock && (
+          <span className="bg-amber-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm relative overflow-hidden group-hover:animate-pulse">
+            مميز
+          </span>
+        )}
       </div>
 
-      {/* Product Image */}
-      <div className="relative h-64 overflow-hidden bg-gray-50">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-emerald-100 opacity-50 pointer-events-none z-0"></div>
-
-        <Image
-          src={(product.images && product.images.length > 0) ? product.images[0] : product.image_url || '/images/products/product-placeholder.jpg'}
-          alt={product.name_ar || product.name}
-          fill
-          className={`object-cover transition-all duration-500 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} group-hover:scale-110 pointer-events-none z-10`}
-          onLoad={() => setImageLoaded(true)}
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-
-        {/* Quick Actions Overlay (Mobile: Always Visible | Desktop: Visible on Hover) */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex gap-2 opacity-100 translate-y-0 transition-all duration-300 md:opacity-0 md:translate-y-full md:group-hover:opacity-100 md:group-hover:translate-y-0 z-30 pointer-events-auto">
-          <button
-            onClick={handleAddToCart}
-            className="flex-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            أضف للسلة
-          </button>
-          <button
-            onClick={handleWhatsAppOrder}
-            className="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-          >
-            <MessageCircle className="w-4 h-4" />
-            واتساب
-          </button>
-        </div>
-
-        {/* Wishlist Button */}
+      {/* Quick Action Overlay (Visible on Hover) */}
+      <div
+        className={`absolute top-4 left-4 z-10 flex flex-col gap-2 transition-all duration-300 ${isHovered ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
+          }`}
+      >
         <button
-          title="أضف للمفضلة"
-          className="absolute top-3 left-3 z-30 p-2 bg-white/90 backdrop-blur rounded-full shadow-lg hover:bg-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 cursor-pointer pointer-events-auto"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            addToast({ type: 'success', title: 'تمت الإضافة للمفضلة', message: 'تم حفظ المنتج في قائمة المفضلة' });
-          }}
+          onClick={handleQuickView}
+          className="w-10 h-10 bg-white/90 backdrop-blur text-gray-700 rounded-full flex items-center justify-center hover:bg-emerald-600 hover:text-white shadow-md transition-colors"
+          title="نظرة سريعة"
         >
-          <Heart className="w-4 h-4 text-gray-600 hover:text-red-500 transition-colors" />
+          <Eye className="w-5 h-5" />
+        </button>
+        <button
+          className="w-10 h-10 bg-white/90 backdrop-blur text-gray-700 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white shadow-md transition-colors"
+          title="إضافة للمفضلة"
+        >
+          <Heart className="w-5 h-5" />
         </button>
       </div>
 
-      <div className="p-5 flex flex-col flex-1 pointer-events-none relative z-20">
-        {/* Title */}
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors leading-tight">
-          {product.name_ar || product.name}
-        </h3>
-
-        {/* Description */}
-        {product.description_ar && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-            {product.description_ar || product.description}
-          </p>
+      {/* Product Image Area */}
+      <Link href={`/products/${product.slug}`} className="block relative aspect-square overflow-hidden bg-gray-50">
+        <ProductImage
+          src={product.images?.[0] || '/images/products/product-placeholder.jpg'}
+          alt={product.name}
+          className={`transition-opacity duration-500 ${isHovered && product.images?.[1] ? 'opacity-0' : 'opacity-100'}`}
+        />
+        {product.images?.[1] && (
+          <ProductImage
+            src={product.images[1]}
+            alt={`${product.name} alternate view`}
+            className={`absolute inset-0 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+          />
         )}
+      </Link>
 
-        {/* Rating and Reviews */}
-        <div className="flex items-center gap-3 mb-3">
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${i < 5 ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
-              />
-            ))}
-          </div>
-          <span className="text-sm text-gray-500">(0)</span>
-        </div>
+      {/* Content Area */}
+      <div className="p-5 flex flex-col flex-1">
+        <Link href={`/products/${product.slug}`} className="block group-hover:text-emerald-600 transition-colors">
+          <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2 leading-tight">
+            {product.name}
+          </h3>
+        </Link>
 
-        {/* Price & Stock */}
-        <div className="mt-auto">
-          <div className="text-2xl font-black text-emerald-600 mb-2">
-            {product.price} درهم
-          </div>
-
-          <div className="flex items-center gap-2 mb-4">
-            <div className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <span className={`text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {product.stock > 0 ? 'متوفر' : 'نفد المخزون'}
+        <div className="mt-auto pt-4 flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-emerald-600">
+              {product.price.toFixed(2)} د.م
             </span>
+            {hasDiscount && (
+              <span className="text-sm text-gray-400 line-through">
+                {product.original_price?.toFixed(2)} د.م
+              </span>
+            )}
           </div>
 
-          {/* Trust Indicators */}
-          <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <Shield className="w-3 h-3" />
-              <span>ضمان الجودة</span>
-            </div>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              <Award className="w-3 h-3" />
-              <span>معتمد</span>
-            </div>
-          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={isOutOfStock || isAdded}
+            className={`
+               w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm
+               ${isOutOfStock
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : isAdded
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-gray-900 text-white hover:bg-emerald-600 hover:shadow-emerald-200 hover:-translate-y-1'
+              }
+             `}
+            title={isOutOfStock ? 'نفذت الكمية' : 'إضافة للسلة'}
+          >
+            {isAdded ? (
+              <CheckCircle2 className="w-6 h-6" />
+            ) : (
+              <ShoppingCart className="w-5 h-5" />
+            )}
+          </button>
         </div>
       </div>
     </div>
   );
 }
-

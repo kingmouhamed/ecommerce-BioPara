@@ -3,259 +3,117 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Youtube, Send, Truck, Shield, RefreshCw, CreditCard } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Truck } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    products: [
-      { name: 'تصفح كل المنتجات', href: '/products' },
-      { name: 'أحدث العروض', href: '/promotions' },
-    ],
-    company: [
-      { name: 'من نحن', href: '/about' },
-      { name: 'اتصل بنا', href: '/contact' },
-      { name: 'الأسئلة الشائعة', href: '/faq' },
-      { name: 'الاستشارات', href: '/consultation' },
-    ],
-    legal: [
-      { name: 'شروط الاستخدام', href: '/terms' },
-      { name: 'سياسة الخصوصية', href: '/privacy' },
-      { name: 'سياسة الإرجاع', href: '/returns' },
-      { name: 'الشحن والتوصيل', href: '/delivery' },
-    ],
-    support: [
-      { name: 'تتبع الطلبات', href: '/orders' },
-      { name: 'الدعم الفني', href: '/contact' },
-      { name: 'ضمان الجودة', href: '/guarantee' },
-    ],
-  };
-
-  const socialLinks = [
-    { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/biopara' },
-    { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/biopara' },
-    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/biopara' },
-    { name: 'Youtube', icon: Youtube, href: 'https://youtube.com/biopara' },
-  ];
-
-  const paymentMethods = [
-    { name: 'Visa', icon: '💳' },
-    { name: 'Mastercard', icon: '💳' },
-    { name: 'مدى', icon: '💳' },
-    { name: 'أبل باي', icon: '💳' },
-  ];
-
-  const shippingPartners = [
-    { name: 'أرامكس', icon: '🚚' },
-    { name: 'سعودي', icon: '✈️' },
-    { name: 'DHL', icon: '📦' },
-    { name: 'فيدكس', icon: '📦' },
-  ];
-
   return (
-    <footer className="bg-gray-900 text-white">
-      {/* Newsletter Section */}
-      <div className="bg-emerald-700 py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold mb-4">اشترك في نشرتنا البريدية</h3>
-            <p className="text-emerald-100 mb-6">احصل على أحدث العروض والمنتجات الجديدة</p>
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="بريدك الإلكتروني"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+    <footer className="bg-[#0f172a] text-white pt-16 pb-6 border-t border-gray-800" dir="rtl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
+
+          {/* Column 1: BioPara Brand */}
+          <div className="flex flex-col items-start lg:col-span-1">
+            <Link href="/" className="mb-6 inline-flex items-center gap-2 bg-white px-3 py-2 rounded-xl">
+              <Image
+                src="/images/logo.png"
+                alt="BioPara"
+                width={110}
+                height={35}
+                className="h-7 w-auto object-contain"
               />
-              <button
-                type="submit"
-                className="bg-white text-emerald-700 px-6 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
-              >
-                <Send className="w-4 h-4" />
-                اشترك الآن
-              </button>
-            </form>
+            </Link>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-xs">
+              متجر متخصص في المنتجات الطبيعية والأعشاب والزيوت والمكملات الغذائية عالية الجودة
+            </p>
+            <div className="flex gap-4">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Products */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">المنتجات</h4>
-            <ul className="space-y-2">
-              {footerLinks.products.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+          {/* Column 2: Quick Links */}
+          <div className="lg:pr-8">
+            <h3 className="text-lg font-bold mb-6 text-white">روابط سريعة</h3>
+            <ul className="space-y-4 text-sm">
+              <li>
+                <Link href="/about" className="text-gray-400 hover:text-emerald-400 transition-colors">من نحن</Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-gray-400 hover:text-emerald-400 transition-colors">المنتجات</Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-gray-400 hover:text-emerald-400 transition-colors">المدونة</Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-400 hover:text-emerald-400 transition-colors">اتصل بنا</Link>
+              </li>
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Column 3: Customer Service */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">الشركة</h4>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+            <h3 className="text-lg font-bold mb-6 text-white">خدمة العملاء</h3>
+            <ul className="space-y-4 text-sm">
+              <li>
+                <Link href="/track-order" className="text-emerald-400 font-bold hover:text-emerald-300 transition-colors flex items-center gap-2 w-fit">
+                  <Truck className="w-4 h-4" />
+                  تتبع طلبي
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">الشحن والتوصيل</Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الإرجاع</Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">شروط الاستخدام</Link>
+              </li>
+              <li>
+                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الخصوصية</Link>
+              </li>
             </ul>
           </div>
 
-          {/* Customer Service */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">خدمة العملاء</h4>
-            <ul className="space-y-2">
-              {footerLinks.support.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+          {/* Column 4: Contact Us */}
+          <div className="lg:pr-8">
+            <h3 className="text-lg font-bold mb-6 text-white">تواصل معنا</h3>
+            <ul className="space-y-4 text-sm">
+              <li className="flex items-center gap-3 text-gray-400">
+                <Phone className="w-4 h-4 shrink-0" />
+                <span dir="ltr" className="inline-block text-right w-fit">06 73 02 02 64</span>
+              </li>
+              <li className="flex items-center gap-3 text-gray-400">
+                <Mail className="w-4 h-4 shrink-0" />
+                <span className="mt-0.5">info@biopara.com</span>
+              </li>
+              <li className="flex items-center gap-3 text-gray-400">
+                <MapPin className="w-4 h-4 shrink-0" />
+                <span className="mt-0.5">المغرب - الدار البيضاء</span>
+              </li>
             </ul>
           </div>
 
-          {/* Contact Info */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">معلومات التواصل</h4>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-emerald-400" />
-                <span className="text-gray-300">+966 50 123 4567</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-emerald-400" />
-                <span className="text-gray-300">info@biopara.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-emerald-400" />
-                <span className="text-gray-300">الرياض، المملكة العربية السعودية</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Working Hours */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">ساعات العمل</h4>
-            <div className="space-y-2 text-gray-300">
-              <p>من السبت إلى الخميس: 9 صباحاً - 9 مساءً</p>
-              <p>الجمعة: 2 ظهراً - 9 مساءً</p>
-              <p>الأحد: مغلق</p>
-            </div>
-          </div>
         </div>
 
-        {/* Trust Badges */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-gray-800">
-          <div className="text-center">
-            <div className="bg-emerald-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Truck className="w-6 h-6 text-white" />
-            </div>
-            <h5 className="font-semibold mb-2">شحن سريع</h5>
-            <p className="text-gray-400 text-sm">توصيل خلال 24-48 ساعة</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-emerald-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <h5 className="font-semibold mb-2">ضمان الجودة</h5>
-            <p className="text-gray-400 text-sm">منتجات أصلية 100%</p>
-          </div>
-          <div className="text-center">
-            <div className="bg-emerald-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-              <RefreshCw className="w-6 h-6 text-white" />
-            </div>
-            <h5 className="font-semibold mb-2">استرجاع سهل</h5>
-            <p className="text-gray-400 text-sm">استرجاع خلال 30 يوم</p>
-          </div>
-        </div>
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-800/60 pt-6 mt-8 flex flex-col md:flex-row items-center justify-between gap-6 uppercase">
+          <p className="text-gray-400 text-sm">
+            © {currentYear} BioPara. جميع الحقوق محفوظة.
+          </p>
 
-        {/* Payment Methods */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <h4 className="text-lg font-semibold mb-4 text-center">طرق الدفع الآمنة</h4>
-          <div className="flex flex-wrap justify-center gap-4">
-            {paymentMethods.map((method) => (
-              <div key={method.name} className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-                <span className="text-2xl">{method.icon}</span>
-                <span className="text-sm text-gray-300 mr-2">{method.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Shipping Partners */}
-        <div className="mt-8">
-          <h4 className="text-lg font-semibold mb-4 text-center">شركاء الشحن</h4>
-          <div className="flex flex-wrap justify-center gap-4">
-            {shippingPartners.map((partner) => (
-              <div key={partner.name} className="bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-                <span className="text-xl mr-2">{partner.icon}</span>
-                <span className="text-sm text-gray-300">{partner.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Social Media */}
-      <div className="bg-gray-800 py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center space-y-4">
-            <h4 className="text-lg font-semibold">تابعنا على</h4>
-            <div className="flex space-x-4 space-x-reverse">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-colors"
-                    aria-label={social.name}
-                  >
-                    <Icon className="w-5 h-5 text-white" />
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="bg-gray-950 py-6">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
-              © {currentYear} BioPara. جميع الحقوق محفوظة.
-            </div>
-            <div className="flex items-center space-x-4 space-x-reverse">
-              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-                شروط الاستخدام
-              </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                سياسة الخصوصية
-              </Link>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-500 text-sm ml-2">وسائل الدفع:</span>
+            <div className="flex gap-2.5">
+              <div className="bg-white text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded tracking-wide">VISA</div>
+              <div className="bg-white text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded tracking-wide">MC</div>
+              <div className="bg-white text-gray-900 text-[11px] font-black px-3.5 py-1.5 rounded tracking-wide">COD</div>
             </div>
           </div>
         </div>

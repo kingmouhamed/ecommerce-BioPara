@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronUp, HelpCircle, ShoppingBag, Truck, CreditCard, Package, RefreshCw, Shield } from "lucide-react";
 
 export default function FAQPage() {
@@ -219,9 +220,9 @@ export default function FAQPage() {
             فريق خدمة العملاء متاح للمساعدة من الإثنين إلى الجمعة، 9:00 - 18:00
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
+            <Link href="/contact" className="bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-800 transition">
               تواصل معنا
-            </a>
+            </Link>
             <a href="tel:+212600000000" className="bg-white text-emerald-700 border border-emerald-700 px-6 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition">
               اتصل بنا
             </a>
