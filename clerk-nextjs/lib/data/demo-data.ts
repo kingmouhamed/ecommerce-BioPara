@@ -46,6 +46,17 @@ export const demoCategories: Category[] = [
     "created_at": "2026-03-04T15:15:36.185Z",
     "updated_at": "2026-03-04T15:15:36.185Z"
   }
+  ,{
+    "id": 5,
+    "slug": "herbal-tea",
+    "name": "شاي الأعشاب",
+    "name_ar": "شاي الأعشاب",
+    "description": "A selection of natural herbal teas for relaxation and health.",
+    "description_ar": "تشكيلة من شاي الأعشاب الطبيعية للاسترخاء والصحة العامة.",
+    "image": "/images/herbal tea/herb-tea-2.jpg",
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
 ];
 
 export const demoProducts: Product[] = [
@@ -78,6 +89,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Biotin for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل بيوتين الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 224,
+    "original_price": null,
     "currency": "MAD",
     "stock": 58,
     "images": [
@@ -98,6 +110,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Collagen for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل كولاجين الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 204,
+    "original_price": null,
     "currency": "MAD",
     "stock": 33,
     "images": [
@@ -118,6 +131,7 @@ export const demoProducts: Product[] = [
     "description": "Premium L Glutathione for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل إل-جلوتاثيون الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 141,
+    "original_price": null,
     "currency": "MAD",
     "stock": 12,
     "images": [
@@ -138,6 +152,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Magnesium for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل مغنيسيوم الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 191,
+    "original_price": null,
     "currency": "MAD",
     "stock": 35,
     "images": [
@@ -158,6 +173,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Mastic Gum for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل مستكة الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 145,
+    "original_price": null,
     "currency": "MAD",
     "stock": 17,
     "images": [
@@ -178,6 +194,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Multivitamins for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل فيتامينات متعددة الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 92,
+    "original_price": null,
     "currency": "MAD",
     "stock": 19,
     "images": [
@@ -198,6 +215,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Omega 3 Fish for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل Omega 3 Fish الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 148,
+    "original_price": null,
     "currency": "MAD",
     "stock": 21,
     "images": [
@@ -218,6 +236,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Omega3 Supplement for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل مكمل أوميغا 3 الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 244,
+    "original_price": null,
     "currency": "MAD",
     "stock": 34,
     "images": [
@@ -238,6 +257,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Probiotic for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل بروبيوتيك الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 144,
+    "original_price": null,
     "currency": "MAD",
     "stock": 37,
     "images": [
@@ -258,6 +278,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Shilajit for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل شيلاجيت الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 130,
+    "original_price": null,
     "currency": "MAD",
     "stock": 47,
     "images": [
@@ -278,6 +299,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Vitamin D3 K2 for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل فيتامين D3 + K2 الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 171,
+    "original_price": null,
     "currency": "MAD",
     "stock": 26,
     "images": [
@@ -298,6 +320,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Zinc for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "مكمل زنك الممتاز لدعم صحتك العامة وتعزيز نشاطك اليومي.",
     "price": 68,
+    "original_price": null,
     "currency": "MAD",
     "stock": 15,
     "images": [
@@ -318,6 +341,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Anise for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب اليانسون طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 180,
+    "original_price": null,
     "currency": "MAD",
     "stock": 49,
     "images": [
@@ -338,6 +362,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Camomile for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب البابونج طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 249,
+    "original_price": null,
     "currency": "MAD",
     "stock": 27,
     "images": [
@@ -358,6 +383,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Cinnamon for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب القرفة طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 47,
+    "original_price": null,
     "currency": "MAD",
     "stock": 56,
     "images": [
@@ -378,6 +404,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب الزنجبيل طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 235,
+    "original_price": null,
     "currency": "MAD",
     "stock": 35,
     "images": [
@@ -398,6 +425,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Hibiscus for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب الكركديه طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 86,
+    "original_price": null,
     "currency": "MAD",
     "stock": 45,
     "images": [
@@ -418,6 +446,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Lavender for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب لافندر (خزامى) طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 107,
+    "original_price": null,
     "currency": "MAD",
     "stock": 52,
     "images": [
@@ -438,6 +467,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Lemon Verbena for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب اللويزة طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 192,
+    "original_price": null,
     "currency": "MAD",
     "stock": 51,
     "images": [
@@ -458,6 +488,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Mint for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب النعناع طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 110,
+    "original_price": null,
     "currency": "MAD",
     "stock": 30,
     "images": [
@@ -478,6 +509,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Rosemary for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب إكليل الجبل طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 96,
+    "original_price": null,
     "currency": "MAD",
     "stock": 17,
     "images": [
@@ -498,6 +530,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Sage for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب المريمية طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 205,
+    "original_price": null,
     "currency": "MAD",
     "stock": 27,
     "images": [
@@ -518,6 +551,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب الزعتر طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 143,
+    "original_price": null,
     "currency": "MAD",
     "stock": 52,
     "images": [
@@ -538,6 +572,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Turmeric for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "أعشاب الكركم طبيعية وعضوية، مثالية للاستخدام اليومي.",
     "price": 125,
+    "original_price": null,
     "currency": "MAD",
     "stock": 33,
     "images": [
@@ -558,6 +593,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Almond for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Almond العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 69,
+    "original_price": null,
     "currency": "MAD",
     "stock": 39,
     "images": [
@@ -578,6 +614,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Argan for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت أرغان العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 215,
+    "original_price": null,
     "currency": "MAD",
     "stock": 14,
     "images": [
@@ -598,6 +635,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Black Seed for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت حبة البركة العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 132,
+    "original_price": null,
     "currency": "MAD",
     "stock": 17,
     "images": [
@@ -618,6 +656,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Castor for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت خروع العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 197,
+    "original_price": null,
     "currency": "MAD",
     "stock": 22,
     "images": [
@@ -638,6 +677,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Ginger for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Ginger العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 181,
+    "original_price": null,
     "currency": "MAD",
     "stock": 15,
     "images": [
@@ -658,6 +698,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Gratic for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Gratic العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 71,
+    "original_price": null,
     "currency": "MAD",
     "stock": 52,
     "images": [
@@ -678,6 +719,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Lanvender for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Lanvender العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 64,
+    "original_price": null,
     "currency": "MAD",
     "stock": 48,
     "images": [
@@ -698,6 +740,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Musk for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Musk العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 170,
+    "original_price": null,
     "currency": "MAD",
     "stock": 59,
     "images": [
@@ -718,6 +761,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Olive for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت زيتون العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 212,
+    "original_price": null,
     "currency": "MAD",
     "stock": 33,
     "images": [
@@ -738,6 +782,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Rose for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت Rose العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 202,
+    "original_price": null,
     "currency": "MAD",
     "stock": 21,
     "images": [
@@ -758,6 +803,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "زيت سدر العضوي النقي، مستخلص بعناية للحفاظ على فوائده.",
     "price": 158,
+    "original_price": null,
     "currency": "MAD",
     "stock": 36,
     "images": [
@@ -778,6 +824,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Acacia for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل طلح طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 120,
+    "original_price": null,
     "currency": "MAD",
     "stock": 20,
     "images": [
@@ -798,6 +845,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Blackseed for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Blackseed طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 231,
+    "original_price": null,
     "currency": "MAD",
     "stock": 59,
     "images": [
@@ -818,6 +866,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Carob for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Carob طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 94,
+    "original_price": null,
     "currency": "MAD",
     "stock": 30,
     "images": [
@@ -838,6 +887,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Daghmos for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Daghmos طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 91,
+    "original_price": null,
     "currency": "MAD",
     "stock": 28,
     "images": [
@@ -858,6 +908,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Eucalyptus for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل كافور طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 184,
+    "original_price": null,
     "currency": "MAD",
     "stock": 34,
     "images": [
@@ -878,6 +929,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Flower for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Flower طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 136,
+    "original_price": null,
     "currency": "MAD",
     "stock": 52,
     "images": [
@@ -898,6 +950,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Forest for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Forest طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 128,
+    "original_price": null,
     "currency": "MAD",
     "stock": 26,
     "images": [
@@ -918,6 +971,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Manuka for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل مانوكا طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 184,
+    "original_price": null,
     "currency": "MAD",
     "stock": 59,
     "images": [
@@ -938,6 +992,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Orange Blossom for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Orange Blossom طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 173,
+    "original_price": null,
     "currency": "MAD",
     "stock": 54,
     "images": [
@@ -958,6 +1013,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Sidr for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل سدر طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 119,
+    "original_price": null,
     "currency": "MAD",
     "stock": 16,
     "images": [
@@ -978,6 +1034,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Thyme for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Thyme طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 198,
+    "original_price": null,
     "currency": "MAD",
     "stock": 58,
     "images": [
@@ -998,6 +1055,7 @@ export const demoProducts: Product[] = [
     "description": "Premium Wildflower for your health and wellbeing. Made with 100% natural ingredients.",
     "description_ar": "عسل Wildflower طبيعي نقي 100%، غني بالفوائد والمغذيات.",
     "price": 199,
+    "original_price": null,
     "currency": "MAD",
     "stock": 50,
     "images": [
@@ -1009,5 +1067,278 @@ export const demoProducts: Product[] = [
     "featured": true,
     "created_at": "2026-03-04T15:15:36.188Z",
     "updated_at": "2026-03-04T15:15:36.188Z"
+  }
+  ,{
+    "id": 100,
+    "name": "Anise Herbal Tea",
+    "name_ar": "شاي اليانسون",
+    "slug": "herbal-tea-anise-herbal-tea",
+    "description": "Premium organic anise herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي اليانسون عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/anise-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/anise-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 101,
+    "name": "Chamomile Herbal Tea",
+    "name_ar": "شاي البابونج",
+    "slug": "herbal-tea-chamomile-herbal-tea",
+    "description": "Premium organic chamomile herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي البابونج عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/camomile-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/camomile-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 102,
+    "name": "Cinnamon Herbal Tea",
+    "name_ar": "شاي القرفة",
+    "slug": "herbal-tea-cinnamon-herbal-tea",
+    "description": "Premium organic cinnamon herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي القرفة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/cinnamon-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/cinnamon-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 103,
+    "name": "Ginger Herbal Tea",
+    "name_ar": "شاي الزنجبيل",
+    "slug": "herbal-tea-ginger-herbal-tea",
+    "description": "Premium organic ginger herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الزنجبيل عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 60,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/ginger-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/ginger-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 104,
+    "name": "Mixed Herbal Tea",
+    "name_ar": "شاي أعشاب مشكلة",
+    "slug": "herbal-tea-mixed-herbal-tea",
+    "description": "Premium organic mixed herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي أعشاب مشكلة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/herb-tea-2.jpg"
+    ],
+    "image_url": "/images/herbal tea/herb-tea-2.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 105,
+    "name": "Hibiscus Herbal Tea",
+    "name_ar": "شاي الكركديه",
+    "slug": "herbal-tea-hibiscus-herbal-tea",
+    "description": "Premium organic hibiscus herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الكركديه عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/hibiscus-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/hibiscus-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 106,
+    "name": "Lavender Herbal Tea",
+    "name_ar": "شاي الخزامى",
+    "slug": "herbal-tea-lavender-herbal-tea",
+    "description": "Premium organic lavender herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الخزامى عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 70,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/lavender-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/lavender-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 107,
+    "name": "Lemon Verbena Tea",
+    "name_ar": "شاي اللويزة",
+    "slug": "herbal-tea-lemon-verbena-tea",
+    "description": "Premium organic lemon verbena tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي اللويزة عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/lemon-verbena-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/lemon-verbena-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 108,
+    "name": "Mint Herbal Tea",
+    "name_ar": "شاي النعناع",
+    "slug": "herbal-tea-mint-herbal-tea",
+    "description": "Premium organic mint herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي النعناع عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 40,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/mint-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/mint-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 109,
+    "name": "Rosemary Herbal Tea",
+    "name_ar": "شاي إكليل الجبل",
+    "slug": "herbal-tea-rosemary-herbal-tea",
+    "description": "Premium organic rosemary herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي إكليل الجبل عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/rosemary-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/rosemary-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 110,
+    "name": "Sage Herbal Tea",
+    "name_ar": "شاي المريمية",
+    "slug": "herbal-tea-sage-herbal-tea",
+    "description": "Premium organic sage herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي المريمية عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 50,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/sage-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/sage-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 111,
+    "name": "Thyme Herbal Tea",
+    "name_ar": "شاي الزعتر",
+    "slug": "herbal-tea-thyme-herbal-tea",
+    "description": "Premium organic thyme herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الزعتر عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 45,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/thyme-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/thyme-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
+  }
+  ,{
+    "id": 112,
+    "name": "Turmeric Herbal Tea",
+    "name_ar": "شاي الكركم",
+    "slug": "herbal-tea-turmeric-herbal-tea",
+    "description": "Premium organic turmeric herbal tea for relaxation and wellness. Made with 100% natural ingredients.",
+    "description_ar": "شاي الكركم عضوي وممتاز للاسترخاء والصحة العامة.",
+    "price": 55,
+    "original_price": null,
+    "currency": "MAD",
+    "stock": 100,
+    "images": [
+      "/images/herbal tea/turmeric-herb.jpg"
+    ],
+    "image_url": "/images/herbal tea/turmeric-herb.jpg",
+    "category_id": 5,
+    "is_active": true,
+    "featured": true,
+    "created_at": new Date().toISOString(),
+    "updated_at": new Date().toISOString()
   }
 ];
