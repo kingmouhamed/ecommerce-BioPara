@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/chat_screen.dart';
+import 'screens/login_screen.dart';
+import 'providers/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // HTML Renderer is usually set via CLI (flutter run -d chrome --web-renderer html).
+  await dotenv.load(fileName: '.env');
 
   try {
-    // Initialize Supabase with the provided URL and Anon Key
     await Supabase.initialize(
-      url: 'https://fvtkbnoodktzumzkxtkv.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dGtibm9vZGt0enVtemt4dGt2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxNzMwMzAsImV4cCI6MjA4NDc0OTAzMH0.C35VopeG7wTzVo0opnCO0Ru2IzVaVn5TcdZyH5d1Mog',
+      url: dotenv.env['SUPABASE_URL']!,
+      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
     debugPrint('✅ Supabase initialized successfully.');
   } catch (e) {
@@ -39,13 +40,44 @@ class BioParaSpiritualApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      // Support for Arabic text display by default
+      // دعم النص العربي
       builder: (context, child) {
         return Directionality(textDirection: TextDirection.rtl, child: child!);
       },
-      home: const ChatScreen(
-        consultationId: '00000000-0000-0000-0000-000000000000',
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+/// يُوجّه المستخدم تلقائياً:
+/// - إذا كان مُسجّل دخوله → شاشة الشات
+/// - إذا لم يكن مُسجّلاً → شاشة تسجيل الدخول
+class AuthWrapper extends ConsumerWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    return authState.when(
+      data: (state) {
+        final isLoggedIn = state.session != null;
+        if (isLoggedIn) {
+          return const ChatScreen(
+            consultationId: '00000000-0000-0000-0000-000000000000',
+          );
+        }
+        return const LoginScreen();
+      },
+      loading: () => const Scaffold(
+        backgroundColor: Color(0xFFF0F7F0),
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
+          ),
+        ),
       ),
+      error: (e, st) => const LoginScreen(),
     );
   }
 }
