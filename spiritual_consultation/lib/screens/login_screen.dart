@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:spiritual_consultation/providers/auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'chat_screen.dart';
-
+import 'admin_dashboard_screen.dart';
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -67,14 +68,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
       if (!mounted) return;
 
-      // انتقل إلى شاشة الشات بعد نجاح العملية
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => const ChatScreen(
-            consultationId: '00000000-0000-0000-0000-000000000000',
+      // نعتمد على AuthWrapper في main.dart للتحكم بالتوجيه أو نوجه يدوياً هنا
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user?.email != null && user!.email!.startsWith('admin')) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AdminDashboardScreen()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => ChatScreen(
+              conversationId: user?.id ?? '00000000-0000-0000-0000-000000000000',
+            ),
           ),
-        ),
-      );
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,10 +107,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   String _getErrorMessage(String error) {
     if (error.contains('Invalid login')) return 'البريد أو كلمة المرور غير صحيحة';
     if (error.contains('already registered')) return 'هذا البريد مسجّل مسبقاً';
-    if (error.contains('email')) return 'صيغة البريد الإلكتروني غير صحيحة';
+    if (error.toLowerCase().contains('email not confirmed')) return 'يجب تفعيل حسابك (يرجى إيقاف Confirm Email في إعدادات Supabase)';
+    if (error.contains('email') && !error.contains('rate limit')) return 'صيغة البريد الإلكتروني غير صحيحة';
+    if (error.contains('rate limit')) return 'حظر مؤقت لتكرار المحاولات (رجاءً إيقاف حماية السخام في Supabase)';
     if (error.contains('password')) return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
     if (error.contains('network')) return 'تحقق من اتصالك بالإنترنت';
-    return 'حدث خطأ. يرجى المحاولة مجدداً.';
+    return 'حدث خطأ: $error'; // لعرض الخطأ الفعلي بدلاً من رسالة مبهمة
   }
 
   void _toggleMode() {

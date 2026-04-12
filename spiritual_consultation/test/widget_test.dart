@@ -32,7 +32,7 @@ void main() {
         const ProviderScope(
           child: MaterialApp(
             home: ChatScreen(
-              consultationId: '00000000-0000-0000-0000-000000000000',
+              conversationId: '00000000-0000-0000-0000-000000000000',
             ),
           ),
         ),
