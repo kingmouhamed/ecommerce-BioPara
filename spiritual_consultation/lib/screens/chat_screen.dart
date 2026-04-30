@@ -2,307 +2,181 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'dart:io' as io;
 import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import '../providers/cart_provider.dart';
-import 'booking_screen.dart';
-import 'cart_screen.dart';
-import 'call_screen.dart';
-import '../widgets/message_context_menu.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// MAIN CHAT SCREEN
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+import 'call_screen.dart';
+import 'booking_screen.dart';
+import 'shop_screen.dart';
+import 'profile_screen.dart';
+import '../providers/chat_upload_provider.dart';
+import '../providers/chat_provider.dart';
+import '../providers/profile_provider.dart';
+import '../models/message_model.dart';
+
+// ── Theme ────────────────────────────────────────────────
+const Color _kPrimary  = Color(0xFF0D6E6E);
+const Color _kBg       = Color(0xFFEAEFF2);
+const Color _kSender   = Color(0xFFE0F2F1);
+const Color _kReceiver = Colors.white;
 
 class ChatScreen extends ConsumerStatefulWidget {
   final String conversationId;
-  const ChatScreen({super.key, required this.conversationId});
+  final String expertName;
+
+  const ChatScreen({
+    super.key,
+    required this.conversationId,
+    this.expertName = 'المستشار الروحاني',
+  });
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
-  final TextEditingController _msgController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final _msgCtrl    = TextEditingController();
+  final _scrollCtrl = ScrollController();
+  final _supabase   = Supabase.instance.client;
+  // Using Record() for version 5.x compatibility
+  final _recorder   = AudioRecorder();
+  final _picker     = ImagePicker();
 
-  bool _isAdmin = false;
-  String? _currentUserId;
-
-  // Media
-  final AudioRecorder _audioRecorder = AudioRecorder();
+  String? _userId;
   bool _isRecording = false;
-  final ImagePicker _picker = ImagePicker();
   bool _isUploading = false;
-
-  // Swipe-to-Reply
-  Map<String, dynamic>? _replyingTo;
-
-  // ── Phase 4: Presence & Typing ──────────────────────
-  RealtimeChannel? _presenceChannel;
-  bool   _otherIsTyping  = false;
-  bool   _otherIsOnline  = false;
-  String _otherLastSeen  = '';
-  Timer? _typingTimer;           // debounce – stops broadcasting after 2s
-  bool   _isBroadcastingTyping = false;
-  // ─────────────────────────────────────────────────────
-
-  // Brand Colors (BioPara - unchanged)
-  static const Color _primaryGreen  = Color(0xFF1B5E20);
-  static const Color _accentGreen   = Color(0xFF4CAF50);
-  static const Color _lightGreen    = Color(0xFFE8F5E9);
-  // WhatsApp sender bubble color: Color(0xFFE7FFDB) — applied directly in _WhatsAppBubble
-  static const Color _bgChat        = Color(0xFFE5DDD5); // WhatsApp wallpaper bg
+  bool _isTyping    = false;
+  Timer? _recTimer;
+  int   _recSecs    = 0;
 
   @override
   void initState() {
     super.initState();
-    _currentUserId = _supabase.auth.currentUser?.id;
-    final email = _supabase.auth.currentUser?.email ?? '';
-    _isAdmin = email.startsWith('admin');
-    _subscribeToPresence();
+    _userId = _supabase.auth.currentUser?.id;
   }
 
   @override
   void dispose() {
-    _typingTimer?.cancel();
-    _presenceChannel?.unsubscribe();
-    _msgController.dispose();
-    _scrollController.dispose();
-    _audioRecorder.dispose();
+    _msgCtrl.dispose();
+    _scrollCtrl.dispose();
+    _recorder.dispose();
+    _recTimer?.cancel();
     super.dispose();
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // PHASE 4: PRESENCE & TYPING
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  String _fmtSecs(int s) =>
+      '${(s ~/ 60).toString().padLeft(2, '0')}:${(s % 60).toString().padLeft(2, '0')}';
 
-  void _subscribeToPresence() {
-    if (_currentUserId == null) return;
-
-    final channelName = 'chat:${widget.conversationId}';
-    _presenceChannel = _supabase.channel(channelName);
-
-    // ── Listen to presence state changes (BEFORE subscribe) ──
-    _presenceChannel!.onPresenceSync((payload) {
-      // presenceState() returns List<SinglePresenceState> in supabase_flutter v2
-      final presences = _presenceChannel!.presenceState();
-      if (!mounted) return;
-
-      bool otherOnline = false;
-      bool otherTyping = false;
-      String lastSeen  = '';
-
-      for (final entry in presences) {
-        final data = entry.presences;
-        for (final presence in data) {
-          final pld = presence.payload;
-          if (pld['user_id'] != _currentUserId) {
-            otherOnline = true;
-            if (pld['typing'] == true) otherTyping = true;
-            if (pld['online_at'] != null) {
-              try {
-                final dt = DateTime.parse(pld['online_at'] as String).toLocal();
-                lastSeen = DateFormat('H:mm').format(dt);
-              } catch (_) {}
-            }
-          }
-        }
-      }
-
-      setState(() {
-        _otherIsOnline = otherOnline;
-        _otherIsTyping = otherTyping;
-        _otherLastSeen = lastSeen;
-      });
-    });
-
-    _presenceChannel!.onPresenceLeave((payload) {
-      if (!mounted) return;
-      setState(() {
-        _otherIsOnline = false;
-        _otherIsTyping = false;
-      });
-    });
-
-    // ── Subscribe & track own presence ──
-    _presenceChannel!.subscribe((status, error) async {
-      if (status == RealtimeSubscribeStatus.subscribed) {
-        await _presenceChannel!.track({
-          'user_id':   _currentUserId,
-          'online_at': DateTime.now().toIso8601String(),
-          'typing':    false,
-        });
-      }
-    });
-  }
-
-  /// Called every keystroke – broadcasts typing=true then debounces stop.
-  void _broadcastTyping() {
-    if (_presenceChannel == null || _currentUserId == null) return;
-
-    // Broadcast typing = true (only once until stopped)
-    if (!_isBroadcastingTyping) {
-      _isBroadcastingTyping = true;
-      _presenceChannel!.track({
-        'user_id':   _currentUserId,
-        'online_at': DateTime.now().toIso8601String(),
-        'typing':    true,
-      });
+  void _scrollToTop() {
+    if (_scrollCtrl.hasClients) {
+      _scrollCtrl.animateTo(0,
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     }
-
-    // Reset debounce timer – 2 seconds after last keystroke
-    _typingTimer?.cancel();
-    _typingTimer = Timer(const Duration(seconds: 2), _stopTypingBroadcast);
-  }
-
-  /// Called after 2s inactivity or when message is sent.
-  void _stopTypingBroadcast() {
-    _isBroadcastingTyping = false;
-    _presenceChannel?.track({
-      'user_id':   _currentUserId,
-      'online_at': DateTime.now().toIso8601String(),
-      'typing':    false,
-    });
-  }
-
-  /// Returns the correct subtitle string for the AppBar.
-  String get _appBarSubtitle {
-    if (_otherIsTyping)  return 'يكتب...';
-    if (_otherIsOnline)  return 'متصل الآن 🟢';
-    if (_otherLastSeen.isNotEmpty) return 'آخر ظهور في $_otherLastSeen';
-    return _isAdmin ? 'مشاهدة ملف المريض' : 'في انتظار المعالج';
-  }
-
-  /// Returns the subtitle colour (green for online/typing, faded otherwise).
-  Color get _subtitleColor {
-    if (_otherIsTyping) return const Color(0xFF80CBC4); // teal for typing
-    if (_otherIsOnline) return Colors.white70;
-    return Colors.white38;
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // SUPABASE LOGIC
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Future<String?> _uploadFile(Uint8List bytes, String fileName, String folder) async {
-    try {
-      final uploadPath = '$folder/$fileName';
-      await _supabase.storage.from('chat_media').uploadBinary(uploadPath, bytes);
-      return _supabase.storage.from('chat_media').getPublicUrl(uploadPath);
-    } catch (e) {
-      debugPrint('❌ Upload error: $e');
-      return null;
-    }
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    Navigator.maybeOf(context)?.maybePop(); // close bottom sheet if open
-    final XFile? image = await _picker.pickImage(source: source, imageQuality: 70);
-    if (image == null) return;
-
-    setState(() => _isUploading = true);
-    final bytes = await image.readAsBytes();
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}_${image.name}';
-    final url = await _uploadFile(bytes, fileName, 'images');
-    setState(() => _isUploading = false);
-
-    if (url != null) _sendMessage(type: 'image', content: url);
   }
 
   Future<void> _startRecording() async {
+    if (!await _recorder.hasPermission()) return;
     try {
-      if (await _audioRecorder.hasPermission()) {
-        String path = '';
-        if (!kIsWeb) {
-          final dir = await getTemporaryDirectory();
-          path = p.join(dir.path, 'rec_${DateTime.now().millisecondsSinceEpoch}.m4a');
-        }
-        await _audioRecorder.start(const RecordConfig(), path: path);
-        setState(() => _isRecording = true);
-        HapticFeedback.mediumImpact();
+      String? path;
+      if (!kIsWeb) {
+        final dir = await getTemporaryDirectory();
+        path = p.join(dir.path, 'rec_${DateTime.now().millisecondsSinceEpoch}.m4a');
       }
+      // Record 5.x API
+      await _recorder.start(const RecordConfig(), path: path ?? '');
+      
+      _recSecs = 0;
+      _recTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (mounted) setState(() => _recSecs++);
+      });
+      setState(() => _isRecording = true);
+      HapticFeedback.mediumImpact();
     } catch (e) {
-      debugPrint('❌ Start recording: $e');
+      debugPrint('rec start: $e');
     }
   }
 
-  Future<void> _stopRecording() async {
-    try {
-      final path = await _audioRecorder.stop();
-      setState(() => _isRecording = false);
-      if (path == null) return;
+  Future<void> _cancelRecording() async {
+    _recTimer?.cancel();
+    await _recorder.stop();
+    setState(() { _isRecording = false; _recSecs = 0; });
+  }
 
-      setState(() => _isUploading = true);
-      Uint8List bytes;
-      if (kIsWeb) {
-        final resp = await http.get(Uri.parse(path));
-        bytes = resp.bodyBytes;
-      } else {
-        bytes = await io.File(path).readAsBytes();
-      }
-      final url = await _uploadFile(bytes, 'rec_${DateTime.now().millisecondsSinceEpoch}.m4a', 'audio');
-      setState(() => _isUploading = false);
-      if (url != null) _sendMessage(type: 'audio', content: url);
-    } catch (e) {
-      debugPrint('❌ Stop recording: $e');
-    }
+  Future<void> _stopAndSend() async {
+    _recTimer?.cancel();
+    final path = await _recorder.stop();
+    setState(() { _isRecording = false; _recSecs = 0; });
+    if (path == null) return;
+    
+    final xfile = XFile(path);
+    final bytes = await xfile.readAsBytes();
+    final ext = p.extension(path);
+    final extension = ext.isEmpty ? '.m4a' : ext;
+
+    final url = await ref
+        .read(chatUploadProvider.notifier)
+        .uploadBytes(bytes, extension, folder: 'audio');
+    if (url != null) _sendMessage(type: MessageType.audio, content: url);
+  }
+
+  Future<void> _pickImage(ImageSource src) async {
+    final f = await _picker.pickImage(source: src, imageQuality: 70);
+    if (f == null) return;
+    setState(() => _isUploading = true);
+    
+    final bytes = await f.readAsBytes();
+    final ext = p.extension(f.path);
+    final extension = ext.isEmpty ? '.jpg' : ext;
+
+    final url = await ref
+        .read(chatUploadProvider.notifier)
+        .uploadBytes(bytes, extension, folder: 'images');
+    setState(() => _isUploading = false);
+    if (url != null) _sendMessage(type: MessageType.image, content: url);
   }
 
   Future<void> _sendMessage({
-    String type = 'text',
+    MessageType type = MessageType.text,
     String content = '',
-    Map<String, dynamic>? metadata,
   }) async {
-    final text = type == 'text' ? _msgController.text.trim() : content;
-    if (text.isEmpty && type == 'text') return;
-    if (type == 'text') {
-      _msgController.clear();
-      _stopTypingBroadcast(); // Phase 4: stop typing indicator on send
+    final text = type == MessageType.text ? _msgCtrl.text.trim() : content;
+    if (text.isEmpty) return;
+
+    if (_userId == null) return;
+
+    // Clear input immediately for text
+    if (type == MessageType.text) {
+      _msgCtrl.clear();
+      setState(() => _isTyping = false);
     }
 
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) return;
-
-    String convId = widget.conversationId;
-    if (convId.length < 10) convId = userId;
-
     try {
+      // 1. تأكد من وجود المحادثة أولاً (لتفادي خطأ Foreign Key)
       await _supabase.from('conversations').upsert({
-        'id': convId,
-        'patient_id': convId,
+        'id': widget.conversationId,
+        'patient_id': _userId,
       });
 
+      // 2. إرسال الرسالة
       await _supabase.from('messages').insert({
-        'conversation_id': convId,
-        'sender_id': userId,
+        'id': const Uuid().v4(),
+        'conversation_id': widget.conversationId,
+        'sender_id': _userId,
         'content': text,
-        'message_type': type,
-        'metadata': metadata,
-        'reply_to_id': _replyingTo?['id'],  // Phase 3: Swipe-to-Reply
-        'status': 'sent',                    // Phase 3: Ticks
+        'message_type': type.name,
       });
-
-      _cancelReply();
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      
+      _scrollToTop();
     } catch (e) {
-      debugPrint('❌ Send error: $e');
+      debugPrint('Send error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('فشل الإرسال: $e'), backgroundColor: Colors.red),
@@ -311,1284 +185,569 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // PHASE 3: SWIPE-TO-REPLY
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  void _onSwiped(Map<String, dynamic> message) {
-    HapticFeedback.lightImpact();
-    setState(() => _replyingTo = message);
-  }
-
-  void _cancelReply() {
-    _stopTypingBroadcast(); // ensure typing stops if user cancels reply
-    setState(() => _replyingTo = null);
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // PHASE 5: LONG-PRESS CONTEXT MENU
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  void _showContextMenu(
-    BuildContext ctx,
-    Map<String, dynamic> message,
-    bool isMe,
-    GlobalKey bubbleKey,
-  ) {
-    HapticFeedback.mediumImpact();
-    showMessageContextMenu(
-      context: ctx,
-      message: message,
-      isMe: isMe,
-      bubbleKey: bubbleKey,
-      onReply: _onSwiped,
-      onReaction: (emoji) => _toggleReaction(message['id'], emoji),
-      onDelete: () => _deleteMessage(message['id']), // Phase 6
-    );
-  }
-
-  // ── Phase 6: Delete Message ──
-  Future<void> _deleteMessage(String messageId) async {
-    try {
-      // WhatsApp behavior for "Delete for everyone":
-      // We change the content and type so the record remains but UI hides it.
-      await _supabase.from('messages').update({
-        'content': 'تم حذف هذه الرسالة',
-        'message_type': 'deleted',
-        'metadata': {}, // clear any file metadata
-      }).eq('id', messageId);
-
-      HapticFeedback.lightImpact();
-    } catch (e) {
-      debugPrint('❌ Delete error: $e');
-    }
-  }
-
-  // ── Phase 6: Reactions Backend ──
-  Future<void> _toggleReaction(String messageId, String emoji) async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) return;
-
-    try {
-      // 1. Get current reactions
-      final res = await _supabase
-          .from('messages')
-          .select('reactions')
-          .eq('id', messageId)
-          .single();
-
-      Map<String, dynamic> reactions = Map<String, dynamic>.from(res['reactions'] ?? {});
-
-      // Logic: Simple WhatsApp style (one reaction per user per message)
-      // If user clicks same emoji -> remove it.
-      // If user clicks different emoji -> replace old one.
-      
-      // Clean up existing reaction for this user
-      reactions.removeWhere((key, value) {
-        if (value is List) {
-          value.remove(userId);
-          return value.isEmpty;
-        }
-        return false;
-      });
-
-      // Add new reaction
-      if (emoji != 'remove') {
-        if (reactions[emoji] == null) reactions[emoji] = [];
-        (reactions[emoji] as List).add(userId);
-      }
-
-      await _supabase
-          .from('messages')
-          .update({'reactions': reactions})
-          .eq('id', messageId);
-
-      HapticFeedback.lightImpact();
-    } catch (e) {
-      debugPrint('❌ Reaction error: $e');
-    }
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ZEGOCLOUD CALLS (preserved untouched)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  void _startCall(bool isVideo) {
-    _sendMessage(
-      type: 'call_invite',
-      content: isVideo ? 'مكالمة فيديو واردة 🎥' : 'مكالمة صوتية واردة 📞',
-      metadata: {'call_id': widget.conversationId, 'is_video': isVideo},
-    );
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CallScreen(
-      callID: widget.conversationId,
-      userID: _currentUserId!,
-      userName: _isAdmin ? 'المعالج' : 'المريض',
-      isVideoCall: isVideo,
-    )));
-  }
-
-  void _joinCall(Map<String, dynamic> metadata) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => CallScreen(
-      callID: metadata['call_id'] ?? widget.conversationId,
-      userID: _currentUserId!,
-      userName: _isAdmin ? 'المعالج' : 'المريض',
-      isVideoCall: metadata['is_video'] ?? true,
-    )));
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ADMIN ACTIONS (preserved)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  void _onAdminSendBookingInvite() {
-    _sendMessage(
-      type: 'booking_invite',
-      content: 'لقد تم تشخيص حالتك بدقة 🌿. لترتيب جلسة روحانية كاملة، يرجى حجز الموعد الآن.',
-      metadata: {'action': 'open_booking_calendar'},
-    );
-  }
-
-  void _onAdminSendProductLink() {
-    _sendMessage(
-      type: 'product_link',
-      content: 'العلاج المقترح. عشبة BioPara المختارة بعناية لك.',
-      metadata: {
-        'id': 'promo_1',
-        'name_ar': 'علاج روحي بالأعشاب الطبيعية',
-        'price': 150.0,
-        'image_url': '',
-      },
-    );
-  }
-
-  void _addToCart(Map<String, dynamic> metadata) {
-    ref.read(cartProvider.notifier).addToCart(
-      productId: metadata['id'].toString(),
-      productName: metadata['name_ar'] ?? 'منتج موصى به',
-      productPrice: (metadata['price'] as num?)?.toDouble() ?? 0,
-      imageUrl: metadata['image_url'],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('✅ الإضافة للسلة: ${metadata['name_ar']}'), backgroundColor: _primaryGreen),
-    );
-  }
-
-  void _showPatientReport() async {
-    final data = await _supabase
-        .from('conversations')
-        .select('patient_report, sentiment_mood, sentiment_score, sentiment_summary, sentiment_advice')
-        .eq('id', widget.conversationId)
-        .maybeSingle();
-
-    if (data == null || data['patient_report'] == null) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('لا يوجد تقرير بعد')));
-      return;
+  void _startCall(bool isVideo, {bool isJoin = false}) {
+    // Only send invite if NOT joining an existing call
+    if (!isJoin) {
+      _sendMessage(
+        type: MessageType.callInvite,
+        content: isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
+      );
     }
 
-    if (mounted) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => Container(
-          height: MediaQuery.of(context).size.height * 0.75,
-          decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+    final profile = ref.read(profileProvider).value;
+    final myName = profile?.fullName ?? 'مريض';
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CallScreen(
+          callID: widget.conversationId,
+          userID: _userId ?? 'unknown',
+          userName: myName,
+          isVideoCall: isVideo,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final uploadState   = ref.watch(chatUploadProvider);
+    final isUploadingNow = uploadState is ChatUploadLoading || _isUploading;
+
+    return Scaffold(
+      backgroundColor: _kBg,
+      appBar: _buildAppBar(),
+      body: Column(
+        children: [
+          Expanded(child: _buildStream()),
+          _buildInputBar(isUploadingNow),
+        ],
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() => AppBar(
+    backgroundColor: _kPrimary,
+    foregroundColor: Colors.white,
+    titleSpacing: 0,
+    title: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(widget.expertName,
+            style: GoogleFonts.tajawal(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text('متصل الآن',
+            style: GoogleFonts.tajawal(fontSize: 11, color: Colors.white70)),
+      ],
+    ),
+    actions: [
+      IconButton(icon: const Icon(Icons.videocam), onPressed: () => _startCall(true)),
+      IconButton(icon: const Icon(Icons.call),     onPressed: () => _startCall(false)),
+      PopupMenuButton<String>(
+        icon: const Icon(Icons.more_vert),
+        onSelected: (v) async {
+          switch (v) {
+            case 'profile':
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              break;
+            case 'shop':
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
+              break;
+            case 'book':
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingScreen()));
+              break;
+            case 'clear':
+              _confirmClear();
+              break;
+            case 'logout':
+              await _supabase.auth.signOut();
+              if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+              break;
+          }
+        },
+        itemBuilder: (_) => [
+          const PopupMenuItem(value: 'profile', child: Text('الملف الشخصي')),
+          const PopupMenuItem(value: 'shop',    child: Text('المتجر')),
+          const PopupMenuItem(value: 'book',    child: Text('حجز جلسة')),
+          const PopupMenuItem(value: 'clear',   child: Text('مسح المحادثة')),
+          const PopupMenuDivider(),
+          const PopupMenuItem(
+            value: 'logout',
+            child: Text('تسجيل الخروج', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    ],
+  );
+
+  void _confirmClear() => showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: const Text('مسح المحادثة', textAlign: TextAlign.center),
+      content: const Text('سيتم حذف كافة الرسائل نهائياً.',
+          textAlign: TextAlign.center),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('إلغاء')),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(dialogContext); // Close dialog immediately
+            try {
+              await ref.read(chatProvider(widget.conversationId).notifier).clearChat();
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('فشل المسح: $e'), backgroundColor: Colors.red),
+                );
+              }
+            }
+          },
+          child: const Text('مسح الكل', style: TextStyle(color: Colors.red)),
+        ),
+      ],
+    ),
+  );
+
+  void _confirmDelete(String id, String? audioUrl) => showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      title: const Text('حذف الرسالة', textAlign: TextAlign.center),
+      content: const Text('هل أنت متأكد؟\nلا يمكن التراجع.',
+          textAlign: TextAlign.center),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('إلغاء')),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, foregroundColor: Colors.white),
+          onPressed: () async {
+            Navigator.pop(dialogContext); // Close dialog immediately
+            try {
+              await ref
+                  .read(chatProvider(widget.conversationId).notifier)
+                  .deleteMessage(id, audioUrl: audioUrl);
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('فشل الحذف: $e'), backgroundColor: Colors.red),
+                );
+              }
+            }
+          },
+          child: const Text('حذف'),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildStream() {
+    final messages = ref.watch(chatProvider(widget.conversationId));
+    if (messages.isEmpty) {
+      return Center(
+        child: Container(
+          margin: const EdgeInsets.all(24),
           padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(2)))),
-                const SizedBox(height: 20),
-                const Text('📋 تقرير المساعد الذكي', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _primaryGreen)),
-                const Divider(),
-                const SizedBox(height: 10),
-                Text(data['patient_report'], style: const TextStyle(fontSize: 16, height: 1.6)),
-                const SizedBox(height: 20),
-                const Text('🧠 التحليل النفسي', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.orange)),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('الحالة: ${data['sentiment_mood']} (درجة: ${data['sentiment_score']}/10)', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 5),
-                      Text(data['sentiment_summary'] ?? ''),
-                      const SizedBox(height: 10),
-                      const Text('نصيحة:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey)),
-                      Text(data['sentiment_advice'] ?? ''),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-              ],
-            ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Text(
+            'الاستشارة محمية وسرية بالكامل.\nيمكنك البدء بالتحدث الآن.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.tajawal(color: _kPrimary, fontWeight: FontWeight.w600, height: 1.6),
           ),
         ),
       );
     }
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // BUILD
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bgChat,
-      appBar: AppBar(
-        backgroundColor: _primaryGreen,
-        foregroundColor: Colors.white,
-        leadingWidth: 70,
-        leading: Row(
-          children: [
-            const SizedBox(width: 4),
-            IconButton(
-              padding: EdgeInsets.zero,
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-            GestureDetector(
-              onTap: () => _openContactDetail(),
-              child: Hero(
-                tag: 'avatar_${widget.conversationId}',
-                child: const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.white24,
-                  child: Icon(Icons.person, color: Colors.white, size: 24),
-                ),
-              ),
-            ),
-          ],
-        ),
-        title: InkWell(
-          onTap: () => _openContactDetail(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('عيادة BioPara', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: Text(
-                  _appBarSubtitle,
-                  key: ValueKey(_appBarSubtitle),
-                  style: TextStyle(fontSize: 11, color: _subtitleColor),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(icon: const Icon(Icons.videocam), onPressed: () => _startCall(true)),
-          IconButton(icon: const Icon(Icons.call), onPressed: () => _startCall(false)),
-          if (_isAdmin)
-            IconButton(
-              icon: const Icon(Icons.assignment_ind, color: Colors.orangeAccent),
-              onPressed: _showPatientReport,
-              tooltip: 'ملف المريض',
-            ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          // ── Chat Wallpaper Layer (Phase 9) ──
-          Positioned.fill(
-            child: Container(
-              color: const Color(0xFFE5DDD5), // Classic WhatsApp beige
-              child: Opacity(
-                opacity: 0.08,
-                child: Image.network(
-                  'https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded51.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              Expanded(child: _buildChatStream()),
-              if (_isAdmin) _buildAdminActionStrip(),
-              _buildInputBar(),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // CHAT STREAM
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Widget _buildChatStream() {
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: _supabase
-          .from('messages')
-          .stream(primaryKey: ['id'])
-          .eq('conversation_id', widget.conversationId)
-          .order('created_at', ascending: false)
-          .map((m) => m.toList()),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return Center(child: Text('خطأ: ${snapshot.error}'));
-        }
-        final messages = snapshot.data ?? [];
-        if (messages.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.spa_outlined, size: 60, color: Colors.green.withValues(alpha: 0.4)),
-                const SizedBox(height: 12),
-                const Text('ابدأ المحادثة الآن 🌿', style: TextStyle(color: Colors.grey, fontSize: 16)),
-              ],
-            ),
-          );
-        }
-        return ListView.builder(
-          controller: _scrollController,
-          reverse: true,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          itemCount: messages.length,
-          itemBuilder: (ctx, i) {
-            final msg = messages[i];
-            final isMe = msg['sender_id'] == _currentUserId;
-            // Find quoted message if any
-            Map<String, dynamic>? quotedMsg;
-            if (msg['reply_to_id'] != null) {
-              try {
-                quotedMsg = messages.firstWhere((m) => m['id'] == msg['reply_to_id']);
-              } catch (_) {
-                quotedMsg = null;
-              }
-            }
-            final bubbleKey = GlobalKey();
-            return _SwipeableBubble(
-              key: ValueKey(msg['id']),
-              message: msg,
-              isMe: isMe,
-              quotedMsg: quotedMsg,
-              currentUserId: _currentUserId,
-              primaryGreen: _primaryGreen,
-              accentGreen: _accentGreen,
-              lightGreen: _lightGreen,
-              bubbleKey: bubbleKey,
-              onSwipe: _onSwiped,
-              onLongPress: (m) => _showContextMenu(ctx, m, isMe, bubbleKey),
-              onJoinCall: _joinCall,
-              onAddToCart: _addToCart,
-              onBooking: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingScreen())),
-            );
-          },
+    return ListView.builder(
+      controller: _scrollCtrl,
+      reverse: true,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      itemCount: messages.length,
+      itemBuilder: (_, i) {
+        final m  = messages[i];
+        final me = m.senderId == _userId;
+        return _Bubble(
+          msg: m,
+          isMe: me,
+          onLongPress: () =>
+              _confirmDelete(m.id, m.type == MessageType.audio ? m.content : null),
+          onJoinCall: () => _startCall(m.content.contains('فيديو'), isJoin: true),
         );
       },
     );
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // INPUT BAR (WhatsApp Style)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  Widget _buildInputBar() {
-    final bool hasText = _msgController.text.trim().isNotEmpty;
-
-    return Container(
-      color: Colors.transparent,
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-
-            // --- Swipe-to-Reply Preview ---
-            if (_replyingTo != null)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                  border: Border(left: BorderSide(color: _accentGreen, width: 4)),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _replyingTo!['sender_id'] == _currentUserId ? 'أنت' : 'الطرف الآخر',
-                            style: TextStyle(fontWeight: FontWeight.bold, color: _accentGreen, fontSize: 12),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _replyingTo!['message_type'] == 'text'
-                                ? (_replyingTo!['content'] ?? '')
-                                : _replyingTo!['message_type'] == 'image' ? '📷 صورة' : '🎤 رسالة صوتية',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.black54, fontSize: 13),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(icon: const Icon(Icons.close, size: 18, color: Colors.grey), onPressed: _cancelReply),
-                  ],
-                ),
-              ),
-
-            // --- Main Input Row ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // TextField container
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4, offset: const Offset(0, 2))],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const SizedBox(width: 4),
-                          IconButton(
-                            icon: const Icon(Icons.emoji_emotions_outlined, color: Colors.grey),
-                            onPressed: () {},
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: _msgController,
-
-                              minLines: 1,
-                              maxLines: 5,
-                              onChanged: (val) {
-                                setState(() {});
-                                _broadcastTyping();
-                              },
-                              onSubmitted: (_) => _sendMessage(),
-                              decoration: const InputDecoration(
-                                hintText: 'اكتب رسالة...',
-                                hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 10),
-                              ),
-                            ),
-                          ),
-                          // Paperclip icon (inside field, right edge)
-                          if (!hasText)
-                            IconButton(
-                              icon: const Icon(Icons.attach_file, color: Colors.grey),
-                              onPressed: _showAttachmentMenu,
-                            ),
-                          if (!hasText)
-                            IconButton(
-                              icon: const Icon(Icons.camera_alt, color: Colors.grey),
-                              onPressed: () => _pickImage(ImageSource.camera),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 6),
-
-                  // Circular FAB - Mic OR Send (WhatsApp behavior)
-                  GestureDetector(
-                    onLongPress: () {
-                      if (!hasText) _startRecording();
-                    },
-                    onLongPressUp: () {
-                      if (_isRecording) _stopRecording();
-                    },
-                    onTap: () {
-                      if (hasText) _sendMessage();
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: _isRecording ? Colors.red : _primaryGreen,
-                        shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: _primaryGreen.withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 3))],
-                      ),
-                      child: _isUploading
-                          ? const Padding(
-                              padding: EdgeInsets.all(14),
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            )
-                          : Icon(
-                              _isRecording
-                                  ? Icons.mic
-                                  : hasText
-                                      ? Icons.send_rounded
-                                      : Icons.mic,
-                              color: Colors.white,
-                              size: 22,
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+  Widget _buildInputBar(bool busy) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
+        child: _isRecording ? _buildRecBar() : _buildIdleBar(busy),
       ),
     );
   }
 
-  void _showAttachmentMenu() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        height: 240,
-        margin: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 3,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                children: [
-                  _attachItem(Icons.photo, Colors.purple, 'معرض الصور',
-                      onTap: () => _pickImage(ImageSource.gallery)),
-                  _attachItem(Icons.camera_alt, Colors.pink, 'الكاميرا',
-                      onTap: () => _pickImage(ImageSource.camera)),
-                  _attachItem(Icons.insert_drive_file, Colors.indigo, 'مستند'),
-                  _attachItem(Icons.headphones, Colors.orange, 'صوت'),
-                  _attachItem(Icons.location_on, Color(0xFF00897B), 'الموقع'),
-                  _attachItem(Icons.person, Colors.blue, 'جهة اتصال'),
-                ],
-              ),
-            ),
-          ],
-        ),
+  Widget _buildRecBar() => Row(
+    children: [
+      GestureDetector(
+        onTap: _stopAndSend,
+        child: const CircleAvatar(
+            radius: 24, backgroundColor: _kPrimary, child: Icon(Icons.send, color: Colors.white)),
       ),
-    );
-  }
-
-  Widget _attachItem(IconData icon, Color color, String label, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pop(context);
-        if (onTap != null) onTap();
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(backgroundColor: color, radius: 26, child: Icon(icon, color: Colors.white, size: 22)),
-          const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.black54)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAdminActionStrip() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton.icon(
-            onPressed: _onAdminSendBookingInvite,
-            icon: const Icon(Icons.calendar_month, color: Colors.orange, size: 18),
-            label: const Text('دعوة حجز', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
+      const SizedBox(width: 8),
+      Expanded(
+        child: Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(24)),
+          child: Row(
+            children: [
+              const _PulsingDot(),
+              const SizedBox(width: 10),
+              Text(_fmtSecs(_recSecs),
+                  style: const TextStyle(
+                      color: Colors.redAccent, fontWeight: FontWeight.bold)),
+              const Spacer(),
+              const Text('جاري التسجيل…',
+                  style: TextStyle(color: Colors.grey, fontSize: 13)),
+            ],
           ),
-          TextButton.icon(
-            onPressed: _onAdminSendProductLink,
-            icon: const Icon(Icons.local_pharmacy, color: _primaryGreen, size: 18),
-            label: const Text('إرسال وصفة', style: TextStyle(color: _primaryGreen, fontWeight: FontWeight.bold)),
-          ),
-        ],
+        ),
       ),
-    );
-  }
+      const SizedBox(width: 8),
+      GestureDetector(
+        onTap: _cancelRecording,
+        child: const CircleAvatar(
+            radius: 24,
+            backgroundColor: Colors.redAccent,
+            child: Icon(Icons.delete, color: Colors.white)),
+      ),
+    ],
+  );
+
+  Widget _buildIdleBar(bool busy) => Row(
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      Expanded(
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(24)),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.attach_file, color: Colors.grey),
+                onPressed: () => _pickImage(ImageSource.gallery),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _msgCtrl,
+                  minLines: 1,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _sendMessage(),
+                  decoration: const InputDecoration(
+                    hintText: 'اكتب رسالتك…',
+                    hintStyle: TextStyle(color: Colors.grey),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  onChanged: (t) => setState(() => _isTyping = t.trim().isNotEmpty),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.camera_alt, color: Colors.grey),
+                onPressed: () => _pickImage(ImageSource.camera),
+              ),
+            ],
+          ),
+        ),
+      ),
+      const SizedBox(width: 8),
+      GestureDetector(
+        onTap: () => _isTyping ? _sendMessage() : _startRecording(),
+        child: CircleAvatar(
+          radius: 24,
+          backgroundColor: _kPrimary,
+          child: busy
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2))
+              : Icon(_isTyping ? Icons.send : Icons.mic, color: Colors.white),
+        ),
+      ),
+    ],
+  );
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SWIPEABLE BUBBLE WRAPPER (Phase 3: Swipe-to-Reply)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-class _SwipeableBubble extends StatefulWidget {
-  final Map<String, dynamic> message;
-  final Map<String, dynamic>? quotedMsg;
+class _Bubble extends StatelessWidget {
+  final MessageModel msg;
   final bool isMe;
-  final String? currentUserId;
-  final Color primaryGreen;
-  final Color accentGreen;
-  final Color lightGreen;
-  final GlobalKey bubbleKey;                                    // Phase 5
-  final Function(Map<String, dynamic>) onSwipe;
-  final Function(Map<String, dynamic>) onLongPress;            // Phase 5
-  final Function(Map<String, dynamic>) onJoinCall;
-  final Function(Map<String, dynamic>) onAddToCart;
-  final VoidCallback onBooking;
+  final VoidCallback onLongPress;
+  final VoidCallback onJoinCall;
 
-  const _SwipeableBubble({
-    super.key,
-    required this.message,
-    this.quotedMsg,
+  const _Bubble({
+    required this.msg,
     required this.isMe,
-    required this.currentUserId,
-    required this.primaryGreen,
-    required this.accentGreen,
-    required this.lightGreen,
-    required this.bubbleKey,
-    required this.onSwipe,
     required this.onLongPress,
     required this.onJoinCall,
-    required this.onAddToCart,
-    required this.onBooking,
-  });
-
-  @override
-  State<_SwipeableBubble> createState() => _SwipeableBubbleState();
-}
-
-class _SwipeableBubbleState extends State<_SwipeableBubble> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  double _dragOffset = 0;
-  bool _triggered = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 150));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _onDragUpdate(DragUpdateDetails d) {
-    setState(() {
-      _dragOffset = math.max(0, math.min(_dragOffset + d.delta.dx, 70));
-    });
-    if (_dragOffset >= 55 && !_triggered) {
-      _triggered = true;
-      HapticFeedback.lightImpact();
-    }
-  }
-
-  void _onDragEnd(DragEndDetails d) {
-    if (_dragOffset >= 55) {
-      widget.onSwipe(widget.message);
-    }
-    setState(() {
-      _dragOffset = 0;
-      _triggered = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPress: () => widget.onLongPress(widget.message), // Phase 5
-      onHorizontalDragUpdate: _onDragUpdate,
-      onHorizontalDragEnd: _onDragEnd,
-      child: Transform.translate(
-        offset: Offset(_dragOffset * (widget.isMe ? -1 : 1), 0),
-        child: Stack(
-          children: [
-            // Reply icon that appears on swipe
-            if (_dragOffset > 15)
-              Positioned(
-                left: widget.isMe ? 12 : null,
-                right: widget.isMe ? null : 12,
-                top: 0, bottom: 0,
-                child: Center(
-                  child: Opacity(
-                    opacity: (_dragOffset / 55).clamp(0, 1),
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.grey[400],
-                      child: const Icon(Icons.reply, color: Colors.white, size: 16),
-                    ),
-                  ),
-                ),
-              ),
-            _WhatsAppBubble(
-              key: widget.bubbleKey,         // Phase 5: used for positioning
-              message: widget.message,
-              quotedMsg: widget.quotedMsg,
-              isMe: widget.isMe,
-              currentUserId: widget.currentUserId,
-              primaryGreen: widget.primaryGreen,
-              accentGreen: widget.accentGreen,
-              lightGreen: widget.lightGreen,
-              onJoinCall: widget.onJoinCall,
-              onAddToCart: widget.onAddToCart,
-              onBooking: widget.onBooking,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// WHATSAPP BUBBLE (Phase 2 + Phase 3)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-class _WhatsAppBubble extends StatelessWidget {
-  final Map<String, dynamic> message;
-  final Map<String, dynamic>? quotedMsg;
-  final bool isMe;
-  final String? currentUserId;
-  final Color primaryGreen;
-  final Color accentGreen;
-  final Color lightGreen;
-  final Function(Map<String, dynamic>) onJoinCall;
-  final Function(Map<String, dynamic>) onAddToCart;
-  final VoidCallback onBooking;
-
-  const _WhatsAppBubble({
-    super.key,
-    required this.message,
-    this.quotedMsg,
-    required this.isMe,
-    required this.currentUserId,
-    required this.primaryGreen,
-    required this.accentGreen,
-    required this.lightGreen,
-    required this.onJoinCall,
-    required this.onAddToCart,
-    required this.onBooking,
   });
 
   @override
   Widget build(BuildContext context) {
-    final type    = message['message_type'] ?? 'text';
-    final content = message['content'] ?? '';
-    final meta    = (message['metadata'] as Map<String, dynamic>?) ?? {};
-    final status  = message['status'] ?? 'sent';
-    final timeStr = message['created_at'] != null
-        ? DateFormat('H:mm').format(DateTime.parse(message['created_at']).toLocal())
+    final time = msg.createdAt != null
+        ? DateFormat('h:mm a').format(msg.createdAt!.toLocal())
         : '';
-
-    final bubbleColor = isMe ? const Color(0xFFE7FFDB) : Colors.white;
-
-    Widget innerContent;
-    switch (type) {
-      case 'image':
-        innerContent = _buildImageContent(context, content);
-        break;
-      case 'audio':
-        innerContent = VoiceMessageWidget(url: content, isMe: isMe, accentColor: accentGreen);
-        break;
-      case 'call_invite':
-        innerContent = _buildCallInvite(content, meta);
-        break;
-      case 'booking_invite':
-        innerContent = _buildBookingCard(content);
-        break;
-      case 'product_link':
-        innerContent = _buildProductCard(content, meta);
-        break;
-      case 'deleted':
-        innerContent = Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.block, size: 16, color: Colors.grey[500]),
-            const SizedBox(width: 6),
-            Text(
-              'تم حذف هذه الرسالة',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        );
-        break;
-      default:
-        innerContent = Text(
-          content,
-
-          style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.4),
-        );
-    }
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-        child: CustomPaint(
-          painter: _BubbleTailPainter(isMe: isMe, color: bubbleColor),
-          child: Container(
-            margin: EdgeInsets.only(
-              top: 3, bottom: 3,
-              left: isMe ? 18 : 6,
-              right: isMe ? 6 : 18,
+      child: GestureDetector(
+        onLongPress: onLongPress,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          constraints: const BoxConstraints(maxWidth: 300),
+          decoration: BoxDecoration(
+            color: isMe ? _kSender : _kReceiver,
+            border: msg.type == MessageType.audio 
+                ? Border.all(color: _kPrimary.withValues(alpha: 0.1), width: 1)
+                : null,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(18),
+              topRight: const Radius.circular(18),
+              bottomLeft: Radius.circular(isMe ? 18 : 0),
+              bottomRight: Radius.circular(isMe ? 0 : 18),
             ),
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-            decoration: BoxDecoration(
-              color: bubbleColor,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(14),
-                topRight: const Radius.circular(14),
-                bottomLeft: Radius.circular(isMe ? 14 : 0),
-                bottomRight: Radius.circular(isMe ? 0 : 14),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 4, offset: const Offset(0, 2)),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildBubbleContent(),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(time,
+                      style: const TextStyle(
+                          fontSize: 10, color: Colors.grey)),
+                  if (isMe) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.done_all, size: 13, color: Colors.blue),
+                  ],
+                ],
               ),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 4, offset: const Offset(0, 2))],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBubbleContent() {
+    switch (msg.type) {
+      case MessageType.image:
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            msg.content,
+            width: 220,
+            fit: BoxFit.cover,
+            loadingBuilder: (_, child, prog) => prog == null
+                ? child
+                : const SizedBox(
+                    width: 220, height: 150,
+                    child: Center(child: CircularProgressIndicator())),
+            errorBuilder: (_, _, _) => const SizedBox(
+              width: 220, height: 120,
+              child: Icon(Icons.broken_image, color: Colors.grey, size: 48)),
+          ),
+        );
+      
+      case MessageType.audio:
+        return _AudioPlayer(url: msg.content, isMe: isMe);
+
+      case MessageType.callInvite:
+        final accent = isMe ? _kPrimary : Colors.redAccent;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Quoted message box (Phase 3)
-                if (quotedMsg != null && quotedMsg!.isNotEmpty)
-                  _buildQuotedBox(quotedMsg!),
-                innerContent,
-                // Timestamp + Ticks (Phase 2 + 3)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: accent.withValues(alpha: 0.15),
+                  child: Icon(
+                    msg.content.contains('فيديو') ? Icons.videocam : Icons.call,
+                    color: accent, size: 20),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(timeStr, style: TextStyle(fontSize: 10, color: Colors.black.withValues(alpha: 0.45))),
-                      if (isMe) ...[
-                        const SizedBox(width: 3),
-                        _buildTicks(status),
-                      ]
+                      Text(msg.content,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: accent)),
+                      Text(isMe ? 'مكالمة صادرة' : 'مكالمة فائتة',
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.grey)),
                     ],
                   ),
                 ),
-                // Reactions Badge (Phase 6)
-                if (message['reactions'] != null && (message['reactions'] as Map).isNotEmpty)
-                   _buildReactionsBadge(message['reactions'] as Map),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ── Phase 6: Reactions UI ──
-  Widget _buildReactionsBadge(Map<dynamic, dynamic> reactions) {
-    if (reactions.isEmpty) return const SizedBox.shrink();
-
-    // Sum up total reactions
-    int totalCount = 0;
-    List<String> emojiList = [];
-    reactions.forEach((emoji, users) {
-      if (users is List) {
-        totalCount += users.length;
-        emojiList.add(emoji.toString());
-      }
-    });
-
-    if (totalCount == 0) return const SizedBox.shrink();
-
-    return Transform.translate(
-      offset: const Offset(4, 8), // slightly pop out of the bubble corner
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(color: Colors.grey[200]!, width: 0.5),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Display unique emojis (max 3 for clean look)
-            ...emojiList.take(3).map((e) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: Text(e, style: const TextStyle(fontSize: 13)),
-            )),
-            if (totalCount > 1)
-              Padding(
-                padding: const EdgeInsets.only(left: 3),
-                child: Text(
-                  '$totalCount',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[700], fontWeight: FontWeight.bold),
+            if (!isMe) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onJoinCall,
+                  icon: const Icon(Icons.call, size: 16),
+                  label: const Text('انضمام الآن',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
                 ),
               ),
+            ],
           ],
-        ),
-      ),
-    );
-  }
-
-  // --- Quoted Box ---
-  Widget _buildQuotedBox(Map<String, dynamic> quoted) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(8),
-        border: Border(left: BorderSide(color: accentGreen, width: 3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            quoted['sender_id'] == currentUserId ? 'أنت' : 'المعالج',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: accentGreen),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            _getPreview(quoted),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: Colors.black54),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _getPreview(Map<String, dynamic> m) {
-    switch (m['message_type']) {
-      case 'image':   return '📷 صورة';
-      case 'audio':   return '🎤 رسالة صوتية';
-      default:        return m['content'] ?? '...';
-    }
-  }
-
-  // --- WhatsApp Ticks (Phase 3) ---
-  Widget _buildTicks(String status) {
-    switch (status) {
-      case 'read':
-        return const Icon(Icons.done_all, size: 15, color: Color(0xFF53BDEB)); // أزرق
-      case 'delivered':
-        return const Icon(Icons.done_all, size: 15, color: Colors.grey); // رمادي مزدوج
-      default: // sent
-        return const Icon(Icons.done, size: 15, color: Colors.grey); // رمادي واحد
-    }
-  }
-
-  Widget _buildImageContent(BuildContext context, String url) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => _FullscreenImageViewer(url: url),
-          ),
         );
-      },
-      child: Hero(
-        tag: url,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            url,
-            fit: BoxFit.cover,
-            loadingBuilder: (ctx, child, progress) =>
-                progress == null ? child : const Center(child: CircularProgressIndicator()),
-            errorBuilder: (e, err, stack) => const Icon(Icons.broken_image, size: 60, color: Colors.grey),
-          ),
-        ),
-      ),
-    );
-  }
 
-  // --- Call Invite ---
-  Widget _buildCallInvite(String content, Map<String, dynamic> meta) {
-    final isVideo = meta['is_video'] ?? true;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(children: [
-          Icon(isVideo ? Icons.videocam : Icons.call, color: Colors.blueAccent, size: 22),
-          const SizedBox(width: 8),
-          Expanded(child: Text(content, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
-        ]),
-        if (currentUserId != null) ...[
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () => onJoinCall(meta),
-              icon: const Icon(Icons.login, size: 16),
-              label: const Text('انضمام للمكالمة'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 8)),
-            ),
-          ),
-        ]
-      ],
-    );
-  }
-
-  // --- Booking Card ---
-  Widget _buildBookingCard(String content) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Row(children: [
-          Icon(Icons.event_available, color: Colors.orange, size: 18),
-          SizedBox(width: 6),
-          Text('دعوة حجز جلسة', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold, fontSize: 13)),
-        ]),
-        const SizedBox(height: 6),
-        Text(content, style: const TextStyle(fontSize: 13)),
-        const SizedBox(height: 10),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: onBooking,
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange, foregroundColor: Colors.white),
-            child: const Text('احجز الموعد الآن', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // --- Product Card ---
-  Widget _buildProductCard(String content, Map<String, dynamic> meta) {
-    final price = meta['price']?.toString() ?? '0';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(children: [
-          const Icon(Icons.medication_liquid_rounded, color: Colors.white, size: 18),
-          const SizedBox(width: 6),
-          const Text('علاج موصى به', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-        ]),
-        const SizedBox(height: 6),
-        Text(content, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-          child: Row(children: [
-            Expanded(child: Text(meta['name_ar'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
-            Text('$price د.م', style: const TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold)),
-          ]),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () => onAddToCart(meta),
-            icon: const Icon(Icons.add_shopping_cart, size: 16),
-            label: const Text('إضافة للسلة'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: primaryGreen),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// BUBBLE TAIL PAINTER (WhatsApp tail shape)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-class _BubbleTailPainter extends CustomPainter {
-  final bool isMe;
-  final Color color;
-
-  const _BubbleTailPainter({required this.isMe, required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
-    final path = Path();
-
-    if (isMe) {
-      // Right tail
-      path.moveTo(size.width, 0);
-      path.lineTo(size.width + 8, 0);
-      path.quadraticBezierTo(size.width + 8, 16, size.width, 14);
-      path.close();
-    } else {
-      // Left tail
-      path.moveTo(0, 0);
-      path.lineTo(-8, 0);
-      path.quadraticBezierTo(-8, 16, 0, 14);
-      path.close();
+      case MessageType.text:
+        return Text(
+          msg.content,
+          style: const TextStyle(color: Colors.black87, fontSize: 15, height: 1.4),
+        );
     }
-    canvas.drawPath(path, paint);
   }
-
-  @override
-  bool shouldRepaint(_BubbleTailPainter old) => old.isMe != isMe || old.color != color;
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// VOICE MESSAGE PLAYER WIDGET
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-class VoiceMessageWidget extends StatefulWidget {
+class _AudioPlayer extends StatefulWidget {
   final String url;
   final bool isMe;
-  final Color accentColor;
-
-  const VoiceMessageWidget({
-    super.key,
-    required this.url,
-    required this.isMe,
-    required this.accentColor,
-  });
+  const _AudioPlayer({required this.url, required this.isMe});
 
   @override
-  State<VoiceMessageWidget> createState() => _VoiceMessageWidgetState();
+  State<_AudioPlayer> createState() => _AudioPlayerState();
 }
 
-class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
-  final AudioPlayer _player = AudioPlayer();
-  bool _isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
+class _AudioPlayerState extends State<_AudioPlayer> {
+  final _player = AudioPlayer();
+  bool _playing = false;
+  Duration _dur = Duration.zero;
+  Duration _pos = Duration.zero;
 
   @override
   void initState() {
     super.initState();
-    _player.onDurationChanged.listen((d) => setState(() => _duration = d));
-    _player.onPositionChanged.listen((p) => setState(() => _position = p));
-    _player.onPlayerComplete.listen((_) => setState(() {
-      _isPlaying = false;
-      _position = Duration.zero;
-    }));
+    _player.onPlayerStateChanged
+        .listen((s) { if (mounted) setState(() => _playing = s == PlayerState.playing); });
+    _player.onDurationChanged
+        .listen((d) { if (mounted) setState(() => _dur = d); });
+    _player.onPositionChanged
+        .listen((p) { if (mounted) setState(() => _pos = p); });
   }
 
   @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
-  }
-
-  void _togglePlay() async {
-    if (_isPlaying) {
-      await _player.pause();
-    } else {
-      await _player.play(UrlSource(widget.url));
-    }
-    setState(() => _isPlaying = !_isPlaying);
-  }
+  void dispose() { _player.dispose(); super.dispose(); }
 
   String _fmt(Duration d) {
-    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$m:$s';
+    String z(int n) => n.toString().padLeft(2, '0');
+    return '${z(d.inMinutes % 60)}:${z(d.inSeconds % 60)}';
   }
 
   @override
   Widget build(BuildContext context) {
-    final maxVal = _duration.inMilliseconds.toDouble();
-    final curVal = _position.inMilliseconds.toDouble().clamp(0.0, maxVal > 0 ? maxVal : 1.0);
-
-    return SizedBox(
-      width: 210,
+    final c = widget.isMe ? _kPrimary : Colors.grey.shade700;
+    return Container(
+      width: 220,
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: widget.accentColor,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 18),
-              onPressed: _togglePlay,
-            ),
+          IconButton(
+            icon: Icon(_playing ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                color: c, size: 40),
+            onPressed: () async {
+              try {
+                if (_playing) {
+                  await _player.pause();
+                } else {
+                  // تحسين تشغيل الصوت في الويب عن طريق إجبار المشغل على استخدام الـ URL مباشرة
+                  await _player.setSource(UrlSource(widget.url));
+                  await _player.resume();
+                }
+              } catch (e) {
+                debugPrint('Audio error: $e');
+              }
+            },
           ),
-          const SizedBox(width: 6),
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SliderTheme(
-                  data: SliderTheme.of(context).copyWith(
-                    trackHeight: 2,
-                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
-                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
-                    activeTrackColor: widget.accentColor,
-                    inactiveTrackColor: Colors.grey[300],
-                    thumbColor: widget.accentColor,
-                  ),
-                  child: Slider(
-                    value: curVal,
-                    max: maxVal > 0 ? maxVal : 1.0,
-                    onChanged: (v) => _player.seek(Duration(milliseconds: v.toInt())),
-                  ),
+                LinearProgressIndicator(
+                  value: _dur.inMilliseconds > 0 ? _pos.inMilliseconds / _dur.inMilliseconds : 0,
+                  backgroundColor: c.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation(c),
                 ),
-                Text(_fmt(_position), style: TextStyle(fontSize: 10, color: Colors.black.withValues(alpha: 0.45))),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(_fmt(_pos), style: TextStyle(fontSize: 10, color: c)),
+                    Text(_fmt(_dur), style: TextStyle(fontSize: 10, color: c)),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(width: 4),
-          const CircleAvatar(radius: 14, backgroundColor: Colors.black12, child: Icon(Icons.person, size: 14, color: Colors.grey)),
+          const SizedBox(width: 8),
         ],
       ),
     );
   }
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// FULL SCREEN IMAGE VIEWER (Phase 12)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class _PulsingDot extends StatefulWidget {
+  const _PulsingDot();
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
 
-class _FullscreenImageViewer extends StatelessWidget {
-  final String url;
-  const _FullscreenImageViewer({required this.url});
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 600))
+    ..repeat(reverse: true);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-      ),
-      body: Center(
-        child: Hero(
-          tag: url,
-          child: InteractiveViewer(
-            panEnabled: true,
-            minScale: 0.5,
-            maxScale: 4.0,
-            child: Image.network(
-              url,
-              fit: BoxFit.contain,
-              width: double.infinity,
-              height: double.infinity,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) => FadeTransition(
+    opacity: _ctrl,
+    child: Container(
+      width: 12, height: 12,
+      decoration: const BoxDecoration(
+          color: Colors.redAccent, shape: BoxShape.circle),
+    ),
+  );
 }
