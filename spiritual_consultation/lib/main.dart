@@ -4,8 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'screens/login_screen.dart';
 import 'screens/admin_dashboard_screen.dart';
-import 'screens/ai_intake_screen.dart';
-import 'screens/whatsapp_home.dart';
+import 'screens/chat_screen.dart';
 import 'providers/auth_provider.dart';
 
 void main() async {
@@ -55,16 +54,11 @@ class BioParaSpiritualApp extends StatelessWidget {
 /// - إذا كان مُسجّل دخوله وأكمل الـ Intake → شاشة الشات
 /// - إذا كان مُسجّل دخوله ولم يكمل الـ Intake → شاشة المساعد الذكي
 /// - إذا لم يكن مُسجّلاً → شاشة تسجيل الدخول
-class AuthWrapper extends ConsumerStatefulWidget {
+class AuthWrapper extends ConsumerWidget {
   const AuthWrapper({super.key});
 
   @override
-  ConsumerState<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends ConsumerState<AuthWrapper> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
 
     return authState.when(
@@ -78,8 +72,8 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
             return const AdminDashboardScreen();
           }
 
-          // للمرضى: فحص إذا أكملوا الـ Intake Form
-          return _PatientRouter(userId: userId);
+          // للمرضى: التوجه مباشرة للشات
+          return ChatScreen(conversationId: userId);
         }
         return const LoginScreen();
       },
@@ -93,65 +87,5 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
       ),
       error: (e, st) => const LoginScreen(),
     );
-  }
-}
-
-/// ويدجت يفحص إذا المريض أكمل الـ Intake ويوجهه بناءً على ذلك
-class _PatientRouter extends StatefulWidget {
-  final String userId;
-  const _PatientRouter({required this.userId});
-
-  @override
-  State<_PatientRouter> createState() => _PatientRouterState();
-}
-
-class _PatientRouterState extends State<_PatientRouter> {
-  bool _loading = true;
-  bool _intakeCompleted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkIntakeStatus();
-  }
-
-  Future<void> _checkIntakeStatus() async {
-    try {
-      final result = await Supabase.instance.client
-          .from('conversations')
-          .select('intake_completed')
-          .eq('id', widget.userId)
-          .maybeSingle();
-
-      if (mounted) {
-        setState(() {
-          _intakeCompleted = result?['intake_completed'] == true;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint('❌ Error checking intake status: $e');
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFFF0F7F0),
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
-          ),
-        ),
-      );
-    }
-
-    if (_intakeCompleted) {
-      return WhatsAppHome(userId: widget.userId);
-    }
-
-    return AiIntakeScreen(userId: widget.userId);
   }
 }

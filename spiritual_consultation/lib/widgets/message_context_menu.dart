@@ -163,30 +163,6 @@ class _MessageContextOverlay extends StatelessWidget {
                     },
                   ),
                 _MenuAction(
-                  icon: Icons.forward,
-                  label: 'إعادة توجيه',
-                  color: Colors.blueGrey,
-                  onTap: () {
-                    Navigator.pop(context);
-                    debugPrint('Forward msg ${message['id']}');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('إعادة التوجيه — قريباً'), behavior: SnackBarBehavior.floating),
-                    );
-                  },
-                ),
-                _MenuAction(
-                  icon: Icons.push_pin_outlined,
-                  label: 'تثبيت',
-                  color: Colors.blueGrey,
-                  onTap: () {
-                    Navigator.pop(context);
-                    debugPrint('Pin msg ${message['id']}');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('التثبيت — قريباً'), behavior: SnackBarBehavior.floating),
-                    );
-                  },
-                ),
-                _MenuAction(
                   icon: Icons.delete_outline,
                   label: 'حذف',
                   color: _red,

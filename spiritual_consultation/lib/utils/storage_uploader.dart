@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter/foundation.dart';
 
 class StorageUploader {
   static const String baseLocalPath = r'C:\Users\msi\Desktop\Ecommerce BioPara\clerk-nextjs\public\images';
@@ -21,7 +22,7 @@ class StorageUploader {
       final directory = Directory(p.join(baseLocalPath, folder));
       
       if (!await directory.exists()) {
-        print('المجلد غير موجود: ${directory.path}');
+        debugPrint('المجلد غير موجود: ${directory.path}');
         continue;
       }
 
@@ -51,14 +52,14 @@ class StorageUploader {
                 .update({'image_url': publicUrl})
                 .ilike('name', '%$productNamePart%');
 
-            print('تم رفع وتحديث: $fileName');
+            debugPrint('تم رفع وتحديث: $fileName');
           } catch (e) {
-            print('خطأ في رفع $fileName: $e');
+            debugPrint('خطأ في رفع $fileName: $e');
           }
         }
       }
     }
-    print('✅ اكتملت عملية الرفع والتحديث!');
+    debugPrint('✅ اكتملت عملية الرفع والتحديث!');
   }
 
   static bool _isImage(String path) {

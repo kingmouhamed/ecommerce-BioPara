@@ -23,9 +23,11 @@ class Product {
       name: map['name']?.toString() ?? 'منتج غير معروف',
       description: map['description']?.toString() ?? '',
       price: (map['price'] as num?)?.toDouble() ?? 0.0,
-      imageUrl: map['image_url']?.toString(),
+      // نتحقق من كلا الاسمين لضمان التوافق
+      imageUrl: (map['image_url'] ?? map['imageUrl'])?.toString(),
       category: map['category']?.toString() ?? 'عام',
-      stock: map['stock'] as int? ?? 0,
+      // نستخدم اسم العمود الموجود في قاعدة بياناتك stock_quantity
+      stock: (map['stock_quantity'] ?? map['stock']) as int? ?? 0,
     );
   }
 
@@ -37,7 +39,7 @@ class Product {
       'price': price,
       'image_url': imageUrl,
       'category': category,
-      'stock': stock,
+      'stock_quantity': stock,
     };
   }
 }

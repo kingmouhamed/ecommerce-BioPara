@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/profile_provider.dart';
+import '../models/profile_model.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -28,7 +29,7 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 20),
               _buildInfoSection(profile),
               const SizedBox(height: 30),
-              _buildActionButtons(context),
+              _buildActionButtons(context, ref, profile),
             ],
           ),
         ),
@@ -38,7 +39,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(profile, String? email) {
+  Widget _buildHeader(Profile? profile, String? email) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -68,7 +69,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoSection(profile) {
+  Widget _buildInfoSection(Profile? profile) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
@@ -106,7 +107,7 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref, Profile? profile) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -114,9 +115,7 @@ class ProfileScreen extends ConsumerWidget {
           _buildActionButton(
             icon: Icons.edit,
             label: 'تعديل الملف الشخصي',
-            onTap: () {
-              // TODO: Implement edit profile
-            },
+            onTap: () => _showEditDialog(context, ref, profile),
           ),
           const SizedBox(height: 12),
           _buildActionButton(
@@ -143,6 +142,77 @@ class ProfileScreen extends ConsumerWidget {
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
       tileColor: Colors.white,
+    );
+  }
+
+  void _showEditDialog(BuildContext context, WidgetRef ref, Profile? profile) {
+    final nameController = TextEditingController(text: profile?.fullName);
+    final bioController = TextEditingController(text: profile?.bio);
+    final phoneController = TextEditingController(text: profile?.phone);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('تعديل الملف الشخصي', style: GoogleFonts.tajawal(fontWeight: FontWeight.bold)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'الاسم الكامل'),
+              ),
+              TextField(
+                controller: bioController,
+                decoration: const InputDecoration(labelText: 'نبذة تعريفية'),
+              ),
+              TextField(
+                controller: phoneController,
+                decoration: const InputDecoration(labelText: 'رقم الهاتف'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D6E6E), foregroundColor: Colors.white),
+            onPressed: () async {
+              final supabase = Supabase.instance.client;
+              final userId = supabase.auth.currentUser?.id;
+              if (userId == null) return;
+
+              try {
+                // استخدام upsert بدلاً من update لضمان الإنشاء إذا لم يكن موجوداً
+                await supabase.from('profiles').upsert({
+                  'id': userId,
+                  'full_name': nameController.text.trim(),
+                  'bio': bioController.text.trim(),
+                  'phone': phoneController.text.trim(),
+                });
+
+                ref.invalidate(profileProvider);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('تم حفظ التعديلات بنجاح'), backgroundColor: Colors.green),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('خطأ في التحديث: $e'), backgroundColor: Colors.red),
+                  );
+                }
+              }
+            },
+            child: const Text('حفظ'),
+          ),
+        ],
+      ),
     );
   }
 }
