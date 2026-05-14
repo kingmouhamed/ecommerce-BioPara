@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:spiritual_consultation/main.dart';
-import 'package:spiritual_consultation/screens/chat_screen.dart';
+import 'package:spiritual_consultation/patient/screens/chat_screen.dart';
 
 void main() {
   group('BioPara Spiritual App Tests', () {
