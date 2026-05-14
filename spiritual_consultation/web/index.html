@@ -29,8 +29,27 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>spiritual_consultation</title>
+  <title>BioPara</title>
   <link rel="manifest" href="manifest.json">
+
+  <!-- Arabic Google Fonts — Tajawal + Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
+      direction: rtl;
+      background-color: #F5F0E8;
+    }
+    /* Ensure Flutter canvas renders correctly */
+    flt-glass-pane, flt-scene, flt-scene-host {
+      font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
+    }
+  </style>
 </head>
 <body>
   <!--

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "788415551640",
+    "project_id": "biopara-spiritual",
+    "storage_bucket": "biopara-spiritual.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788415551640:android:1ad549ee07d2ba2efc98ed",
+        "android_client_info": {
+          "package_name": "com.example.spiritual_consultation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlsP0e-RvQl7byrkM6iD7exoFfOhJEFno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
