@@ -5,10 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'admin/screens/admin_login_screen.dart';
 import 'admin/screens/admin_dashboard_screen.dart';
+import 'admin/debug_helper.dart'; // ✅ Debug helper
 import 'core/providers/auth_provider.dart';
+import 'core/utils/custom_error_screen.dart';
+import 'core/utils/app_logger.dart';
+import 'core/services/cache_service.dart';
 
 // ── Load Arabic fonts locally (fixes Web CanvasKit garbled text) ──────────
 Future<void> _loadArabicFonts() async {
@@ -36,6 +41,14 @@ Future<void> _loadArabicFonts() async {
 // ── Main ───────────────────────────────────────────────────
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+  await CacheService().init();
+
+  // Set global custom error rendering widget
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    AppLogger.e('Unhandled Admin UI Render Error intercepted', details.exception, details.stack);
+    return CustomErrorScreen(errorDetails: details);
+  };
 
   // Prevent GoogleFonts from fetching from internet (use local assets)
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -49,11 +62,22 @@ void main() async {
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
     debugPrint('✅ Supabase initialized (Admin App)');
+    
+    // ── Check Database Schema ───────────────────
+    await debugCheckSchema(); 
+    // ────────────────────────────────────────────
   } catch (e) {
     debugPrint('❌ Supabase init error: $e');
   }
 
-  runApp(const ProviderScope(child: BioParaAdminApp()));
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('ar'), Locale('fr')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('ar'),
+      child: const ProviderScope(child: BioParaAdminApp()),
+    ),
+  );
 }
 
 class BioParaAdminApp extends StatelessWidget {
@@ -64,6 +88,9 @@ class BioParaAdminApp extends StatelessWidget {
     return MaterialApp(
       title: 'BioPara Admin',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       theme: ThemeData(
         primaryColor: const Color(0xFF2E7D32),
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2E7D32)),
@@ -72,10 +99,6 @@ class BioParaAdminApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
         useMaterial3: true,
-      ),
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child ?? const SizedBox.shrink(),
       ),
       home: const AdminAuthWrapper(),
     );

@@ -1,4 +1,4 @@
-﻿// lib/screens/admin_reports_tab.dart
+// lib/screens/admin_reports_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,11 +11,31 @@ final reportsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   try {
     final rows = await db
         .from('conversations')
-        .select('id, patient_id, patient_report, report_generated_at, profiles!patient_id(full_name, avatar_url)')
+        .select('id, patient_id, patient_report, report_generated_at')
         .not('patient_report', 'is', null)
         .order('report_generated_at', ascending: false);
-    return List<Map<String, dynamic>>.from(rows as List);
-  } catch (_) {
+        
+    final result = <Map<String, dynamic>>[];
+    for (final r in rows) {
+      final pid = r['patient_id'] as String?;
+      Map<String, dynamic>? profile;
+      if (pid != null) {
+        try {
+          profile = await db
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', pid)
+              .maybeSingle();
+        } catch (_) {}
+      }
+      result.add({
+        ...Map<String, dynamic>.from(r as Map),
+        'profiles': profile,
+      });
+    }
+    return result;
+  } catch (e) {
+    debugPrint('ReportsProvider Error (missing columns?): $e');
     return [];
   }
 });
@@ -36,7 +56,8 @@ final reportStatsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
       if (scores.isNotEmpty) avgSentiment = scores.reduce((a, b) => a + b) / scores.length;
     }
     return {'total': total, 'avgSentiment': avgSentiment.toStringAsFixed(1)};
-  } catch (_) {
+  } catch (e) {
+    debugPrint('ReportStatsProvider Error: $e');
     return {'total': 0, 'avgSentiment': 'N/A'};
   }
 });

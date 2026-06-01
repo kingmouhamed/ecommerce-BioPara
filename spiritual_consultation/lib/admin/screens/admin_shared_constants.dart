@@ -1,13 +1,13 @@
-﻿// lib/screens/admin_shared_constants.dart
+// lib/screens/admin_shared_constants.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // ── ثوابت الألوان الموحدة ──────────────────────────────────────────
-const Color kAdminPrimary = Color(0xFF2E7D32);
-const Color kAdminTeal    = Color(0xFF0D6E6E);
+const Color kAdminPrimary = Color(0xFF2D4A2E);
+const Color kAdminTeal    = Color(0xFF3D5A3E);
 const Color kAdminBg      = Color(0xFFF5F0E8);
-const Color kAdminGold    = Color(0xFFC8A951);
+const Color kAdminGold    = Color(0xFFC8963E);
 const Color kAdminPurple  = Color(0xFF6A1B9A);
 
 // ── Providers المشتركة ───────────────────────────────────────────

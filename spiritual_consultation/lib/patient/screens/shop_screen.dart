@@ -1,12 +1,14 @@
+// lib/patient/screens/shop_screen.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'dart:async';
 import '../../core/providers/shop_provider.dart';
 import '../../core/providers/cart_provider.dart';
+import '../../core/providers/wishlist_provider.dart';
 import '../../core/models/product_model.dart';
 import 'cart_screen.dart';
+import 'product_detail_screen.dart';
 
 // ── COLORS & DESIGN SYSTEM ──────────────────────────────────
 const Color primary = Color(0xFF2D4A2E);
@@ -20,7 +22,6 @@ const Color inputBorder = Color(0xFFD4C9B0);
 const Color success = Color(0xFF2D7A4E);
 const Color danger = Color(0xFFB94040);
 const Color accent2 = Color(0xFFE8D5B0);
-const Color shadowColor = Color(0x15000000);
 
 class ShopScreen extends ConsumerStatefulWidget {
   const ShopScreen({super.key});
@@ -35,12 +36,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   final List<String> _categories = [
     'الكل 🌿',
     'أعشاب طبية 🌱',
-    'شاي اعشاب ðŸµ',
-    'Ù…Ùƒملات غذائية 💊',
-    'Ø²ÙŠÙˆت طبية 🫙',
-    'عسل طبيعي ðŸ¯'
+    'شاي اعشاب 🍵',
+    'مكملات غذائية 💊',
+    'زيوت طبية 🫙',
+    'عسل طبيعي 🍯',
   ];
-
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -54,7 +54,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
     final productsAsync = ref.watch(productsProvider);
     final cartCount = ref.watch(cartItemCount);
     final cartItems = ref.watch(cartProvider);
-    
+
     double totalPrice = 0;
     for (var item in cartItems) {
       totalPrice += item.productPrice * item.quantity;
@@ -68,7 +68,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
             controller: _scrollController,
             slivers: [
               const StoreHeaderWidget(),
-
               SliverToBoxAdapter(
                 child: Column(
                   children: [
@@ -79,7 +78,6 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                   ],
                 ),
               ),
-
               productsAsync.when(
                 data: (allProducts) {
                   final filteredProducts = allProducts.where((p) {
@@ -114,7 +112,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                         (context, index) => ProductCard(
                           product: filteredProducts[index],
                           index: index,
-                        ).animate().fade(delay: (index * 50).ms).slideY(begin: 0.1, curve: Curves.easeOutQuad),
+                        ),
                         childCount: filteredProducts.length,
                       ),
                     ),
@@ -139,19 +137,16 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                   child: Center(child: Text('خطأ: $err')),
                 ),
               ),
-              
               const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
-          
+
           if (cartCount > 0)
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
-              child: FloatingCartBar(count: cartCount, total: totalPrice)
-                  .animate()
-                  .slideY(begin: 1, end: 0, curve: Curves.easeOutBack, duration: 400.ms),
+              child: FloatingCartBar(count: cartCount, total: totalPrice),
             ),
         ],
       ),
@@ -176,7 +171,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           onChanged: (v) => setState(() => _searchQuery = v),
           style: GoogleFonts.tajawal(color: textPrimary, fontSize: 14),
           decoration: InputDecoration(
-            hintText: 'ابحث Ø¹Ù† أعشاب، Ø²ÙŠÙˆت، Ø£Ùˆ Ù…Ù†تجات Ø±Ùˆحية...',
+            hintText: 'ابحث عن أعشاب، زيوت، أو منتجات روحية...',
             hintStyle: GoogleFonts.tajawal(color: textSecondary, fontStyle: FontStyle.italic, fontSize: 13),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(vertical: 12),
@@ -193,7 +188,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
           ),
         ),
       ),
-    ).animate().fade(duration: 400.ms).slideY(begin: -0.2);
+    );
   }
 
   Widget _buildCategorySection(AsyncValue<List<Product>> productsAsync) {
@@ -213,18 +208,18 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 GestureDetector(
                   onTap: () => setState(() => _selectedCategory = cat),
                   child: AnimatedContainer(
-                    duration: 200.ms,
+                    duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
-                      gradient: isSelected 
-                        ? const LinearGradient(colors: [primary, primaryLight])
-                        : null,
+                      gradient: isSelected
+                          ? const LinearGradient(colors: [primary, primaryLight])
+                          : null,
                       color: isSelected ? null : Colors.white,
                       borderRadius: BorderRadius.circular(22),
                       border: isSelected ? null : Border.all(color: inputBorder),
-                      boxShadow: isSelected 
-                        ? [BoxShadow(color: accent.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))]
-                        : null,
+                      boxShadow: isSelected
+                          ? [BoxShadow(color: accent.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4))]
+                          : null,
                     ),
                     child: Text(
                       cat,
@@ -238,29 +233,27 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 ),
                 const SizedBox(height: 4),
                 if (!isSelected)
-                  Builder(
-                    builder: (context) {
-                      final count = productsAsync.when(
-                        data: (prods) {
-                          final cleanCat = cat.split(' ')[0];
-                          if (cleanCat == 'الكل') return prods.length;
-                          return prods.where((p) => p.category.contains(cleanCat)).length;
-                        },
-                        loading: () => 0,
-                        error: (err, stack) => 0,
-                      );
-                      return Text(
-                        "($count)",
-                        style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary),
-                      );
-                    }
-                  ),
+                  Builder(builder: (context) {
+                    final count = productsAsync.when(
+                      data: (prods) {
+                        final cleanCat = cat.split(' ')[0];
+                        if (cleanCat == 'الكل') return prods.length;
+                        return prods.where((p) => p.category.contains(cleanCat)).length;
+                      },
+                      loading: () => 0,
+                      error: (err, stack) => 0,
+                    );
+                    return Text(
+                      '($count)',
+                      style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary),
+                    );
+                  }),
               ],
             ),
           );
         },
       ),
-    ).animate().fade(delay: 200.ms).slideX(begin: 0.1);
+    );
   }
 
   Widget _buildSectionHeader(BuildContext context) {
@@ -290,11 +283,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text('عرض Ø§Ù„Ùƒل â†', style: GoogleFonts.tajawal(color: accent, fontSize: 14, fontWeight: FontWeight.bold)),
+              Text('عرض الكل ←', style: GoogleFonts.tajawal(color: accent, fontSize: 14, fontWeight: FontWeight.bold)),
             ],
           ),
           Text(
-            'Ø§Ù„Ù…Ù†تجات Ø§Ù„Ø£Ùƒثر مبيعاً',
+            'المنتجات الأكثر مبيعاً',
             style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary),
           ),
         ],
@@ -312,6 +305,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
   }
 }
 
+// ── Store App Bar ──────────────────────────────────────────────
 class StoreHeaderWidget extends StatelessWidget {
   const StoreHeaderWidget({super.key});
 
@@ -333,151 +327,40 @@ class StoreHeaderWidget extends StatelessWidget {
                 colors: [primary, primaryLight],
               ),
             ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: 0.05,
-                    child: Icon(Icons.eco, size: 300, color: Colors.white.withValues(alpha: 0.5)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
-                  child: Column(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 50, 20, 0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // سلة التسوق (Ø¹Ù„Ù‰ اليسار في RTL)
-                          Consumer(builder: (context, ref, _) {
-                            final count = ref.watch(cartItemCount);
-                            return GestureDetector(
-                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
-                              child: _buildIconBadge(Icons.shopping_cart_outlined, count, accent),
-                            );
-                          }),
-                          // Ø§Ù„Ø¹Ù†ÙˆØ§Ù† ÙÙŠ Ø§Ù„Ù…Ù†تصف
-                          Text(
-                            'متجر BioPara',
-                            style: GoogleFonts.cairo(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
-                          ),
-                          // Ø§Ù„ØªÙ†Ø¨ÙŠÙ‡ات Ùˆزر Ø§Ù„Ø±Ø¬Ùˆع (Ø¹Ù„Ù‰ Ø§Ù„ÙŠÙ…ÙŠÙ† في RTL)
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () => _showNotificationsSheet(context),
-                                child: _buildIconBadge(Icons.notifications_outlined, 3, Colors.red),
-                              ),
-                              const SizedBox(width: 15),
-                              GestureDetector(
-                                onTap: () => Navigator.maybePop(context),
-                                child: const Icon(
-                                  Icons.arrow_forward_rounded, // Ø³Ù‡م Ø§Ù„Ø±Ø¬Ùˆع Ø§Ù„Ù…Ù†اسب للـ RTL
-                                  color: Colors.white,
-                                  size: 28,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 4),
+                      Consumer(builder: (context, ref, _) {
+                        final count = ref.watch(cartItemCount);
+                        return GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen())),
+                          child: _buildIconBadge(Icons.shopping_cart_outlined, count, accent),
+                        );
+                      }),
                       Text(
-                        'أعشاب طبيعية أصيلة',
-                        style: GoogleFonts.tajawal(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
+                        'متجر BioPara',
+                        style: GoogleFonts.cairo(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
+                      ),
+                      GestureDetector(
+                        onTap: () => Navigator.maybePop(context),
+                        child: const Icon(Icons.arrow_back, color: Colors.white, size: 28),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showNotificationsSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(width: 40, height: 4, decoration: BoxDecoration(color: inputBorder, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 20),
-            Text('Ø§Ù„ØªÙ†Ø¨ÙŠÙ‡ات', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  _buildNotificationItem(
-                    'تم ØªØ£Ùƒيد طلبك #8234',
-                    'جاري ØªØ¬Ù‡يز Ø£Ø¹Ø´Ø§Ø¨Ùƒ الطبية وسيتم الشحن قريباً.',
-                    'Ù…Ù†ذ ١٠ دقائق',
-                    Icons.check_circle,
-                    success,
-                  ),
-                  _buildNotificationItem(
-                    'ØªØ°Ùƒير Ø¨Ù…Ùˆعد استشارة',
-                    'Ù„Ø¯ÙŠÙƒ استشارة ÙÙŠØ¯ÙŠÙˆ Ø§Ù„ÙŠÙˆم الساعة ٤:٣٠ مساءً.',
-                    'Ù…Ù†ذ ساعتين',
-                    Icons.calendar_today,
-                    accent,
-                  ),
-                  _buildNotificationItem(
-                    'Ø®ØµÙˆمات جديدة! 🌿',
-                    'استخدم ÙƒÙˆد BIOPARA Ù„Ù„Ø­ØµÙˆل Ø¹Ù„Ù‰ خصم إضافي.',
-                    'Ù…Ù†ذ ÙŠÙˆم Ùˆاحد',
-                    Icons.local_offer,
-                    primary,
+                  const SizedBox(height: 4),
+                  Text(
+                    'أعشاب طبيعية أصيلة',
+                    style: GoogleFonts.tajawal(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNotificationItem(String title, String sub, String time, IconData icon, Color color) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: background.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: inputBorder.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 14, color: textPrimary)),
-                Text(sub, style: GoogleFonts.tajawal(fontSize: 12, color: textSecondary)),
-                const SizedBox(height: 4),
-                Text(time, style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary.withValues(alpha: 0.7))),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -492,14 +375,18 @@ class StoreHeaderWidget extends StatelessWidget {
             top: 0,
             child: Container(
               padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(color: badgeColor, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 1.5)),
+              decoration: BoxDecoration(
+                color: badgeColor,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 1.5),
+              ),
               constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
               child: Text(
                 '$count',
                 style: GoogleFonts.cairo(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-            ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(begin: const Offset(1, 1), end: const Offset(1.2, 1.2), duration: 1.seconds),
+            ),
           ),
       ],
     );
@@ -521,10 +408,12 @@ class WaveClipper extends CustomClipper<Path> {
     path.close();
     return path;
   }
+
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
+// ── Hero Banner Carousel ────────────────────────────────────────
 class HeroBannerCarousel extends StatefulWidget {
   const HeroBannerCarousel({super.key});
 
@@ -536,23 +425,27 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
+
   final List<Map<String, String>> _slides = [
-    {'title': 'Ø¹Ø±Ùˆض الموسم 🌿', 'subtitle': 'خصم ٢٠٪ Ø¹Ù„Ù‰ جميع الأعشاب'},
-    {'title': 'عسل السدر الطبيعي ðŸ¯', 'subtitle': 'Ø§Ù„Ø¢Ù† Ù…ØªÙˆفر Ø¨Ùƒميات Ù…Ø­Ø¯Ùˆدة'},
-    {'title': 'استشارة Ù…Ø¬Ø§Ù†ية ðŸ‘¨â€âš•️', 'subtitle': 'مع Ùƒل طلب ÙÙˆÙ‚ ٢٠٠ درهم'},
+    {'title': 'عروض الموسم 🌿', 'subtitle': 'خصم ٢٠٪ على جميع الأعشاب'},
+    {'title': 'عسل السدر الطبيعي 🍯', 'subtitle': 'الآن متوفر بكميات محدودة'},
+    {'title': 'استشارة مجانية 👨‍⚕️', 'subtitle': 'مع كل طلب فوق ٢٠٠ درهم'},
   ];
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 4), (Timer timer) {
-      if (_currentPage < 2) {
-        _currentPage++;
-      } else {
-        _currentPage = 0;
-      }
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (!mounted) return;
+      setState(() {
+        _currentPage = (_currentPage + 1) % _slides.length;
+      });
       if (_pageController.hasClients) {
-        _pageController.animateToPage(_currentPage, duration: 800.ms, curve: Curves.easeInOutExpo);
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 800),
+          curve: Curves.easeInOutExpo,
+        );
       }
     });
   }
@@ -600,20 +493,24 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(_slides.length, (index) => AnimatedContainer(
-                duration: 300.ms,
+                duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 width: _currentPage == index ? 20 : 6,
                 height: 6,
-                decoration: BoxDecoration(color: _currentPage == index ? accent : Colors.white, borderRadius: BorderRadius.circular(3)),
+                decoration: BoxDecoration(
+                  color: _currentPage == index ? accent : Colors.white,
+                  borderRadius: BorderRadius.circular(3),
+                ),
               )),
             ),
           ),
         ],
       ),
-    ).animate().fade(delay: 100.ms).scale(begin: const Offset(0.95, 0.95));
+    );
   }
 }
 
+// ── Product Card ────────────────────────────────────────────────
 class ProductCard extends ConsumerStatefulWidget {
   final Product product;
   final int index;
@@ -624,171 +521,168 @@ class ProductCard extends ConsumerStatefulWidget {
 }
 
 class _ProductCardState extends ConsumerState<ProductCard> {
-  bool _isWishlisted = false;
-
   @override
   Widget build(BuildContext context) {
     final isInCart = ref.watch(cartProvider).any((item) => item.productId == widget.product.id);
+    final isWishlisted = ref.watch(wishlistProvider).valueOrNull?.contains(widget.product.id) ?? false;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: inputBorder.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 16, offset: const Offset(0, 4)),
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => ProductDetailScreen(product: widget.product)),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 55,
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFFF5F0E8), Color(0xFFEDE8DC)],
+      child: Container(
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: inputBorder.withValues(alpha: 0.5)),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 16, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Column(
+            children: [
+              Expanded(
+                flex: 55,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0xFFF5F0E8), Color(0xFFEDE8DC)],
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Hero(
+                        tag: 'prod_${widget.product.id}',
+                        child: widget.product.imageUrl != null
+                            ? Image.network(widget.product.imageUrl!, fit: BoxFit.contain)
+                            : const Icon(Icons.eco, size: 50, color: primary),
                       ),
                     ),
-                    padding: const EdgeInsets.all(12),
-                    child: Hero(
-                      tag: 'prod_${widget.product.id}',
-                      child: widget.product.imageUrl != null
-                          ? Image.network(widget.product.imageUrl!, fit: BoxFit.contain)
-                          : const Icon(Icons.eco, size: 50, color: primary),
-                    ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: GestureDetector(
-                      onTap: () => setState(() => _isWishlisted = !_isWishlisted),
-                      child: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          _isWishlisted ? Icons.favorite : Icons.favorite_border,
-                          size: 18,
-                          color: _isWishlisted ? Colors.red : textSecondary,
-                        ).animate(target: _isWishlisted ? 1 : 0).scale(begin: const Offset(1, 1), end: const Offset(1.3, 1.3), duration: 200.ms),
-                      ),
-                    ),
-                  ),
-                  if (widget.index < 3)
                     Positioned(
                       top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(10)),
-                        child: Text('Ø§Ù„Ø£Ùƒثر مبيعاً', style: GoogleFonts.cairo(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  if (widget.product.stock <= 0)
-                    Container(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      child: Center(child: Text('Ù†فد المخزون', style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold))),
-                    ),
-                ],
-              ),
-            ),
-            Expanded(
-              flex: 45,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.product.name,
-                      style: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary, height: 1.2),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'أعشاب طبيعية مختارة',
-                      style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary, fontStyle: FontStyle.italic),
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        ...List.generate(3, (i) => const Icon(Icons.star, color: Colors.amber, size: 10)),
-                        const SizedBox(width: 4),
-                        Text('(٢٤)', style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary)),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${widget.product.price} درهم', style: GoogleFonts.cairo(fontSize: 15, fontWeight: FontWeight.w900, color: primary)),
-                            if (widget.index % 4 == 0)
-                              Text('٢٠٠ درهم', style: GoogleFonts.cairo(fontSize: 11, color: textSecondary, decoration: TextDecoration.lineThrough)),
-                          ],
-                        ),
-                        if (widget.index % 4 == 0)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                            decoration: BoxDecoration(color: danger, borderRadius: BorderRadius.circular(4)),
-                            child: Text('٢٠٪-', style: GoogleFonts.cairo(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                      left: 8,
+                      child: GestureDetector(
+                        onTap: () => ref.read(wishlistProvider.notifier).toggle(widget.product.id),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            isWishlisted ? Icons.favorite : Icons.favorite_border,
+                            size: 18,
+                            color: isWishlisted ? Colors.red : textSecondary,
                           ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.product.stock > 0) {
-                          ref.read(cartProvider.notifier).addToCart(
-                                productId: widget.product.id,
-                                productName: widget.product.name,
-                                productPrice: widget.product.price,
-                                imageUrl: widget.product.imageUrl,
-                              );
-                        }
-                      },
-                      child: AnimatedContainer(
-                        duration: 300.ms,
-                        height: 36,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          gradient: isInCart ? null : const LinearGradient(colors: [primary, primaryLight]),
-                          color: isInCart ? success : null,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(isInCart ? Icons.check_circle_outline : Icons.add_shopping_cart, color: Colors.white, size: 16),
-                            const SizedBox(width: 4),
-                            Text(
-                              isInCart ? 'ÙÙŠ السلة' : 'أضف للسلة',
-                              style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                          ],
                         ),
                       ),
                     ),
+                    if (widget.index < 3)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(color: accent, borderRadius: BorderRadius.circular(10)),
+                          child: Text('الأكثر مبيعاً', style: GoogleFonts.cairo(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    if (widget.product.stock <= 0)
+                      Container(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        child: Center(child: Text('نفد المخزون', style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold))),
+                      ),
                   ],
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                flex: 45,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.product.name,
+                        style: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold, color: textPrimary, height: 1.2),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text('أعشاب طبيعية مختارة', style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary, fontStyle: FontStyle.italic)),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          ...List.generate(5, (i) {
+                            final rating = widget.product.rating > 0 ? widget.product.rating : 4.2;
+                            return Icon(
+                              i < rating.floor() ? Icons.star : (i < rating ? Icons.star_half : Icons.star_border),
+                              color: Colors.amber,
+                              size: 10,
+                            );
+                          }),
+                          const SizedBox(width: 4),
+                          Text('(${widget.product.reviewsCount > 0 ? widget.product.reviewsCount : 24})', style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${widget.product.price} درهم', style: GoogleFonts.cairo(fontSize: 15, fontWeight: FontWeight.w800, color: primary)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          if (widget.product.stock > 0) {
+                            ref.read(cartProvider.notifier).addToCart(
+                              productId: widget.product.id,
+                              productName: widget.product.name,
+                              productPrice: widget.product.price,
+                              imageUrl: widget.product.imageUrl,
+                            );
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: 36,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: isInCart ? null : const LinearGradient(colors: [primary, primaryLight]),
+                            color: isInCart ? success : null,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(isInCart ? Icons.check_circle_outline : Icons.add_shopping_cart, color: Colors.white, size: 16),
+                              const SizedBox(width: 4),
+                              Text(
+                                isInCart ? 'في السلة' : 'أضف للسلة',
+                                style: GoogleFonts.cairo(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+// ── Filter Bottom Sheet ─────────────────────────────────────────
 class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({super.key});
 
@@ -797,7 +691,7 @@ class FilterBottomSheet extends StatefulWidget {
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  String _selectedSort = 'Ø§Ù„Ø£Ùƒثر Ù…Ø¨ÙŠØ¹Ø§Ù‹ ⭐';
+  String _selectedSort = 'الأكثر مبيعاً ⭐';
   double _priceRange = 500;
 
   @override
@@ -813,26 +707,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         children: [
           Container(width: 40, height: 4, decoration: BoxDecoration(color: inputBorder, borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 20),
-          Text('ÙÙ„ترة Ùˆترتيب', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
+          Text('فلترة وترتيب', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
           const SizedBox(height: 20),
-          RadioGroup<String>(
-            groupValue: _selectedSort,
-            onChanged: (v) => setState(() => _selectedSort = v!),
-            child: Column(
-              children: [
-                _buildSortOption('Ø§Ù„Ø£Ùƒثر Ù…Ø¨ÙŠØ¹Ø§Ù‹ ⭐'),
-                _buildSortOption('السعر: من الأقل للأعلى ↑'),
-                _buildSortOption('السعر: من الأعلى للأقل ↓'),
-                _buildSortOption('الأحدث 🆕'),
-              ],
-            ),
-          ),
+          _buildSortOption('الأكثر مبيعاً ⭐'),
+          _buildSortOption('السعر: من الأقل للأعلى ↑'),
+          _buildSortOption('السعر: من الأعلى للأقل ↓'),
+          _buildSortOption('الأحدث 🆕'),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('السعر الأقصى: $_priceRange درهم', style: GoogleFonts.tajawal(color: textPrimary, fontWeight: FontWeight.bold)),
-              Text('Ø§Ù„Ù…ÙŠØ²Ø§Ù†ية', style: GoogleFonts.cairo(color: textSecondary)),
+              Text('الميزانية', style: GoogleFonts.cairo(color: textSecondary)),
             ],
           ),
           Slider(
@@ -850,26 +736,43 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               minimumSize: const Size(double.infinity, 54),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: Text('ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„ÙÙ„ترة', style: GoogleFonts.cairo(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text('تطبيق الفلترة', style: GoogleFonts.cairo(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-    ).animate().slideY(begin: 1, end: 0, curve: Curves.easeOut);
+    );
   }
 
   Widget _buildSortOption(String title) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, style: GoogleFonts.tajawal(fontSize: 14)),
-      leading: Radio<String>(
-        value: title,
-        activeColor: primary,
-      ),
+    final isSelected = _selectedSort == title;
+    return GestureDetector(
       onTap: () => setState(() => _selectedSort = title),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? primary : inputBorder,
+                  width: isSelected ? 6 : 2,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(title, style: GoogleFonts.tajawal(fontSize: 14, color: isSelected ? textPrimary : textSecondary)),
+          ],
+        ),
+      ),
     );
   }
 }
 
+// ── Floating Cart Bar ───────────────────────────────────────────
 class FloatingCartBar extends StatelessWidget {
   final int count;
   final double total;
@@ -906,7 +809,7 @@ class FloatingCartBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('$count Ù…Ù†تجات ÙÙŠ السلة', style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+              Text('$count منتجات في السلة', style: GoogleFonts.cairo(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
               Text('الإجمالي: $total درهم', style: GoogleFonts.tajawal(color: Colors.white70, fontSize: 12)),
             ],
           ),
@@ -927,6 +830,7 @@ class FloatingCartBar extends StatelessWidget {
   }
 }
 
+// ── Product Skeleton Card ───────────────────────────────────────
 class ProductSkeletonCard extends StatelessWidget {
   const ProductSkeletonCard({super.key});
 
@@ -951,17 +855,18 @@ class ProductSkeletonCard extends StatelessWidget {
                 Container(height: 14, width: 100, color: Colors.grey[200]),
                 const SizedBox(height: 8),
                 Container(height: 10, width: 60, color: Colors.grey[100]),
-                const Spacer(),
+                const SizedBox(height: 8),
                 Container(height: 36, width: double.infinity, color: Colors.grey[200]),
               ],
             ),
           ),
         ],
       ),
-    ).animate(onPlay: (c) => c.repeat()).shimmer(color: accent2.withValues(alpha: 0.2), duration: 1500.ms);
+    );
   }
 }
 
+// ── Store Empty State ───────────────────────────────────────────
 class StoreEmptyState extends StatelessWidget {
   final VoidCallback onReset;
   const StoreEmptyState({super.key, required this.onReset});
@@ -974,9 +879,9 @@ class StoreEmptyState extends StatelessWidget {
         children: [
           Icon(Icons.eco_rounded, size: 100, color: primary.withValues(alpha: 0.2)),
           const SizedBox(height: 20),
-          Text('لا ØªÙˆجد Ù…Ù†تجات ÙÙŠ Ù‡ذا Ø§Ù„ØªØµÙ†يف', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
+          Text('لا توجد منتجات في هذا التصنيف', style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
           const SizedBox(height: 8),
-          Text('جرب ØªØµÙ†ÙŠÙØ§Ù‹ آخر Ø£Ùˆ ابحث Ø¹Ù† Ù…Ù†تج محدد', style: GoogleFonts.tajawal(color: textSecondary, fontSize: 14)),
+          Text('جرب تصنيفاً آخر أو ابحث عن منتج محدد', style: GoogleFonts.tajawal(color: textSecondary, fontSize: 14)),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: onReset,
@@ -985,10 +890,10 @@ class StoreEmptyState extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text('عرض جميع Ø§Ù„Ù…Ù†تجات', style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold)),
+            child: Text('عرض جميع المنتجات', style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-    ).animate().fade().scale();
+    );
   }
 }

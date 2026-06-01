@@ -18,11 +18,18 @@ class OrderDetailsScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text('ØªÙØ§ØµÙŠÙ„ الطلب', style: GoogleFonts.tajawal(fontWeight: FontWeight.bold)),
+        title: Text('تف اصيل الطلب', style: GoogleFonts.tajawal(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 0,
+        leading: Directionality(
+          textDirection: TextDirection.ltr,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black87),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -35,7 +42,7 @@ class OrderDetailsScreen extends ConsumerWidget {
                 itemBuilder: (context, index) => _buildItemCard(items[index]),
               ),
               loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF0D6E6E))),
-              error: (err, stack) => Center(child: Text('خطأ ÙÙŠ تحميل Ø§Ù„Ø¹Ù†اصر: $err')),
+              error: (err, stack) => Center(child: Text('خطأ في تحميل العناصر: $err')),
             ),
           ),
           _buildTotalSection(),
@@ -58,7 +65,7 @@ class OrderDetailsScreen extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Ø±Ù‚م الطلب: #${order.id.substring(0, 8)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('رقم الطلب: #${order.id.substring(0, 8)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Text('الحالة: ${order.statusArabic}', style: const TextStyle(color: Color(0xFF0D6E6E), fontWeight: FontWeight.bold)),
                 ],
@@ -81,7 +88,7 @@ class OrderDetailsScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('إلغاء الطلب', textAlign: TextAlign.center),
-        content: const Text('Ù‡ل Ø£Ù†ت Ù…ØªØ£Ùƒد Ù…Ù† Ø±ØºØ¨ØªÙƒ ÙÙŠ إلغاء Ù‡ذا الطلب؟', textAlign: TextAlign.center),
+        content: const Text('هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟', textAlign: TextAlign.center),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('تراجع')),
           TextButton(
@@ -89,7 +96,7 @@ class OrderDetailsScreen extends ConsumerWidget {
               Navigator.pop(context); // Close dialog
               await _cancelOrder(context, ref);
             },
-            child: const Text('Ù†عم، إلغاء', style: TextStyle(color: Colors.red)),
+            child: const Text('نعم، إلغاء', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -107,14 +114,14 @@ class OrderDetailsScreen extends ConsumerWidget {
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إلغاء الطلب Ø¨Ù†جاح'), backgroundColor: Colors.orange),
+          const SnackBar(content: Text('تم إلغاء الطلب بنجاح'), backgroundColor: Colors.orange),
         );
         Navigator.pop(context); // Return to orders list
       }
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('ÙØ´Ù„ إلغاء الطلب: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('فشل إلغاء الطلب: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -143,7 +150,7 @@ class OrderDetailsScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(item.productName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text('Ø§Ù„Ùƒمية: ${item.quantity}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text('الكمية: ${item.quantity}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           ),
@@ -164,8 +171,8 @@ class OrderDetailsScreen extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('الإجمالي Ø§Ù„Ù…Ø¯ÙÙˆع', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Text('${order.totalPrice} درهم', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF0D6E6E))),
+          const Text('الإجمالي المدف وع', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          Text('${order.totalPrice} درهم', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF0D6E6E))),
         ],
       ),
     );

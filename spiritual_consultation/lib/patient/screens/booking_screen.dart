@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../widgets/booking/booking_widgets.dart';
+import '../../core/theme/app_theme.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -10,26 +12,26 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> with TickerProviderStateMixin {
-  // Ù†ظام Ø§Ù„Ø£Ù„ÙˆØ§Ù† المعتمد لـ BioPara
-  static const Color primary = Color(0xFF2D4A2E);
-  static const Color primaryLight = Color(0xFF4A7C4E);
-  static const Color accent = Color(0xFFC8963E);
-  static const Color background = Color(0xFFF5F0E8);
-  static const Color surface = Color(0xFFFDFAF5);
-  static const Color textPrimary = Color(0xFF1A2E1B);
-  static const Color textSecondary = Color(0xFF6B7B6C);
-  static const Color inputBorder = Color(0xFFD4C9B0);
-  static const Color success = Color(0xFF2D7A4E);
-  static const Color danger = Color(0xFFB94040);
-  static const Color shadowColor = Color(0x15000000);
+  // الألوان من نظام التصميم المركزي
+  static const Color primary        = AppColors.primary;
+  static const Color primaryLight   = AppColors.primaryLight;
+  static const Color accent         = AppColors.accent;
+  static const Color background     = AppColors.background;
+  static const Color surface        = AppColors.surface;
+  static const Color textPrimary    = AppColors.textPrimary;
+  static const Color textSecondary  = AppColors.textSecondary;
+  static const Color inputBorder    = AppColors.border;
+  static const Color success        = AppColors.success;
+  static const Color danger         = AppColors.danger;
+  static const Color shadowColor    = Color(0x15000000);
 
-  // حالة Ø§Ù„Ø®Ø·Ùˆات
+  // حالة الخطوات
   int _currentStep = 0;
   final PageController _pageController = PageController();
 
   // اختيارات المستخدم
-  String? _selectedType; // ÙÙŠØ¯ÙŠÙˆ، ØµÙˆت، Ù†ص
-  int? _selectedDuration; // ٣٠، ٤٥، ٦٠ Ø¯Ù‚ÙŠÙ‚ة
+  String? _selectedType; // فيديو، صوت، نص
+  int? _selectedDuration; // ٣٠، ٤٥، ٦٠ دقيقة
   DateTime? _selectedDate;
   String? _selectedTime;
   final TextEditingController _notesController = TextEditingController();
@@ -70,12 +72,12 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
   bool _validateCurrentStep() {
     if (_currentStep == 0) {
       if (_selectedType == null || _selectedDuration == null) {
-        _showError("الرجاء اختيار Ù†Ùˆع الاستشارة Ùˆمدة الجلسة");
+        _showError("الرجاء اختيار نوع الاستشارة ومدة الجلسة");
         return false;
       }
     } else if (_currentStep == 1) {
       if (_selectedDate == null || _selectedTime == null) {
-        _showError("الرجاء تحديد التاريخ ÙˆØ§Ù„ÙˆÙ‚ت Ø§Ù„Ù…Ù†اسب");
+        _showError("الرجاء تحديد التاريخ والوقت المناسب");
         return false;
       }
     }
@@ -99,11 +101,11 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) throw Exception('غير مسجل دخول');
 
-      // دمج ØªÙØ§ØµÙŠÙ„ الحجز ÙÙŠ Ø­Ù‚ل الملاحظات Ù„Ø¶Ù…Ø§Ù† Ø§Ù„ØªÙˆØ§ÙÙ‚ مع Ù‚اعدة Ø§Ù„Ø¨ÙŠØ§Ù†ات الحالية
+      // دمج تفاصيل الحجز في حقل الملاحظات لضمان التوافق مع قاعدة البيانات الحالية
       final bookingDetails = """
-Ù†Ùˆع الجلسة: $_selectedType
-المدة: $_selectedDuration Ø¯Ù‚ÙŠÙ‚ة
-Ø§Ù„ÙˆÙ‚ت: $_selectedTime
+نوع الجلسة: $_selectedType
+المدة: $_selectedDuration دقيقة
+الوقت: $_selectedTime
 ---
 الملاحظات: ${_notesController.text.trim()}
 """;
@@ -124,7 +126,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
       if (mounted) Navigator.pop(context);
       
     } catch (e) {
-      _showError("حدث خطأ Ø£Ø«Ù†اء الحجز: $e");
+      _showError("حدث خطأ أثناء الحجز: $e");
       setState(() => _isBooking = false);
     }
   }
@@ -135,13 +137,13 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
       backgroundColor: background,
       body: Column(
         children: [
-          // 1. Ø§Ù„Ù‡يدر المتميز (Header)
+          // 1. الهيدر المتميز (Header)
           _buildHeader(),
 
-          // 2. مؤشر Ø§Ù„Ø®Ø·Ùˆات (Step Progress)
+          // 2. مؤشر الخطوات (Step Progress)
           _buildProgressIndicator(),
 
-          // 3. Ø§Ù„Ù…Ø­ØªÙˆÙ‰ المتغير (Steps Content)
+          // 3. المحتوى المتغير (Steps Content)
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -161,7 +163,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
     );
   }
 
-  // --- Ù…ÙƒÙˆÙ†ات Ø§Ù„Ù‡يدر ---
+  // --- مكونات الهيدر ---
   Widget _buildHeader() {
     return Stack(
       children: [
@@ -178,7 +180,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
             ),
             child: Stack(
               children: [
-                // Ù†Ù‚ش الأعشاب Ø§Ù„Ø®ÙÙŠف
+                // نقش الأعشاب الخفيف
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0.05,
@@ -190,9 +192,12 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-                          onPressed: () => Navigator.pop(context),
+                        Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ),
                         Expanded(
                           child: Center(
@@ -206,7 +211,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
                             ),
                           ),
                         ),
-                        const SizedBox(width: 40), // Ù„Ù„Ù…ÙˆØ§Ø²Ù†ة مع زر Ø§Ù„Ø±Ø¬Ùˆع
+                        const SizedBox(width: 40), // للموازنة مع زر الرجوع
                       ],
                     ),
                   ),
@@ -215,7 +220,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
             ),
           ),
         ),
-        // الخط Ø§Ù„Ø°Ù‡بي الصغير Ø£Ø³ÙÙ„ Ø§Ù„ØªÙ…Ùˆج
+        // الخط الذهبي الصغير أسفل التموج
         Positioned(
           bottom: 20,
           left: 0,
@@ -235,17 +240,17 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
     );
   }
 
-  // --- مؤشر Ø§Ù„Ø®Ø·Ùˆات ---
+  // --- مؤشر الخطوات ---
   Widget _buildProgressIndicator() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
       child: Row(
         children: [
-          _buildStepNode(0, "اختيار Ø§Ù„Ù†Ùˆع"),
+          _buildStepNode(0, "اختيار النوع"),
           _buildStepLine(0),
-          _buildStepNode(1, "Ø§Ù„ØªÙاصيل"),
+          _buildStepNode(1, "التفاصيل"),
           _buildStepLine(1),
-          _buildStepNode(2, "Ø§Ù„ØªØ£Ùƒيد"),
+          _buildStepNode(2, "التأكيد"),
         ],
       ),
     );
@@ -312,95 +317,49 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
     );
   }
 
-  // --- Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø®Ø·Ùˆة الأولى ---
+  // --- محتوى الخطوة الأولى ---
   Widget _buildStep1() {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        // Ø¨Ø·Ø§Ù‚ة المستشار
+        // بطاقة المستشار
         _buildConsultantCard(),
         const SizedBox(height: 32),
 
-        // اختيار Ù†Ùˆع الجلسة
-        Text("Ù†Ùˆع الاستشارة", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
+        // اختيار نوع الجلسة
+        Text("نوع الاستشارة", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
         const SizedBox(height: 16),
         _buildTypeSelector(),
         const SizedBox(height: 32),
 
-        // اختيار المدة Ùˆالسعر
-        Text("مدة الجلسة Ùˆالسعر", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
+        // اختيار مدة الجلسة والأسعار
+        Text("مدة الجلسة والأسعار", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
         const SizedBox(height: 16),
         _buildDurationSelector(),
-        
         const SizedBox(height: 40),
-        _buildTipCard("💡 Ù†صيحة: جلسة Ø§Ù„ÙÙŠØ¯ÙŠÙˆ تتيح للمستشار رؤية الأعراض Ø¨Ø´Ùƒل Ø£Ùˆضح"),
+        _buildTipCard("🌿 المواعيد المتاحة تظهر باللون الأخضر؛ تفضل باختيار ما يناسبك"),
       ],
     );
   }
 
   Widget _buildConsultantCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: inputBorder.withValues(alpha: 0.4)),
-        boxShadow: const [BoxShadow(color: shadowColor, blurRadius: 15, offset: Offset(0, 5))],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-              border: Border.all(color: accent, width: 2),
-            ),
-            child: const Icon(Icons.person_pin_rounded, color: primary, size: 36),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("إلياس المساوي", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
-                Text("خبير ÙÙŠ الاعشاب الطبية Ùˆامراض الصحية Ùˆ Ø§Ù„Ø±Ùˆحية", style: GoogleFonts.tajawal(fontSize: 13, color: textSecondary)),
-                Row(
-                  children: [
-                    const Icon(Icons.star_rounded, color: accent, size: 16),
-                    const Icon(Icons.star_rounded, color: accent, size: 16),
-                    const Icon(Icons.star_rounded, color: accent, size: 16),
-                    const Icon(Icons.star_rounded, color: accent, size: 16),
-                    const Icon(Icons.star_half_rounded, color: accent, size: 16),
-                    const SizedBox(width: 4),
-                    Text("(48 تقييم)", style: GoogleFonts.tajawal(fontSize: 12, color: textSecondary)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            children: [
-              Row(
-                children: [
-                  Container(width: 8, height: 8, decoration: const BoxDecoration(color: success, shape: BoxShape.circle)),
-                  const SizedBox(width: 4),
-                  Text("متاح", style: GoogleFonts.tajawal(fontSize: 12, color: success)),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
+    return ConsultantCard(
+      primary: primary,
+      accent: accent,
+      success: success,
+      textPrimary: textPrimary,
+      textSecondary: textSecondary,
+      surface: surface,
+      inputBorder: inputBorder,
+      shadowColor: shadowColor,
     );
   }
 
   Widget _buildTypeSelector() {
     final types = [
       {'label': 'فيديو', 'icon': Icons.videocam_rounded, 'id': 'video'},
-      {'label': 'ØµÙˆت', 'icon': Icons.mic_rounded, 'id': 'audio'},
-      {'label': 'Ù†ص', 'icon': Icons.chat_rounded, 'id': 'chat'},
+      {'label': 'صوت', 'icon': Icons.mic_rounded, 'id': 'audio'},
+      {'label': 'نص', 'icon': Icons.chat_rounded, 'id': 'chat'},
     ];
 
     return Row(
@@ -436,9 +395,9 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
 
   Widget _buildDurationSelector() {
     final options = [
-      {'label': '30 Ø¯Ù‚ÙŠÙ‚ة', 'price': '150 درهم', 'val': 30},
-      {'label': '45 Ø¯Ù‚ÙŠÙ‚ة', 'price': '200 درهم', 'val': 45},
-      {'label': '60 Ø¯Ù‚ÙŠÙ‚ة', 'price': '250 درهم', 'val': 60},
+      {'label': '30 دقيقة', 'price': '150 درهم', 'val': 30},
+      {'label': '45 دقيقة', 'price': '200 درهم', 'val': 45},
+      {'label': '60 دقيقة', 'price': '250 درهم', 'val': 60},
     ];
 
     return Row(
@@ -469,36 +428,36 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
     );
   }
 
-  // --- Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø®Ø·Ùˆة Ø§Ù„Ø«Ø§Ù†ية ---
+  // --- محتوى الخطوة الثانية ---
   Widget _buildStep2() {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         // التقويم الأسبوعي
-        Text("تاريخ Ø§Ù„Ù…Ùˆعد", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
+        Text("تاريخ الموعد", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
         const SizedBox(height: 16),
         _buildWeeklyCalendar(),
         const SizedBox(height: 32),
 
-        // Ø§Ù„Ø£ÙˆÙ‚ات المتاحة
-        Text("Ø§Ù„ÙˆÙ‚ت Ø§Ù„Ù…Ù†اسب", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
+        // الأوقات المتاحة
+        Text("الوقت المناسب", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
         const SizedBox(height: 16),
         _buildTimeSlotGrid(),
         const SizedBox(height: 32),
 
-        // ملاحظات Ø¥Ø¶Ø§ÙÙŠة
-        Text("ملاحظات Ø§Ù„Ù…Ùˆعد Ø£Ùˆ الأعراض", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
+        // ملاحظات إضافية
+        Text("ملاحظات الموعد أو الأعراض", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
         const SizedBox(height: 16),
         _buildNotesField(),
         
         const SizedBox(height: 40),
-        _buildTipCard("🌿 Ø§Ù„Ù…Ùˆاعيد الصباحية Ù‡ي Ø§Ù„Ø£Ùƒثر Ø·Ù„Ø¨Ø§Ù‹، احجز مبكراً لضمان وقتك"),
+        _buildTipCard("🌿 المواعيد الصباحية هي الأكثر طلباً، احجز مبكراً لضمان وقتك"),
       ],
     );
   }
 
   Widget _buildWeeklyCalendar() {
-    // ØªÙˆليد الأيام السبعة Ø§Ù„Ù‚ادمة
+    // توليد الأيام السبعة القادمة
     final days = List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
     final arabicDays = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 
@@ -559,7 +518,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
       itemCount: slots.length,
       itemBuilder: (context, index) {
         bool isSelected = _selectedTime == slots[index];
-        bool isFull = index == 2; // Ù…Ø­Ø§Ùƒاة ÙˆÙ‚ت Ù…Ø­Ø¬Ùˆز
+        bool isFull = index == 2; // محاكاة وقت محجوز
 
         return GestureDetector(
           onTap: isFull ? null : () => setState(() => _selectedTime = slots[index]),
@@ -571,7 +530,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
             ),
             child: Center(
               child: Text(
-                isFull ? "Ù…Ø­Ø¬Ùˆز" : slots[index],
+                isFull ? "محجوز" : slots[index],
                 style: GoogleFonts.cairo(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -601,7 +560,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
               children: [
                 const Icon(Icons.description_outlined, color: primaryLight, size: 20),
                 const SizedBox(width: 8),
-                Text("الأعراض Ø£Ùˆ الملاحظات", style: GoogleFonts.tajawal(fontSize: 12, color: textSecondary)),
+                Text("الأعراض أو الملاحظات", style: GoogleFonts.tajawal(fontSize: 12, color: textSecondary)),
               ],
             ),
           ),
@@ -610,7 +569,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
             maxLines: 4,
             style: GoogleFonts.tajawal(fontSize: 14, color: textPrimary),
             decoration: InputDecoration(
-              hintText: "Ø§Ùƒتب باختصار ما ØªØ¹Ø§Ù†ي Ù…Ù†Ù‡ Ø£Ùˆ سبب الاستشارة...",
+              hintText: "اكتب باختصار ما تعاني منه أو سبب الاستشارة...",
               hintStyle: GoogleFonts.tajawal(fontSize: 13, color: textSecondary.withValues(alpha: 0.6), fontStyle: FontStyle.italic),
               contentPadding: const EdgeInsets.all(16),
               border: InputBorder.none,
@@ -631,7 +590,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
     );
   }
 
-  // --- Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ø®Ø·Ùˆة الثالثة ---
+  // --- محتوى الخطوة الثالثة ---
   Widget _buildStep3() {
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -656,7 +615,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  "ÙŠÙ…ÙƒÙ† إلغاء الحجز مجاناً قبل 24 ساعة Ù…Ù† Ù…Ùˆعد الجلسة",
+                  "يمكن إلغاء الحجز مجاناً قبل 24 ساعة من موعد الجلسة",
                   style: GoogleFonts.tajawal(fontSize: 13, color: textSecondary),
                 ),
               ),
@@ -665,7 +624,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
         ),
         
         const SizedBox(height: 40),
-        _buildTipCard("🔒 Ø¯ÙØ¹Ùƒ محمي Ùˆمشفر بالكامل لضمان خصوصيتك"),
+        _buildTipCard("🔒 دفعك محمي ومشفر بالكامل لضمان خصوصيتك"),
       ],
     );
   }
@@ -683,13 +642,13 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
         children: [
           _buildSummaryRow(Icons.person_outline, "المستشار", "إلياس المساوي"),
           _buildDivider(),
-          _buildSummaryRow(Icons.videocam_outlined, "Ù†Ùˆع الجلسة", _selectedType == 'video' ? "فيديو" : (_selectedType == 'audio' ? "ØµÙˆت" : "Ù†ص")),
+          _buildSummaryRow(Icons.videocam_outlined, "نوع الجلسة", _selectedType == 'video' ? "فيديو" : (_selectedType == 'audio' ? "صوت" : "نص")),
           _buildDivider(),
           _buildSummaryRow(Icons.calendar_today_outlined, "التاريخ", "${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}"),
           _buildDivider(),
-          _buildSummaryRow(Icons.access_time_rounded, "Ø§Ù„ÙˆÙ‚ت", _selectedTime ?? "-"),
+          _buildSummaryRow(Icons.access_time_rounded, "الوقت", _selectedTime ?? "-"),
           _buildDivider(),
-          _buildSummaryRow(Icons.timer_outlined, "المدة", "$_selectedDuration Ø¯Ù‚ÙŠÙ‚ة"),
+          _buildSummaryRow(Icons.timer_outlined, "المدة", "$_selectedDuration دقيقة"),
           _buildDivider(),
           _buildSummaryRow(Icons.payments_outlined, "السعر", _selectedDuration == 30 ? "150 درهم" : (_selectedDuration == 45 ? "200 درهم" : "250 درهم")),
           const SizedBox(height: 20),
@@ -698,7 +657,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
             children: [
               Text("الإجمالي", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: textPrimary)),
               Text(_selectedDuration == 30 ? "150 درهم" : (_selectedDuration == 45 ? "200 درهم" : "250 درهم"), 
-                  style: GoogleFonts.cairo(fontSize: 20, fontWeight: FontWeight.w900, color: accent)),
+                  style: GoogleFonts.cairo(fontSize: 20, fontWeight: FontWeight.w800, color: accent)),
             ],
           ),
         ],
@@ -727,7 +686,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
 
   Widget _buildDivider() => Divider(height: 1, color: inputBorder.withValues(alpha: 0.3));
 
-  // --- شريط Ø§Ù„ØªÙ†Ù‚ل Ø§Ù„Ø³Ùلي ---
+  // --- شريط التنقل السفلي ---
   Widget _buildBottomNavigation() {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -762,7 +721,7 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(_currentStep == 2 ? "ØªØ£Ùƒيد الحجز" : "التالي", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(_currentStep == 2 ? "تأكيد الحجز" : "التالي", style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold)),
                         const SizedBox(width: 8),
                         Icon(_currentStep == 2 ? Icons.check_circle_outline : Icons.arrow_back_ios, size: 18),
                       ],
@@ -775,48 +734,10 @@ class _BookingScreenState extends State<BookingScreen> with TickerProviderStateM
   }
 
   Widget _buildTipCard(String tip) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(tip, style: GoogleFonts.tajawal(fontSize: 13, color: textSecondary, fontStyle: FontStyle.italic)),
+    return TipCard(
+      tip: tip,
+      accent: accent,
+      textSecondary: textSecondary,
     );
   }
-}
-
-// --- رسام Ù†مط الأعشاب ---
-class HerbPatternPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
-
-    for (var i = 0; i < 5; i++) {
-      canvas.drawCircle(Offset(size.width * (i / 5), 20), 30, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
-
-// --- Ù‚اطع Ø§Ù„Ù‡يدر Ø§Ù„Ù…ØªÙ…Ùˆج ---
-class HeaderWaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    var path = Path();
-    path.lineTo(0, size.height - 30);
-    path.quadraticBezierTo(size.width / 4, size.height, size.width / 2, size.height - 20);
-    path.quadraticBezierTo(size.width * 3 / 4, size.height - 40, size.width, size.height - 10);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

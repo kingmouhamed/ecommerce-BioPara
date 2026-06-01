@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/foundation.dart';
@@ -7,30 +8,65 @@ class AiService {
   factory AiService() => _instance;
   AiService._internal();
 
-  late final GenerativeModel _model;
-  bool _isInitialized = false;
+  int _currentModelIndex = 0;
 
-  void init() {
+  /// يريّح الاتصال ويفحص النماذج البديلة تلقائياً في حالة تعذر تشغيل النموذج الافتراضي
+  Future<T> _runWithFallback<T>(Future<T> Function(GenerativeModel model) action) async {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
     if (apiKey == null || apiKey.isEmpty) {
-      debugPrint('❌ Gemini API Key is missing in .env');
-      return;
+      throw Exception('Gemini API Key is missing in .env');
     }
-    _model = GenerativeModel(
-      model: 'gemini-1.5-flash',
-      apiKey: apiKey,
-      systemInstruction: Content.system('أنت خبير كبير في الاستشارات الروحية والعلاج بالأعشاب الطبيعية في منصة BioPara Spiritual. ردودك يجب أن تكون هادئة، محترمة، وباللغة العربية الفصحى أو المغربية الراقية. قدم نصائح مفيدة بناءً على الأعشاب والروحانيات. تجنب التشخيص الطبي الجراحي وركز على الطب البديل والسكينة الروحية.'),
-    );
-    _isInitialized = true;
+
+    final candidateModels = [
+      'gemini-2.5-flash',
+      'gemini-2.5-pro',
+      'gemini-2.0-flash',
+      'gemini-flash-latest',
+      'gemini-pro-latest',
+    ];
+
+    if (_currentModelIndex >= candidateModels.length) {
+      _currentModelIndex = 0;
+    }
+
+    while (_currentModelIndex < candidateModels.length) {
+      final modelName = candidateModels[_currentModelIndex];
+      final model = GenerativeModel(
+        model: modelName,
+        apiKey: apiKey,
+        systemInstruction: Content.system('أنت خبير كبير في الاستشارات الروحية والعلاج بالأعشاب الطبيعية في منصة BioPara Spiritual. ردودك يجب أن تكون هادئة، محترمة، وباللغة العربية الفصحى أو المغربية الراقية. قدم نصائح مفيدة بناءً على الأعشاب والروحانيات. تجنب التشخيص الطبي الجراحي وركز على الطب البديل والسكينة الروحية.'),
+      );
+
+      try {
+        return await action(model);
+      } catch (e) {
+        final errStr = e.toString().toLowerCase();
+        if (errStr.contains('not found') ||
+            errStr.contains('not supported') ||
+            errStr.contains('404') ||
+            errStr.contains('deprecated') ||
+            errStr.contains('model')) {
+          debugPrint('⚠️ Gemini model "$modelName" failed or not found. Trying fallback...');
+          _currentModelIndex++;
+          if (_currentModelIndex >= candidateModels.length) {
+            rethrow;
+          }
+        } else {
+          rethrow;
+        }
+      }
+    }
+    throw Exception('All Gemini candidate models failed to load.');
   }
 
   /// يطلب من البوت الرد على رسالة المستخدم مع مراعاة سياق المحادثة
   Future<String> askChatbot(String message, List<Content> history) async {
-    if (!_isInitialized) init();
     try {
-      final chat = _model.startChat(history: history);
-      final response = await chat.sendMessage(Content.text(message));
-      return response.text ?? 'عذراً، لم أستطع توليد رد حالياً.';
+      return await _runWithFallback((model) async {
+        final chat = model.startChat(history: history);
+        final response = await chat.sendMessage(Content.text(message));
+        return response.text ?? 'عذراً، لم أستطع توليد رد حالياً.';
+      });
     } catch (e) {
       debugPrint('Gemini Error (askChatbot): $e');
       return 'حدث خطأ أثناء التواصل مع المستشار الذكي.';
@@ -39,7 +75,6 @@ class AiService {
 
   /// يحلل الحالة النفسية والمزاجية للنص
   Future<Map<String, dynamic>> analyzeSentiment(String text) async {
-    if (!_isInitialized) init();
     try {
       final prompt = '''
       حلل النص التالي من منظور استشارة روحية وطبية عشبية:
@@ -51,13 +86,28 @@ class AiService {
         "advice": (نصيحة روحية قصيرة بناءً على المزاج)
       }
       ''';
-      final response = await _model.generateContent([Content.text(prompt)]);
-      // ملاحظة: يفضل استخدام parser للـ JSON هنا
+
+      final responseText = await _runWithFallback((model) async {
+        final response = await model.generateContent([Content.text(prompt)]);
+        return response.text ?? '';
+      });
+
+      String cleanJson = responseText;
+      if (cleanJson.contains('```')) {
+        final regExp = RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```');
+        final match = regExp.firstMatch(cleanJson);
+        if (match != null) {
+          cleanJson = match.group(1) ?? cleanJson;
+        }
+      }
+      cleanJson = cleanJson.trim();
+
+      final Map<String, dynamic> parsed = jsonDecode(cleanJson);
       return {
-        'score': 7,
-        'mood': 'هادئ',
-        'advice': 'استمر في التأمل والاسترخاء.',
-        'raw': response.text
+        'score': int.tryParse(parsed['score']?.toString() ?? '7') ?? 7,
+        'mood': parsed['mood']?.toString() ?? 'هادئ',
+        'advice': parsed['advice']?.toString() ?? 'استمر في التأمل والاسترخاء.',
+        'raw': responseText
       };
     } catch (e) {
       debugPrint('Gemini Error (analyzeSentiment): $e');
@@ -70,7 +120,6 @@ class AiService {
     String conversation, {
     required String patientName,
   }) async {
-    if (!_isInitialized) init();
     try {
       final prompt = '''
 أنت مساعد طبي متخصص في الأعشاب والطب التقليدي المغربي.
@@ -89,9 +138,11 @@ $conversation
 
 ملاحظة: التقرير للاستخدام الداخلي فقط من قبل المستشار.
 ''';
-      final response =
-          await _model.generateContent([Content.text(prompt)]);
-      return response.text ?? 'تعذر توليد التقرير.';
+
+      return await _runWithFallback((model) async {
+        final response = await model.generateContent([Content.text(prompt)]);
+        return response.text ?? 'تعذر توليد التقرير.';
+      });
     } catch (e) {
       debugPrint('Gemini Error (generatePatientReport): $e');
       return 'فشل توليد التقرير: $e';

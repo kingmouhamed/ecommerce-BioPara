@@ -18,7 +18,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // تعريف Ø§Ù„Ø£Ù„ÙˆØ§Ù† الأساسية Ù„Ù„Ù‡Ùˆية (Ù…ØªØ·Ø§Ø¨Ù‚ة مع Ø§Ù„Ø¨Ø±Ùˆفايل)
+  // تعريف الألوان الأساسية للهوية (متطابقة مع البروفايل)
   static const Color primary = Color(0xFF2D4A2E);
   static const Color primaryLight = Color(0xFF4A7C4E);
   static const Color background = Color(0xFFF5F0E8);
@@ -52,7 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // Ù…Ø­Ø§Ùƒاة حفظ Ø§Ù„Ø¨ÙŠØ§Ù†ات Ø£Ùˆ Ø±Ø¨Ø·Ù‡ا بـ Supabase
+      // محاكاة حفظ البيانات أو ربطها بـ Supabase
       // final user = Supabase.instance.client.auth.currentUser;
       // await Supabase.instance.client.auth.updateUser(
       //   UserAttributes(data: {'full_name': _nameController.text}),
@@ -63,7 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("تم تحديث Ø§Ù„Ø¨ÙŠØ§Ù†ات Ø¨Ù†جاح"),
+            content: Text("تم تحديث البيانات بنجاح"),
             backgroundColor: primary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -77,7 +77,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("خطأ ÙÙŠ التحديث: $e"), backgroundColor: Colors.red),
+          SnackBar(content: Text("خطأ في التحديث: $e"), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -92,9 +92,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: textPrimary, size: 20),
-          onPressed: () => Navigator.pop(context),
+        leading: Directionality(
+          textDirection: TextDirection.ltr,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: textPrimary, size: 22),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
         title: Text(
           "تعديل الملف الشخصي",
@@ -113,7 +116,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             // تلميح جمالي
             Text(
-              "تحديث Ù…Ø¹Ù„ÙˆÙ…Ø§ØªÙƒ الشخصية Ù„Ø¶Ù…Ø§Ù† ØªÙˆاصل Ø£ÙØ¶Ù„ مع Ø®Ø¨Ø±Ø§Ø¦Ù†ا.",
+              "تحديث معلوماتك الشخصية لضمان تواصل أفضل مع خبرائنا.",
               style: GoogleFonts.tajawal(
                 color: textSecondary,
                 fontSize: 14,
@@ -129,16 +132,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Ø­Ù‚ل Ø§Ù„Ù‡اتف
+            // حقل الهاتف
             _buildInputField(
-              label: "Ø±Ù‚م Ø§Ù„Ù‡اتف",
+              label: "رقم الهاتف",
               controller: _phoneController,
               icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
 
-            // Ø­Ù‚ل المعرف
+            // حقل المعرف
             _buildInputField(
               label: "اسم المعرّف",
               controller: _handleController,

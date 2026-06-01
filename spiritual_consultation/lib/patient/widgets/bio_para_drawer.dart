@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../core/providers/chat_provider.dart';
 import '../screens/shop_screen.dart';
 import '../screens/booking_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/privacy_policy_screen.dart';
 
-// â”€â”€ Ø£Ù„ÙˆØ§Ù† Ù‡Ùˆية BioPara الرسمية ──────────────────────────────────────
+// ── ألوان هوية BioPara الرسمية ──────────────────────────────────────
 const Color primary = Color(0xFF2D4A2E);
 const Color primaryLight = Color(0xFF4A7C4E);
 const Color accent = Color(0xFFC8963E);
@@ -49,12 +47,12 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
       ),
       child: Stack(
         children: [
-          // â”€â”€ Ù†مط الأعشاب Ø§Ù„Ø®ÙÙŠف ÙÙŠ Ø§Ù„Ø®Ù„ÙÙŠة ──
+          // â”€â”€ نمط الأعشاب الخفيف في الخلفية ──
           Positioned.fill(
             child: Opacity(
               opacity: 0.04,
               child: Image.asset(
-                'assets/images/image .png', // استخدام ØµÙˆرة Ø§Ù„Ù†مط Ø§Ù„Ù…ÙˆØ¬Ùˆدة
+                'assets/images/image .png', // استخدام صورة النمط الموجودة
                 repeat: ImageRepeat.repeat,
                 fit: BoxFit.cover,
               ),
@@ -82,7 +80,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
                       },
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 200.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     DrawerNavTile(
                       icon: Icons.storefront_outlined,
@@ -96,11 +94,11 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
                       },
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 240.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     DrawerNavTile(
                       icon: Icons.calendar_today_outlined,
-                      label: 'حجز Ù…Ùˆعد',
+                      label: 'حجز موعد',
                       iconBg: const Color(0xFF4A6B8A).withValues(alpha: 0.12),
                       iconColor: const Color(0xFF4A6B8A),
                       isSelected: widget.currentRoute == '/book',
@@ -108,7 +106,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const BookingScreen()));
                       },
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 280.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     const DrawerGroupDivider(),
 
@@ -126,7 +124,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                         activeTrackColor: primary.withValues(alpha: 0.2),
                         inactiveTrackColor: inputBorder.withValues(alpha: 0.3),
                       ),
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 320.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     DrawerNavTile(
                       icon: Icons.language_rounded,
@@ -142,22 +140,22 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                         child: Text('العربية 🇲🇦', style: GoogleFonts.tajawal(fontSize: 11, color: accent, fontWeight: FontWeight.w600)),
                       ),
                       onTap: () => _showLanguageSheet(context),
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 360.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     DrawerNavTile(
                       icon: Icons.lock_outline_rounded,
-                      label: 'Ø§Ù„Ø®ØµÙˆصية والأمان',
+                      label: 'الخصوصية والأمان',
                       iconBg: const Color(0xFF6B4A3A).withValues(alpha: 0.12),
                       iconColor: const Color(0xFF6B4A3A),
                       onTap: () {
                         Navigator.pop(context);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
                       },
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 400.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     const DrawerGroupDivider(),
 
-                    // GROUP 3 â€” إجراءات خطيرة
+                    // GROUP 3 — إجراءات خطيرة
                     const DrawerGroupLabel(label: 'إجراءات الحساب'),
                     DrawerNavTile(
                       icon: Icons.delete_sweep_outlined,
@@ -177,24 +175,24 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                             await ref.read(chatProvider(widget.conversationId).notifier).clearChat();
                           } catch (e) {
                             messenger.showSnackBar(
-                              SnackBar(content: Text('ÙØ´Ù„ المسح: $e'), backgroundColor: Colors.red),
+                              SnackBar(content: Text('فشل المسح: $e'), backgroundColor: Colors.red),
                             );
                           }
                         },
                       ),
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 440.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
 
                     DrawerNavTile(
                       icon: Icons.logout_rounded,
-                      label: 'تسجيل Ø§Ù„Ø®Ø±Ùˆج',
+                      label: 'تسجيل الخروج',
                       iconBg: danger.withValues(alpha: 0.12),
                       iconColor: danger,
                       labelColor: danger,
                       onTap: () => _showConfirmDialog(
                         context,
                         title: 'تسجيل الخروج؟',
-                        body: 'ستحتاج لإدخال Ø±Ù‚م Ù‡Ø§ØªÙÙƒ مرة أخرى للدخول.',
-                        confirmLabel: 'Ø®Ø±Ùˆج',
+                        body: 'ستحتاج لإدخال رقم هاتفك مرة أخرى للدخول.',
+                        confirmLabel: 'خروج',
                         isDanger: true,
                         onConfirm: () async {
                           final nav = Navigator.of(context);
@@ -202,7 +200,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                           nav.pushNamedAndRemoveUntil('/', (route) => false);
                         },
                       ),
-                    ).animate().slideX(begin: -0.2, end: 0, delay: 480.ms, duration: 400.ms, curve: Curves.easeOut),
+                    ),
                   ],
                 ),
               ),
@@ -211,7 +209,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
             ],
           ),
 
-          // â”€â”€ زر الإغلاق العلوي ──
+          // ── زر الإغلاق العلوي ──
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
             right: 16,
@@ -226,7 +224,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
                 child: const Icon(Icons.close, color: Colors.white, size: 18),
               ),
             ),
-          ).animate().fadeIn(delay: 600.ms),
+          ),
         ],
       ),
     );
@@ -249,7 +247,7 @@ class _BioParaDrawerState extends ConsumerState<BioParaDrawer> {
   }
 }
 
-// â”€â”€ Ù…ÙƒÙˆÙ† Ù‡يدر المستخدم ───────────────────────────────────────
+// ── مكون هيدر المستخدم ───────────────────────────────────────
 class DrawerHeaderWidget extends StatelessWidget {
   final User? user;
   const DrawerHeaderWidget({super.key, this.user});
@@ -325,18 +323,18 @@ class DrawerHeaderWidget extends StatelessWidget {
                         ),
                       ),
                     ],
-                  ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     name,
-                    style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white, shadows: [
+                    style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, shadows: [
                       const Shadow(color: Colors.black26, offset: Offset(0, 2), blurRadius: 6),
                     ]),
-                  ).animate().fadeIn(delay: 200.ms),
+                  ),
                   Text(
                     phone,
                     style: GoogleFonts.tajawal(fontSize: 13, color: Colors.white.withValues(alpha: 0.7)),
-                  ).animate().fadeIn(delay: 300.ms),
+                  ),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -353,7 +351,7 @@ class DrawerHeaderWidget extends StatelessWidget {
                         Text('عضو BioPara', style: GoogleFonts.tajawal(fontSize: 11, color: accent, fontWeight: FontWeight.w600)),
                       ],
                     ),
-                  ).animate().fadeIn(delay: 400.ms),
+                  ),
                 ],
               ),
             ),
@@ -384,7 +382,7 @@ class DrawerHeaderWidget extends StatelessWidget {
   }
 }
 
-// â”€â”€ Ø§Ù„Ù…ÙƒÙˆÙ† المخصص Ù„Ù…Ù†Ø­Ù†Ù‰ Ø§Ù„Ù‡يدر ──────────────────────────────────
+// ── المكون المخصص لمنحنى الهيدر ──────────────────────────────────
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -407,7 +405,7 @@ class WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-// â”€â”€ Ù…ÙƒÙˆÙ† Ø¹Ù†صر Ø§Ù„Ù‚ائمة ───────────────────────────────────────
+// ── مكون عنصر القائمة ───────────────────────────────────────
 class DrawerNavTile extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -442,7 +440,7 @@ class DrawerNavTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
         child: AnimatedContainer(
-          duration: 200.ms,
+          duration: const Duration(milliseconds: 200),
           height: 56,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
@@ -452,7 +450,7 @@ class DrawerNavTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Ø£ÙŠÙ‚ÙˆÙ†ة دائرية
+              // أيقونة دائرية
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -473,12 +471,12 @@ class DrawerNavTile extends StatelessWidget {
                         child: Center(
                           child: Text(badgeCount.toString(), style: GoogleFonts.cairo(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white)),
                         ),
-                      ).animate(onPlay: (controller) => controller.repeat(reverse: true)).scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 600.ms),
+                      ),
                     ),
                 ],
               ),
               const SizedBox(width: 16),
-              // Ø§Ù„Ù†ص
+              // النص
               Expanded(
                 child: Text(
                   label,
@@ -504,7 +502,7 @@ class DrawerNavTile extends StatelessWidget {
   }
 }
 
-// â”€â”€ Ø§Ù„Ùواصل والعناوين ───────────────────────────────────────
+// â”€â”€ الفواصل والعناوين ───────────────────────────────────────
 class DrawerGroupLabel extends StatelessWidget {
   final String label;
   const DrawerGroupLabel({super.key, required this.label});
@@ -533,7 +531,7 @@ class DrawerGroupDivider extends StatelessWidget {
   }
 }
 
-// â”€â”€ تذييل Ø§Ù„Ù‚ائمة ──────────────────────────────────────────
+// ── تذييل القائمة ──────────────────────────────────────────
 class DrawerFooter extends StatelessWidget {
   const DrawerFooter({super.key});
 
@@ -556,18 +554,13 @@ class DrawerFooter extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text('الإصدار ١.٠.٠', style: GoogleFonts.tajawal(fontSize: 10, color: textSecondary.withValues(alpha: 0.6))),
-          const SizedBox(height: 6),
-          InkWell(
-            onTap: () => launchUrl(Uri.parse('https://biopara.ma')),
-            child: Text('biopara.ma', style: GoogleFonts.tajawal(fontSize: 11, color: accent, fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
-          ),
         ],
       ),
     );
   }
 }
 
-// â”€â”€ Ù†افذة Ø§Ù„ØªØ£Ùƒيد ──────────────────────────────────────────
+// ── نافذة التأكيد ──────────────────────────────────────────
 class ConfirmActionSheet extends StatelessWidget {
   final String title;
   final String body;
@@ -627,7 +620,7 @@ class ConfirmActionSheet extends StatelessWidget {
   }
 }
 
-// â”€â”€ Ù†افذة اختيار اللغة ───────────────────────────────────────
+// ── نافذة اختيار اللغة ───────────────────────────────────────
 class LanguageBottomSheet extends StatelessWidget {
   const LanguageBottomSheet({super.key});
 

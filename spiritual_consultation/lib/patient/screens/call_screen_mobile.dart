@@ -14,10 +14,10 @@ Widget buildMobileCallScreen(
   final appID = int.tryParse(rawAppID ?? '') ?? 0;
 
   if (appID == 0 || appSign.isEmpty) {
-    return const Scaffold(body: Center(child: Text('خطأ ÙÙŠ إعدادات الاتصال')));
+    return const Scaffold(body: Center(child: Text('خطأ في إعدادات الاتصال')));
   }
 
-  // ØªÙ†ظيف المعرفات Ù„Ø¶Ù…Ø§Ù† Ø§Ù„ØªÙˆافق (إزالة المسافات Ø£Ùˆ Ø§Ù„Ø±Ù…Ùˆز الغريبة)
+  // تنظيف المعرفات لضمان التوافق (إزالة المسافات أو الرموز الغريبة)
   final safeUserID = userID.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
   final safeCallID = callID.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_');
 

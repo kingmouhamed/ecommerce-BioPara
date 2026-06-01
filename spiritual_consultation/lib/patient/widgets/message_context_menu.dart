@@ -148,14 +148,14 @@ class _MessageContextOverlay extends StatelessWidget {
                 if (type == 'text')
                   _MenuAction(
                     icon: Icons.copy,
-                    label: 'Ù†سخ',
+                    label: 'نسخ',
                     color: Colors.blueGrey,
                     onTap: () {
                       Navigator.pop(context);
                       Clipboard.setData(ClipboardData(text: content));
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('✅ تم Ù†سخ الرسالة'),
+                          content: Text('✅ تم نسخ الرسالة'),
                           duration: Duration(seconds: 1),
                           behavior: SnackBarBehavior.floating,
                         ),
@@ -185,7 +185,7 @@ class _MessageContextOverlay extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('حذف الرسالة؟', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        content: const Text('Ù‡ل تريد حذف Ù‡Ø°Ù‡ الرسالة لدى الجميع؟'),
+        content: const Text('هل تريد حذف هذه الرسالة لدى الجميع؟'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('إلغاء', style: TextStyle(color: Colors.grey))),
           TextButton(
@@ -193,7 +193,7 @@ class _MessageContextOverlay extends StatelessWidget {
               Navigator.pop(ctx);
               onConfirm();
             },
-            child: const Text('حذف Ù„Ø¯Ù‰ الجميع', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            child: const Text('حذف لدى الجميع', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
