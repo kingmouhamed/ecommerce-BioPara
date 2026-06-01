@@ -23,6 +23,25 @@
           "other_platform_oauth_client": []
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:788415551640:android:efc2dee52ea146b2fc98ed",
+        "android_client_info": {
+          "package_name": "com.kingmouhamed.biopara"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlsP0e-RvQl7byrkM6iD7exoFfOhJEFno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
     }
   ],
   "configuration_version": "1"

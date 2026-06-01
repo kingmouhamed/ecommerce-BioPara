@@ -1,21 +1,19 @@
-// lib/main_patient.dart
-// BioPara Patient App Entry Point
+// lib/main_patient.dart — BioPara Patient App Entry Point (Clean Rewrite)
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 
-import 'patient/screens/login_screen.dart';
-import 'patient/screens/chat_screen.dart';
-import 'core/providers/auth_provider.dart';
+import 'patient/screens/splash_screen.dart';
+import 'core/utils/custom_error_screen.dart';
+import 'core/utils/app_logger.dart';
+import 'core/services/cache_service.dart';
 
-// ── Firebase ────────────────────────────────────────────────
 Future<void> _initializeFirebase() async {
   try {
     if (kIsWeb) {
@@ -33,7 +31,6 @@ Future<void> _initializeFirebase() async {
     } else {
       await Firebase.initializeApp();
     }
-    debugPrint('Firebase initialized (Patient App)');
   } catch (e) {
     debugPrint('Firebase init error: $e');
   }
@@ -44,7 +41,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await _initializeFirebase();
 }
 
-// ── Load Arabic fonts from local assets (fixes CanvasKit web rendering) ──
 Future<void> _loadArabicFonts() async {
   try {
     final tajawal = FontLoader('Tajawal')
@@ -61,40 +57,43 @@ Future<void> _loadArabicFonts() async {
       ..addFont(rootBundle.load('assets/fonts/Cairo-Bold.ttf'))
       ..addFont(rootBundle.load('assets/fonts/Cairo-ExtraBold.ttf'));
     await cairo.load();
-
-    debugPrint('✅ Arabic fonts loaded from assets (TTF)');
   } catch (e) {
-    debugPrint('⚠️ Font loading warning: $e');
+    debugPrint('Font loading warning: $e');
   }
 }
 
-// ── Main ────────────────────────────────────────────────────
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CacheService().init();
 
-  // Prevent GoogleFonts from fetching from internet (use local assets)
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    AppLogger.e('Unhandled UI Render Error intercepted', details.exception, details.stack);
+    return CustomErrorScreen(errorDetails: details);
+  };
+
   GoogleFonts.config.allowRuntimeFetching = false;
   await _loadArabicFonts();
-
   await dotenv.load(fileName: '.env');
   await _initializeFirebase();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await initializeDateFormatting('ar', null);
 
   try {
     await Supabase.initialize(
       url: dotenv.env['SUPABASE_URL']!,
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     );
-    debugPrint('Supabase initialized (Patient App)');
   } catch (e) {
     debugPrint('Supabase init error: $e');
   }
 
-  runApp(const ProviderScope(child: BioParaPatientApp()));
+  // ProviderScope مباشرةً — بدون EasyLocalization (التطبيق عربي ثابت)
+  runApp(
+    const ProviderScope(
+      child: BioParaPatientApp(),
+    ),
+  );
 }
 
-// ── Patient App ─────────────────────────────────────────────
 class BioParaPatientApp extends StatelessWidget {
   const BioParaPatientApp({super.key});
 
@@ -103,6 +102,8 @@ class BioParaPatientApp extends StatelessWidget {
     return MaterialApp(
       title: 'BioPara',
       debugShowCheckedModeBanner: false,
+      // اللغة العربية ثابتة — لا حاجة لـ EasyLocalization
+      locale: const Locale('ar'),
       theme: ThemeData(
         primaryColor: const Color(0xFF3D5A3E),
         colorScheme: ColorScheme.fromSeed(
@@ -113,66 +114,10 @@ class BioParaPatientApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: const Color(0xFFF5F0E8),
         fontFamily: 'Tajawal',
-        textTheme: GoogleFonts.tajawalTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: GoogleFonts.tajawalTextTheme(),
         useMaterial3: true,
       ),
-      builder: (context, child) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: child ?? const SizedBox.shrink(),
-      ),
-      home: const PatientAuthWrapper(),
+      home: const SplashScreen(),
     );
   }
-}
-
-// ── Patient Auth Wrapper ─────────────────────────────────────
-class PatientAuthWrapper extends ConsumerWidget {
-  const PatientAuthWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStateProvider);
-
-    return authState.when(
-      data: (state) {
-        if (state.session == null) return const LoginScreen();
-
-        final userId = state.session!.user.id;
-        final isAdminAsync = ref.watch(isAdminProvider);
-
-        return isAdminAsync.when(
-          data: (isAdmin) {
-            if (isAdmin) {
-              debugPrint('PatientAuthWrapper: Admin blocked, signing out');
-              Supabase.instance.client.auth.signOut();
-              return const LoginScreen();
-            }
-            return ChatScreen(conversationId: userId);
-          },
-          loading: () => const _LoadingScreen(color: Color(0xFF0D6E6E)),
-          error: (e, _) => ChatScreen(conversationId: userId),
-        );
-      },
-      loading: () => const _LoadingScreen(color: Color(0xFF0D6E6E)),
-      error: (e, _) => const LoginScreen(),
-    );
-  }
-}
-
-// ── Loading Screen ───────────────────────────────────────────
-class _LoadingScreen extends StatelessWidget {
-  final Color color;
-  const _LoadingScreen({required this.color});
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        backgroundColor: const Color(0xFFF5F0E8),
-        body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(color),
-          ),
-        ),
-      );
 }

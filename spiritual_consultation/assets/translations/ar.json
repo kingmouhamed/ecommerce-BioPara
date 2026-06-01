@@ -1,0 +1,23 @@
+{
+  "app_name": "BioPara",
+  "welcome_back": "مرحباً بك من جديد",
+  "calling": "جاري الاتصال...",
+  "active_call": "مكالمة نشطة",
+  "incoming_call": "اتصال وارد...",
+  "accept": "قبول",
+  "decline": "رفض",
+  "end_call": "إنهاء المكالمة",
+  "retry": "إعادة المحاولة",
+  "error_occurred": "حدث خطأ غير متوقع",
+  "loading": "جاري التحميل...",
+  "login": "تسجيل الدخول",
+  "phone_number": "رقم الهاتف",
+  "enter_otp": "أدخل رمز التحقق SMS",
+  "confirm": "تأكيد",
+  "profile": "الملف الشخصي",
+  "settings": "الإعدادات",
+  "appointments": "المواعيد",
+  "chat": "المحادثة",
+  "shop": "المتجر",
+  "cart": "السلة"
+}

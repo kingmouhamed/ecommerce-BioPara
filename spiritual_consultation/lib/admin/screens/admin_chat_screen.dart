@@ -1,5 +1,6 @@
 // lib/screens/admin_chat_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,11 +8,21 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
+import 'package:audioplayers/audioplayers.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:record/record.dart';
+import 'dart:async';
 import '../../core/services/ai_service.dart';
 import '../../core/providers/chat_upload_provider.dart';
+import '../../core/providers/chat_provider.dart';
+import '../../core/models/message_model.dart';
+import '../../core/services/storage_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../core/services/offline_queue_service.dart';
+import '../../patient/screens/call_overlay.dart';
 
-const Color _kPrimary  = Color(0xFF2E7D32);
-const Color _kTeal     = Color(0xFF0D6E6E);
+const Color _kPrimary  = Color(0xFF2D4A2E);
+const Color _kTeal     = Color(0xFF3D5A3E);
 const Color _kGold     = Color(0xFFC8963E);
 const Color _kBg       = Color(0xFFF5F0E8);
 
@@ -41,51 +52,195 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
   bool _generatingReport = false;
   bool _isUploading      = false;
 
-  // â”€â”€ ØªÙ‡يئة ─────────────────────────────────────────────────
+  final _audioRecorder = AudioRecorder();
+  bool _isRecording = false;
+  bool _isTyping = false;
+  Timer? _recTimer;
+  int _recSecs = 0;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  StreamSubscription<List<Map<String, dynamic>>>? _incomingCallSub;
+  final List<String> _processedCallIds = [];
+
+  // ─── تهيئة ─────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
     _markAllAsRead();
+    _controller.addListener(() {
+      final typing = _controller.text.trim().isNotEmpty;
+      if (typing != _isTyping) {
+        setState(() => _isTyping = typing);
+      }
+    });
+
+    // Sync any pending messages on screen load
+    OfflineQueueService.syncQueue();
+
+    // Listen for connection restoration to sync messages
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      if (results.isNotEmpty && results.first != ConnectivityResult.none) {
+        debugPrint('🌐 Admin Chat: Internet restored. Syncing offline messages...');
+        OfflineQueueService.syncQueue();
+      }
+    });
+
+    // Listen for incoming call invitations in real-time
+    _incomingCallSub = _supabase
+        .from('messages')
+        .stream(primaryKey: ['id'])
+        .eq('conversation_id', widget.conversationId)
+        .listen((messages) {
+          if (messages.isNotEmpty) {
+            final latestMsg = messages.last; // stream orders by primary key/ascending
+            final type = latestMsg['message_type'] as String? ?? 'text';
+            final status = latestMsg['status'] as String? ?? 'sent';
+            final senderId = latestMsg['sender_id'] as String? ?? '';
+            final msgId = latestMsg['id'] as String? ?? '';
+
+            if (type == 'call_invite' && 
+                status == 'ringing' && 
+                senderId != _supabase.auth.currentUser!.id && 
+                !_processedCallIds.contains(msgId)) {
+              
+              _processedCallIds.add(msgId);
+              final content = latestMsg['content'] as String? ?? '';
+              final isVideo = content.contains('فيديو') || content.contains('video');
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => CallOverlay(
+                    name: widget.patientName,
+                    callId: msgId,
+                    conversationId: widget.conversationId,
+                    initialMode: CallMode.incoming,
+                    isVideo: isVideo,
+                  ),
+                ),
+              );
+            }
+          }
+        });
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _scrollCtrl.dispose();
+    _audioRecorder.dispose();
+    _recTimer?.cancel();
+    _connectivitySub?.cancel();
+    _incomingCallSub?.cancel();
     super.dispose();
   }
 
-  // â”€â”€ إرسال رسالة Ù†صية ──────────────────────────────────────
-  Future<void> _sendMessage({
+  // ─── إرسال رسالة نصية ──────────────────────────────────────
+  Future<String> _sendMessage({
     String? text,
     String? mediaUrl,
     String type = 'text',
+    String? customId,
+    String status = 'sent',
   }) async {
     final content = text ?? mediaUrl ?? '';
-    if (content.isEmpty) return;
+    final msgId = customId ?? const Uuid().v4();
+    if (content.isEmpty) return msgId;
     if (text != null) _controller.clear();
 
-    await _supabase.from('messages').insert({
-      'id': const Uuid().v4(),
+    final payload = {
+      'id': msgId,
       'conversation_id': widget.conversationId,
       'sender_id': _supabase.auth.currentUser!.id,
       'content': content,
       'message_type': type,
-      'status': 'sent',
-    });
+      'status': status,
+    };
 
-    // تحديث آخر رسالة ÙÙŠ المحادثة
-    await _supabase.from('conversations').upsert({
-      'id': widget.conversationId,
-      'patient_id': widget.patientId,
-      'last_message': content,
-      'last_message_at': DateTime.now().toIso8601String(),
-    });
+    try {
+      await _supabase.from('messages').insert(payload);
 
-    _scrollToBottom();
+      // تحديث آخر رسالة في المحادثة
+      await _supabase.from('conversations').upsert({
+        'id': widget.conversationId,
+        'patient_id': widget.patientId,
+        'last_message': content,
+        'last_message_at': DateTime.now().toIso8601String(),
+      });
+
+      _scrollToBottom();
+    } catch (e) {
+      debugPrint('Admin Chat: Send error, queuing offline: $e');
+      await OfflineQueueService.enqueueMessage(payload);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'أنت غير متصل. تم حفظ الرسالة وسيتم إرسالها تلقائياً عند عودة الاتصال.',
+              style: GoogleFonts.tajawal(),
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+    return msgId;
   }
 
-  // â”€â”€ إرسال ØµÙˆرة Ø£Ùˆ ملف ─────────────────────────────────────
+  // ─── تسجيل وإرسال الصوت ──────────────────────────────────────
+  Future<void> _startRecording() async {
+    try {
+      if (await _audioRecorder.hasPermission()) {
+        await _audioRecorder.start(const RecordConfig(), path: '');
+        _recSecs = 0;
+        _recTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+          if (mounted) setState(() => _recSecs++);
+        });
+        setState(() => _isRecording = true);
+      }
+    } catch (e) {
+      debugPrint('rec start error: $e');
+    }
+  }
+
+  Future<void> _cancelRecording() async {
+    _recTimer?.cancel();
+    await _audioRecorder.stop();
+    setState(() { _isRecording = false; _recSecs = 0; });
+  }
+
+  Future<void> _stopAndSend() async {
+    _recTimer?.cancel();
+    String? path;
+    try {
+      path = await _audioRecorder.stop();
+    } catch (e) {
+      debugPrint('rec stop error: $e');
+    }
+    setState(() { _isRecording = false; _recSecs = 0; });
+    if (path == null) return;
+    
+    final xfile = XFile(path);
+    final bytes = await xfile.readAsBytes();
+    final extension = '.m4a';
+
+    setState(() => _isUploading = true);
+    final url = await ref
+        .read(chatUploadProvider.notifier)
+        .uploadBytes(bytes, extension, folder: 'audio');
+    setState(() => _isUploading = false);
+    
+    if (url != null) {
+      await _sendMessage(
+        mediaUrl: url,
+        type: 'audio',
+      );
+    }
+  }
+
+  String _fmt(Duration d) =>
+      '${d.inMinutes.toString().padLeft(2, '0')}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+
+  // ─── إرسال صورة أو ملف ─────────────────────────────────────
   Future<void> _pickAndSendMedia(String type) async {
     setState(() => _isUploading = true);
     try {
@@ -107,7 +262,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('ÙØ´Ù„ الرفع: $e', style: GoogleFonts.tajawal())),
+          SnackBar(content: Text('فشل الرفع: $e', style: GoogleFonts.tajawal())),
         );
       }
     } finally {
@@ -115,7 +270,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     }
   }
 
-  // â”€â”€ تحديد الرسائل كـ "Ù…Ù‚Ø±Ùˆءة" ─────────────────────────────
+  // â”€â”€ تحديد الرسائل كـ "مقروءة" ─────────────────────────────
   Future<void> _markAllAsRead() async {
     try {
       await _supabase
@@ -124,7 +279,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
           .eq('conversation_id', widget.conversationId)
           .neq('sender_id', _supabase.auth.currentUser!.id);
 
-      // إعادة ØªØ¹ÙŠÙŠÙ† عداد غير Ø§Ù„Ù…Ù‚Ø±Ùˆء ÙÙŠ المحادثة
+      // إعادة تعيين عداد غير المقروء في المحادثة
       await _supabase
           .from('conversations')
           .update({'unread_count': 0})
@@ -146,7 +301,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     });
   }
 
-  // â”€â”€ ØªÙˆليد ØªÙ‚رير Gemini تلقائي ─────────────────────────────
+  // â”€â”€ توليد تقرير Gemini تلقائي ─────────────────────────────
   Future<void> _generateSessionReport() async {
     setState(() => _generatingReport = true);
     try {
@@ -178,7 +333,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('خطأ ÙÙŠ ØªÙˆليد Ø§Ù„ØªÙ‚رير: $e',
+            content: Text('خطأ في توليد التقرير: $e',
                 style: GoogleFonts.tajawal()),
             backgroundColor: Colors.redAccent,
           ),
@@ -186,6 +341,32 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
       }
     } finally {
       if (mounted) setState(() => _generatingReport = false);
+    }
+  }
+
+  void _startCall(bool isVideo) async {
+    final callId = const Uuid().v4();
+    
+    await _sendMessage(
+      customId: callId,
+      type: 'call_invite',
+      text: isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
+      status: 'ringing',
+    );
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CallOverlay(
+            name: widget.patientName,
+            callId: callId,
+            conversationId: widget.conversationId,
+            initialMode: CallMode.outgoing,
+            isVideo: isVideo,
+          ),
+        ),
+      );
     }
   }
 
@@ -206,7 +387,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'ØªÙ‚رير الجلسة — ${widget.patientName}',
+                      'تقرير الجلسة — ${widget.patientName}',
                       style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold, fontSize: 16),
                     ),
@@ -279,7 +460,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildAttachItem(
-                  Icons.image_rounded, 'ØµÙˆرة', const Color(0xFF4CAF50),
+                  Icons.image_rounded, 'صورة', const Color(0xFF4CAF50),
                   () { Navigator.pop(context); _pickAndSendMedia('image'); },
                 ),
                 _buildAttachItem(
@@ -287,7 +468,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
                   () { Navigator.pop(context); _pickAndSendMedia('document'); },
                 ),
                 _buildAttachItem(
-                  Icons.auto_awesome_rounded, 'ØªÙ‚رير Gemini', _kGold,
+                  Icons.auto_awesome_rounded, 'تقرير Gemini', _kGold,
                   () { Navigator.pop(context); _generateSessionReport(); },
                 ),
               ],
@@ -325,11 +506,9 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
   // ─────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    final messagesStream = _supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .eq('conversation_id', widget.conversationId)
-        .order('created_at', ascending: false);
+    // ✅ استخدام chatProvider المحسّن بدلاً من StreamBuilder المنشأ في build()
+    final messages = ref.watch(chatProvider(widget.conversationId));
+    final adminId  = _supabase.auth.currentUser?.id ?? '';
 
     return Scaffold(
       backgroundColor: _kBg,
@@ -338,6 +517,13 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 0,
+        leading: Directionality(
+          textDirection: TextDirection.ltr,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
         title: Row(
           children: [
             CircleAvatar(
@@ -348,9 +534,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
                   : null,
               child: widget.patientAvatar == null
                   ? Text(
-                      widget.patientName.isNotEmpty
-                          ? widget.patientName[0]
-                          : 'م',
+                      widget.patientName.isNotEmpty ? widget.patientName[0] : 'م',
                       style: const TextStyle(color: Colors.white))
                   : null,
             ),
@@ -360,211 +544,252 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
               children: [
                 Text(widget.patientName,
                     style: GoogleFonts.tajawal(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                        color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                 Text('مريض BioPara',
-                    style: GoogleFonts.tajawal(
-                        color: Colors.white70, fontSize: 11)),
+                    style: GoogleFonts.tajawal(color: Colors.white70, fontSize: 11)),
               ],
             ),
           ],
         ),
         actions: [
-          // زر ØªÙ‚رير Gemini
           _generatingReport
               ? const Padding(
                   padding: EdgeInsets.all(14),
-                  child: SizedBox(
-                    width: 20, height: 20,
-                    child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2),
-                  ),
-                )
+                  child: SizedBox(width: 20, height: 20,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)))
               : IconButton(
                   icon: const Icon(Icons.auto_awesome_rounded),
-                  tooltip: 'ØªÙˆليد ØªÙ‚رير Gemini',
-                  onPressed: _generateSessionReport,
-                ),
+                  tooltip: 'توليد تقرير Gemini',
+                  onPressed: _generateSessionReport),
           IconButton(
             icon: const Icon(Icons.call_rounded),
-            tooltip: 'Ù…Ùƒالمة ØµÙˆتية',
-            onPressed: () {},
-          ),
+            tooltip: 'مكالمة صوتية',
+            onPressed: () => _startCall(false)),
           IconButton(
             icon: const Icon(Icons.videocam_rounded),
-            tooltip: 'Ù…Ùƒالمة فيديو',
-            onPressed: () {},
-          ),
+            tooltip: 'مكالمة فيديو',
+            onPressed: () => _startCall(true)),
           const SizedBox(width: 4),
         ],
       ),
 
       body: Column(
         children: [
-          // â”€â”€ Ù‚ائمة الرسائل ─────────────────────────────────
+          // ── قائمة الرسائل بـ chatProvider ─────────────
           Expanded(
-            child: StreamBuilder<List<Map<String, dynamic>>>(
-              stream: messagesStream,
-              builder: (ctx, snap) {
-                if (snap.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: _kTeal),
-                  );
-                }
-                final msgs = snap.data ?? [];
-                if (msgs.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.chat_bubble_outline_rounded,
-                            size: 64, color: Color(0x332E7D32)),
-                        const SizedBox(height: 16),
-                        Text('لا ØªÙˆجد رسائل بعد',
-                            style: GoogleFonts.tajawal(
-                                color: Colors.grey, fontSize: 16)),
-                      ],
-                    ),
-                  );
-                }
-
-                WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
-
-                return ListView.builder(
+            child: messages.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.chat_bubble_outline_rounded,
+                          size: 64, color: Color(0x332E7D32)),
+                      const SizedBox(height: 16),
+                      Text('لا توجد رسائل بعد',
+                          style: GoogleFonts.tajawal(color: Colors.grey, fontSize: 16)),
+                    ],
+                  ),
+                )
+              : ListView.builder(
                   controller: _scrollCtrl,
                   reverse: true,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
-                  itemCount: msgs.length,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  itemCount: messages.length,
                   itemBuilder: (_, i) {
-                    // ✅ reverse=true يعرض Ù…Ù† Ø§Ù„Ø£Ø³Ùل (index 0) للأعلى
-                    final msg = msgs[i];
-                    final adminId = _supabase.auth.currentUser!.id;
-                    final isAdmin = msg['sender_id'] == adminId;
-                    final isAi    = msg['sender_id'] == 'ai_agent';
-                    return _MessageBubble(
-                      message: msg,
+                    final msg = messages[i];
+                    final isAdmin = msg.senderId == adminId;
+                    final isAi   = msg.isAi || msg.senderId == 'ai_agent';
+                    return _MessageBubbleNew(
+                      msg: msg,
                       isAdmin: isAdmin,
                       isAi: isAi,
                     );
                   },
-                );
-              },
-            ),
+                ),
           ),
 
-          // â”€â”€ شريط Ø§Ù„Ùƒتابة ───────────────────────────────────
+          // â”€â”€ شريط الكتابة ───────────────────────────────────
           if (_isUploading)
             const LinearProgressIndicator(
               backgroundColor: Color(0xFFE0D8C8),
               color: _kTeal,
             ),
 
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 12, vertical: 8),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 8,
-                    offset: Offset(0, -2))
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline_rounded,
-                        color: _kTeal, size: 28),
-                    onPressed: _showAttachmentMenu,
+          _isRecording
+              ? Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 8,
+                        offset: Offset(0, -2),
+                      )
+                    ],
                   ),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _kBg,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(
-                            color: const Color(0xFFD4C9B0)),
-                      ),
-                      child: TextField(
-                        controller: _controller,
-                        textAlign: TextAlign.right,
-                        style: GoogleFonts.tajawal(fontSize: 15),
-                        minLines: 1,
-                        maxLines: 5,
-                        textInputAction: TextInputAction.send,
-                        onSubmitted: (_) =>
-                            _sendMessage(text: _controller.text.trim()),
-                        decoration: InputDecoration(
-                          hintText: 'Ø§Ùƒتب Ø±Ø¯Ùƒ Ø¹Ù„Ù‰ المريض...',
-                          hintStyle: GoogleFonts.tajawal(
-                              color: Colors.grey.shade400,
-                              fontStyle: FontStyle.italic),
-                          border: InputBorder.none,
-                          contentPadding:
-                              const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () =>
-                        _sendMessage(text: _controller.text.trim()),
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: _kPrimary,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: _kPrimary.withValues(alpha: 0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 3),
+                  child: SafeArea(
+                    child: Row(
+                      children: [
+                        const Icon(Icons.fiber_manual_record, color: Colors.redAccent),
+                        const SizedBox(width: 12),
+                        Text(
+                          _fmt(Duration(seconds: _recSecs)),
+                          style: GoogleFonts.cairo(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      child: const Icon(Icons.send_rounded,
-                          color: Colors.white, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'جاري تسجيل مقطع صوتي...',
+                            textAlign: TextAlign.right,
+                            style: GoogleFonts.tajawal(color: Colors.black54),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                          onPressed: _cancelRecording,
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: _stopAndSend,
+                          child: Container(
+                            width: 48, height: 48,
+                            decoration: const BoxDecoration(color: _kPrimary, shape: BoxShape.circle),
+                            child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                )
+              : Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 8,
+                        offset: Offset(0, -2),
+                      )
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline_rounded,
+                              color: _kTeal, size: 28),
+                          onPressed: _showAttachmentMenu,
+                        ),
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: _kBg,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                  color: const Color(0xFFD4C9B0)),
+                            ),
+                            child: Focus(
+                              onKeyEvent: (node, event) {
+                                if (event is KeyDownEvent &&
+                                    event.logicalKey == LogicalKeyboardKey.enter) {
+                                  if (!HardwareKeyboard.instance.isShiftPressed) {
+                                    if (_isTyping) {
+                                      _sendMessage(text: _controller.text.trim());
+                                    }
+                                    return KeyEventResult.handled;
+                                  }
+                                }
+                                return KeyEventResult.ignored;
+                              },
+                              child: TextField(
+                                controller: _controller,
+                                textAlign: TextAlign.right,
+                                style: GoogleFonts.tajawal(fontSize: 15),
+                                minLines: 1,
+                                maxLines: 5,
+                                textInputAction: TextInputAction.send,
+                                onSubmitted: (_) =>
+                                    _isTyping ? _sendMessage(text: _controller.text.trim()) : null,
+                                decoration: InputDecoration(
+                                  hintText: 'اكتب ردك على المريض...',
+                                  hintStyle: GoogleFonts.tajawal(
+                                      color: Colors.grey.shade400,
+                                      fontStyle: FontStyle.italic),
+                                  border: InputBorder.none,
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () {
+                            if (_isTyping) {
+                              _sendMessage(text: _controller.text.trim());
+                            } else {
+                              _startRecording();
+                            }
+                          },
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: _kPrimary,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _kPrimary.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              _isTyping ? Icons.send_rounded : Icons.mic_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
         ],
       ),
     );
   }
 }
 
-// â”€â”€ ÙÙ‚اعة الرسالة ─────────────────────────────────────────────
-class _MessageBubble extends StatelessWidget {
-  final Map<String, dynamic> message;
+// ── فقاعة الرسالة الجديدة (تستخدم MessageModel) ──────────────
+class _MessageBubbleNew extends ConsumerWidget {
+  final MessageModel msg;
   final bool isAdmin;
   final bool isAi;
 
-  const _MessageBubble({
-    required this.message,
+  const _MessageBubbleNew({
+    required this.msg,
     required this.isAdmin,
     this.isAi = false,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final type = message['message_type'] as String? ?? 'text';
-    final content = message['content'] as String? ?? '';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final type    = msg.type.name;
+    final content = msg.content;
 
-    // ✅ BUG-CHAT-01: Ø³ÙŠØ§Ù‚ الاستشارة الطبية
-    //   المريض (Ù…Ù† يطلب المساعدة) â†’ ÙŠÙ…ÙŠÙ†، أبيض (مثل WhatsApp Ù„Ù„Ù…ÙØ±Ø³Ùل)
-    //   الأدمن/المستشار (Ø§Ù„Ù…ÙØ¬ÙŠب) â†’ يسار، أخضر
+    // المريض يكون على اليمين، الأدمن والذكاء الاصطناعي على اليسار
     final isPatient = !isAdmin && !isAi;
+
     return Align(
       alignment: isPatient ? Alignment.centerRight : Alignment.centerLeft,
       child: Column(
@@ -578,7 +803,7 @@ class _MessageBubble extends StatelessWidget {
                 children: [
                   const Icon(Icons.auto_awesome_rounded, size: 12, color: _kGold),
                   const SizedBox(width: 4),
-                  Text('مساعد ذكي', style: GoogleFonts.tajawal(fontSize: 11, color: _kGold)),
+                  Text('مساعد ذكي BioPara', style: GoogleFonts.tajawal(fontSize: 11, color: _kGold)),
                 ],
               ),
             ),
@@ -595,92 +820,68 @@ class _MessageBubble extends StatelessWidget {
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(18),
                 topRight: const Radius.circular(18),
-                // ذيل Ø§Ù„ÙÙ‚اعة: ÙŠÙ…ÙŠÙ† للمريض، يسار للأدمن
+                // ذيل الفقاعة: يمين للمريض، يسار للأدمن
                 bottomLeft:  Radius.circular(isPatient ? 18 : 4),
                 bottomRight: Radius.circular(isPatient ? 4  : 18),
               ),
               boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 6, offset: const Offset(0, 2))],
               border: isAi ? Border.all(color: _kGold.withValues(alpha: 0.4), width: 1) : null,
             ),
-            child: _buildContent(type, content),
+            child: _buildContent(context, ref, type, content),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent(String type, String content) {
-    // â”€â”€ ØµÙˆرة ─────────────────────────────────────────────────
+  Widget _buildContent(BuildContext context, WidgetRef ref, String type, String content) {
+    // ─── صورة ─────────────────────────────────────────────────
     if (type == 'image') {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          content,
-          width: 220,
-          fit: BoxFit.cover,
-          loadingBuilder: (_, child, progress) => progress == null
-              ? child
-              : const SizedBox(
-                  width: 220,
-                  height: 140,
-                  child:
-                      Center(child: CircularProgressIndicator(color: _kTeal)),
-                ),
-          errorBuilder: (ctx, err, st) => const Icon(Icons.broken_image,
-              size: 50, color: Colors.grey),
+      return _SecureImage(url: content);
+    }
+
+    // ─── ملف صوتي ─────────────────────────────────────────────
+    if (type == 'audio') {
+      return _AudioPlayer(url: content, isMe: isAdmin);
+    }
+
+    // ─── مستند ────────────────────────────────────────────────
+    if (type == 'document') {
+      return InkWell(
+        onTap: () async {
+          try {
+            final storage = ref.read(storageServiceProvider);
+            final path = storage.extractPath(content);
+            final launchUrlStr = path != null
+                ? await storage.getSignedUrl(path)
+                : content;
+            final uri = Uri.parse(launchUrlStr);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            }
+          } catch (e) {
+            debugPrint('Error opening document: $e');
+          }
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.description_rounded,
+                color: isAdmin ? Colors.white : _kTeal, size: 26),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text('مستند مرفق',
+                  style: GoogleFonts.tajawal(
+                      color: isAdmin ? Colors.white : _kTeal,
+                      decoration: TextDecoration.underline)),
+            ),
+          ],
         ),
       );
     }
 
-    // â”€â”€ ملف صوتي ─────────────────────────────────────────────
-    if (type == 'audio') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.play_circle_filled_rounded,
-            color: isAdmin ? Colors.white : _kPrimary,
-            size: 34,
-          ),
-          const SizedBox(width: 8),
-          Container(
-            width: 120,
-            height: 4,
-            decoration: BoxDecoration(
-              color: (isAdmin ? Colors.white : _kPrimary).withValues(alpha: 0.35),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Icon(
-            Icons.mic_rounded,
-            color: (isAdmin ? Colors.white : _kPrimary).withValues(alpha: 0.7),
-            size: 16,
-          ),
-        ],
-      );
-    }
-
-    // â”€â”€ Ù…Ø³ØªÙ†د ────────────────────────────────────────────────
-    if (type == 'document') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.description_rounded,
-              color: isAdmin ? Colors.white : _kTeal, size: 26),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text('Ù…Ø³ØªÙ†د Ù…Ø±Ùق',
-                style: GoogleFonts.tajawal(
-                    color: isAdmin ? Colors.white : _kTeal,
-                    decoration: TextDecoration.underline)),
-          ),
-        ],
-      );
-    }
-
-    // â”€â”€ Ø¯Ø¹Ùˆة Ù…Ùƒالمة ØµÙˆتية/فيديو ──────────────────────────────
-    if (type == 'call_invite' || content.contains('Ù…Ùƒالمة')) {
+    // ─── دعوة مكالمة صوتية/فيديو ──────────────────────────────
+    if (type == 'call_invite' || content.contains('مكالمة')) {
       final isVideo = content.contains('فيديو') ||
           content.contains('video') ||
           type == 'video_call';
@@ -694,7 +895,7 @@ class _MessageBubble extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            isVideo ? 'Ù…Ùƒالمة فيديو' : 'Ù…Ùƒالمة ØµÙˆتية',
+            isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
             style: GoogleFonts.tajawal(
               color: isAdmin ? Colors.white : _kPrimary,
               fontSize: 13,
@@ -705,38 +906,17 @@ class _MessageBubble extends StatelessWidget {
       );
     }
 
-    // â”€â”€ رابط ملف (audio/video URL خام) ───────────────────────
+    // ─── رابط ملف (audio/video URL خام) ───────────────────────
     if (content.startsWith('https://') &&
         (content.endsWith('.m4a') ||
             content.endsWith('.mp3') ||
             content.endsWith('.aac') ||
             content.endsWith('.ogg'))) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.play_circle_filled_rounded,
-              color: isAdmin ? Colors.white : _kPrimary, size: 34),
-          const SizedBox(width: 8),
-          Container(
-            width: 110,
-            height: 4,
-            decoration: BoxDecoration(
-              color: (isAdmin ? Colors.white : _kPrimary)
-                  .withValues(alpha: 0.35),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.mic_rounded,
-              color: (isAdmin ? Colors.white : _kPrimary)
-                  .withValues(alpha: 0.6),
-              size: 16),
-        ],
-      );
+      return _AudioPlayer(url: content, isMe: isAdmin);
     }
 
-    // â”€â”€ Ù†ص عادي ──────────────────────────────────────────────
-    // المريض â†’ ÙÙ‚اعة بيضاء â†’ Ù†ص Ø£Ø³Ùˆد | Ø§Ù„Ø£Ø¯Ù…Ù† â†’ ÙÙ‚اعة خضراء â†’ Ù†ص أبيض
+    // ─── نص عادي ──────────────────────────────────────────────
+    // المريض → فقاعة بيضاء → نص أسود | الأدمن → فقاعة خضراء → نص أبيض
     final isPatientText = !isAdmin;
     return Text(
       content,
@@ -746,6 +926,325 @@ class _MessageBubble extends StatelessWidget {
         height: 1.5,
       ),
       textAlign: isPatientText ? TextAlign.right : TextAlign.left,
+    );
+  }
+}
+
+// ─── مشغل الصوت المخصص للأدمن ──────────────────────────────────
+final _activeAudioUrlProvider = StateProvider<String?>((ref) => null);
+
+class _AudioPlayer extends ConsumerStatefulWidget {
+  final String url;
+  final bool isMe;
+  const _AudioPlayer({required this.url, required this.isMe});
+
+  @override
+  ConsumerState<_AudioPlayer> createState() => _AudioPlayerState();
+}
+
+class _AudioPlayerState extends ConsumerState<_AudioPlayer> {
+  final _player = AudioPlayer();
+  Duration _pos = Duration.zero;
+  Duration _dur = Duration.zero;
+  bool _playing = false;
+  bool _prepared = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _player.onPositionChanged.listen((p) {
+      final dynamic val = p;
+      if (val != null && mounted) {
+        setState(() => _pos = p);
+      }
+    });
+    _player.onDurationChanged.listen((d) {
+      final dynamic val = d;
+      if (val != null && mounted) {
+        setState(() => _dur = d);
+      }
+    });
+    _player.onPlayerStateChanged.listen((s) {
+      final dynamic val = s;
+      if (val != null && mounted) {
+        setState(() => _playing = s == PlayerState.playing);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  String _fmt(Duration d) =>
+      '${d.inMinutes.toString().padLeft(2, '0')}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
+
+  @override
+  Widget build(BuildContext context) {
+    // إيقاف تشغيل هذا الأوديو تلقائياً إذا بدأ تشغيل أوديو آخر
+    ref.listen<String?>(_activeAudioUrlProvider, (prev, next) {
+      if (next != widget.url && _playing) {
+        _player.pause();
+      }
+    });
+
+    final accent = _kGold;
+    final progress = _dur.inMilliseconds > 0 
+        ? (_pos.inMilliseconds / _dur.inMilliseconds).clamp(0.0, 1.0) 
+        : 0.0;
+    final isMe = widget.isMe == true;
+    final labelColor = isMe ? Colors.white70 : Colors.black54;
+
+    return Container(
+      width: 250,
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () async {
+              try {
+                if (_playing) {
+                  await _player.pause();
+                } else {
+                  // تعيين هذا الأوديو كالأوديو النشط حالياً لتنبيه باقي المشغلات بالتوقف
+                  ref.read(_activeAudioUrlProvider.notifier).state = widget.url;
+
+                  if (!_prepared) {
+                    final storage = ref.read(storageServiceProvider);
+                    final path = storage.extractPath(widget.url);
+                    final playUrl = path != null
+                        ? await storage.getSignedUrl(path)
+                        : widget.url;
+
+                    if (playUrl.isNotEmpty) {
+                      await _player.setSource(UrlSource(playUrl));
+                      _prepared = true;
+                    }
+                  }
+                  await _player.resume();
+                }
+              } catch (e) {
+                debugPrint('Audio playback error: $e');
+              }
+            },
+            child: Container(
+              width: 40, height: 40,
+              decoration: BoxDecoration(
+                color: isMe ? Colors.white : _kPrimary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: (isMe ? Colors.white : _kPrimary).withValues(alpha: 0.35),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  )
+                ],
+              ),
+              child: Icon(
+                _playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                color: isMe ? _kPrimary : Colors.white,
+                size: 22,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 30,
+                  width: double.infinity,
+                  child: CustomPaint(
+                    painter: _WaveformPainter(
+                      progress: progress,
+                      activeColor: isMe ? Colors.white : accent,
+                      inactiveColor: (isMe ? Colors.white : Colors.grey).withValues(alpha: 0.2),
+                      seed: widget.url.hashCode,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_fmt(_pos), style: GoogleFonts.tajawal(fontSize: 10, color: labelColor)),
+                      Text(_fmt(_dur), style: GoogleFonts.tajawal(fontSize: 10, color: labelColor)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircleAvatar(
+                radius: 16,
+                backgroundColor: isMe ? Colors.white24 : Colors.grey.shade300,
+                child: Icon(Icons.person, color: isMe ? Colors.white : Colors.grey.shade600, size: 20),
+              ),
+              Positioned(
+                bottom: -2,
+                left: -2,
+                child: Container(
+                  padding: const EdgeInsets.all(1),
+                  decoration: BoxDecoration(color: isMe ? _kPrimary : Colors.white, shape: BoxShape.circle),
+                  child: Icon(Icons.mic, size: 10, color: isMe ? Colors.white : accent),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── رسام الموجات الصوتية ─────────────────────────────────────
+class _WaveformPainter extends CustomPainter {
+  final double progress;
+  final Color activeColor;
+  final Color inactiveColor;
+  final int seed;
+
+  _WaveformPainter({
+    required this.progress,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.seed,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
+
+    final barWidth = 3.0;
+    final spacing = 3.0;
+    final count = (size.width / (barWidth + spacing)).floor();
+    
+    for (int i = 0; i < count; i++) {
+      final x = i * (barWidth + spacing);
+      final normalizedX = i / count;
+      
+      final pseudoRandom = ((i * 13) ^ seed).abs() % 100 / 100.0;
+      final hFactor = 0.3 + (0.7 * pseudoRandom);
+      final height = size.height * hFactor;
+      
+      paint.color = normalizedX <= progress ? activeColor : inactiveColor;
+      
+      final rect = Rect.fromLTWH(
+        x, 
+        (size.height - height) / 2, 
+        barWidth, 
+        height
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(5)), 
+        paint
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_WaveformPainter old) => old.progress != progress;
+}
+
+// ─── عرض الصور الآمن ──────────────────────────────────────────
+class _SecureImage extends ConsumerWidget {
+  final String url;
+  const _SecureImage({required this.url});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final storage = ref.read(storageServiceProvider);
+    final path = storage.extractPath(url);
+    if (path == null) return _buildImage(context, url);
+
+    return FutureBuilder<String>(
+      future: storage.getSignedUrl(path),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+              width: 220, height: 150,
+              child: Center(child: CircularProgressIndicator(color: _kTeal)));
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const SizedBox(
+              width: 220, height: 120,
+              child: Icon(Icons.broken_image, color: Colors.grey, size: 48));
+        }
+        return _buildImage(context, snapshot.data!);
+      },
+    );
+  }
+
+  Widget _buildImage(BuildContext context, String imageUrl) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => _FullScreenImage(url: imageUrl),
+          ),
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          width: 220,
+          fit: BoxFit.cover,
+          loadingBuilder: (_, child, prog) => prog == null
+              ? child
+              : const SizedBox(
+                  width: 220, height: 150,
+                  child: Center(child: CircularProgressIndicator(color: _kTeal))),
+          errorBuilder: (_, _, _) => const SizedBox(
+            width: 220, height: 120,
+            child: Icon(Icons.broken_image, color: Colors.grey, size: 48)),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── عرض الصورة بالحجم الكامل ──────────────────────────────────
+class _FullScreenImage extends StatelessWidget {
+  final String url;
+  const _FullScreenImage({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: Center(
+        child: InteractiveViewer(
+          minScale: 0.5,
+          maxScale: 4.0,
+          child: Hero(
+            tag: url,
+            child: Image.network(
+              url,
+              fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

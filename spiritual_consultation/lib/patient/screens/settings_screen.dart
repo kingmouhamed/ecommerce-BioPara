@@ -12,7 +12,13 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: primaryGreen,
         title: const Text('الإعدادات', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        leading: Directionality(
+          textDirection: TextDirection.ltr,
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       body: ListView(
         children: [
@@ -21,12 +27,12 @@ class SettingsScreen extends StatelessWidget {
           const Divider(),
 
           // ── SETTINGS LIST ──
-          _buildSettingsTile(Icons.key, 'الحساب', 'Ø§Ù„Ø®ØµÙˆصية، Ø§Ù„Ø£Ù…Ø§Ù†، تغيير الرقم'),
-          _buildSettingsTile(Icons.chat, 'الدردشات', 'Ø§Ù„Ù…Ø¸Ù‡ر، Ø®Ù„ÙÙŠات الشاشة، سجل الدردشات'),
-          _buildSettingsTile(Icons.notifications, 'الإشعارات', 'Ù†غمات الرسائل، Ø§Ù„Ù…Ø¬Ù…Ùˆعات ÙˆØ§Ù„Ù…Ùƒالمات'),
-          _buildSettingsTile(Icons.storage, 'Ø§Ù„ØªØ®Ø²ÙŠÙ† ÙˆØ§Ù„Ø¨ÙŠØ§Ù†ات', 'استخدام الشبكة، التنزيل التلقائي'),
-          _buildSettingsTile(Icons.help_outline, 'المساعدة', 'Ù…Ø±Ùƒز المساعدة، اتصل Ø¨Ù†ا، سياسة Ø§Ù„Ø®ØµÙˆصية'),
-          _buildSettingsTile(Icons.people, 'Ø¯Ø¹Ùˆة صديق', ''),
+          _buildSettingsTile(Icons.key, 'الحساب', 'الخصوصية، الأمان، تغيير الرقم'),
+          _buildSettingsTile(Icons.chat, 'الدردشات', 'المظهر، خلفيات الشاشة، سجل الدردشات'),
+          _buildSettingsTile(Icons.notifications, 'الإشعارات', 'نغمات الرسائل، المجموعات والمكالمات'),
+          _buildSettingsTile(Icons.storage, 'التخزين والبيانات', 'استخدام الشبكة، التنزيل التلقائي'),
+          _buildSettingsTile(Icons.help_outline, 'المساعدة', 'مركز المساعدة، اتصل بنا، سياسة الخصوصية'),
+          _buildSettingsTile(Icons.people, 'دعوة صديق', ''),
 
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
@@ -64,7 +70,7 @@ class SettingsScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                const Text('🌿 متاح Ø§Ù„Ø¢Ù† للاستشارة Ø§Ù„Ø±Ùˆحية', style: TextStyle(color: Colors.grey)),
+                const Text('🌿 متاح الآن للاستشارة الروحية', style: TextStyle(color: Colors.grey)),
               ],
             ),
           ),

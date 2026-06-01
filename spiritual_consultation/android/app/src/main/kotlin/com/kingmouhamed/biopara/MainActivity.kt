@@ -1,4 +1,4 @@
-package com.example.spiritual_consultation
+package com.kingmouhamed.biopara
 
 import io.flutter.embedding.android.FlutterActivity
 

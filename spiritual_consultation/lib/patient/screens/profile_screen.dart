@@ -11,10 +11,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/profile_provider.dart';
 import '../../core/providers/auth_provider.dart';
 import '../../core/models/profile_model.dart';
+import 'package:path/path.dart' as p;
 
 
-/// [ProfileScreen] - إعادة تصميم شاملة Ù„Ù‡Ùˆية BioPara Spiritual
-/// تصميم يجمع Ø¨ÙŠÙ† الأصالة العربية ÙˆØ§Ù„ÙØ®Ø§Ù…ة الحديثة
+/// [ProfileScreen] - إعادة تصميم شاملة لهوية BioPara Spiritual
+/// تصميم يجمع بين الأصالة العربية والفخامة الحديثة
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
  
@@ -24,7 +25,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
  
 class _ProfileScreenState extends ConsumerState<ProfileScreen>
     with TickerProviderStateMixin {
-  // تعريف Ø§Ù„Ø£Ù„ÙˆØ§Ù† الأساسية Ù„Ù„Ù‡Ùˆية
+  // تعريف الألوان الأساسية للهوية
   static const Color primary = Color(0xFF2D4A2E);
   static const Color primaryLight = Color(0xFF4A7C4E);
   static const Color accent = Color(0xFFC8963E);
@@ -71,13 +72,70 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+      maxWidth: 600,
+    );
+    if (image == null) return;
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('جاري رفع الصورة...'),
+          backgroundColor: primary,
+          duration: Duration(seconds: 30),
+        ),
+      );
+    }
+
+    try {
+      final supabase = Supabase.instance.client;
+      final userId = supabase.auth.currentUser?.id;
+      if (userId == null) return;
+
+      final bytes = await image.readAsBytes();
+      final ext = p.extension(image.path).toLowerCase();
+      final fileName = 'avatar_$userId$ext';
+
+      await supabase.storage
+          .from('avatars')
+          .uploadBinary(
+            fileName,
+            bytes,
+            fileOptions: FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
+
+      final avatarUrl = supabase.storage
+          .from('avatars')
+          .getPublicUrl(fileName);
+
+      await supabase
+          .from('profiles')
+          .update({'avatar_url': avatarUrl})
+          .eq('id', userId);
+
+      ref.invalidate(profileProvider);
+
       if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("جاري تحديث Ø§Ù„ØµÙˆرة الشخصية..."),
-            backgroundColor: primary,
+            content: Text('✅ تم تحديث الصورة الشخصية بنجاح'),
+            backgroundColor: Color(0xFF2D7A4E),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('فشل رفع الصورة: $e'),
+            backgroundColor: danger,
           ),
         );
       }
@@ -102,11 +160,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  // 1. Ø§Ù„Ù‚سم Ø§Ù„Ø¹Ù„Ùˆي Ø§Ù„Ù…ØªÙ…Ùˆج (Header)
+                  // 1. القسم العلوي المتموج (Header)
                   _buildHeader(userName),
 
                   const SizedBox(height: 40),
-                  // 2. Ø¨Ø·Ø§Ù‚ة Ø§Ù„Ù…Ø¹Ù„Ùˆمات الشخصية
+                  // 2. بطاقة المعلومات الشخصية
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: SlideTransition(
@@ -115,10 +173,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                     ),
                   ),
 
-                  // 3. Ù‚ائمة الإجراءات
+                  // 3. قائمة الإجراءات
                   _buildActionList(userName, userPhone, userHandle, profile),
 
-                  // 4. زر تسجيل Ø§Ù„Ø®Ø±Ùˆج
+                  // 4. زر تسجيل الخروج
                   _buildLogoutButton(),
 
                   _buildFooter(),
@@ -134,12 +192,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     );
   }
 
-  // Ø¨Ù†اء Ø§Ù„Ù‡يدر مع Ø§Ù„ØªÙ…Ùˆج Ùˆالأفاتار
+  // بناء الهيدر مع التموج والأفاتار
   Widget _buildHeader(String userName) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Ø§Ù„Ø®Ù„ÙÙŠة المتدرجة مع Ø§Ù„ØªÙ…Ùˆج
+        // الخلفية المتدرجة مع التموج
         ClipPath(
           clipper: WaveClipper(),
           child: Container(
@@ -154,14 +212,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
             child: Stack(
               children: [
-                // Ù†Ù‚ش Ø£ÙˆØ±Ø§Ù‚ شجر Ø®ÙÙŠف (Overlay)
+                // نقش أوراق شجر خفيف (Overlay)
                 Positioned.fill(
                   child: Opacity(
                     opacity: 0.05,
                     child: CustomPaint(painter: LeafPatternPainter()),
                   ),
                 ),
-                // Ù…Ø­ØªÙˆÙ‰ Ø§Ù„Ù‡يدر (الاسم ÙˆØ§Ù„Ø¨ÙŠØ§Ù†ات)
+                // محتوى الهيدر (الاسم والبيانات)
                 Positioned(
                   bottom: 65,
                   right: 0,
@@ -172,7 +230,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         userName,
                         style: GoogleFonts.cairo(
                           fontSize: 20,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           color: Colors.white,
                           shadows: [
                             const Shadow(
@@ -187,17 +245,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       _buildMemberBadge(),
                       const SizedBox(height: 4),
                       Text(
-                        "Ø¹Ø¶Ùˆ Ù…Ù†ذ: مايو 2024",
+                        "عضو منذ: مايو 2024",
                         style: GoogleFonts.tajawal(
                           fontSize: 11,
                           color: Colors.white70,
-                          fontWeight: FontWeight.w300,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
                   ),
                 ),
-                // خط Ø°Ù‡بي جمالي ÙÙŠ Ø§Ù„Ø£Ø³Ùل
+                // خط ذهبي جمالي في الأسفل
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
@@ -239,7 +297,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   Widget _buildAvatar(String userName) {
     return Stack(
       children: [
-        // Ø§Ù„Ø­Ù„Ù‚ة الخارجية Ø§Ù„Ù…Ù†Ù‚طة
+        // الحلقة الخارجية المنقطة
         Container(
           width: 112,
           height: 112,
@@ -255,7 +313,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             painter: DashedCirclePainter(color: accent.withValues(alpha: 0.4)),
           ),
         ),
-        // Ø§Ù„Ø­Ø§Ùˆية الأساسية للأفاتار
+        // الحاوية الأساسية للأفاتار
         Container(
           margin: const EdgeInsets.all(8),
           width: 96,
@@ -283,7 +341,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
           ),
         ),
-        // زر Ø§Ù„Ùƒاميرا المصغر
+        // زر الكاميرا المصغر
         Positioned(
           bottom: 12,
           right: 12,
@@ -327,29 +385,72 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }
 
   Widget _buildStatsRow() {
-    return Row(
-      children: [
-        _buildStatCard(context, "🌿 الجلسات", "5 جلسات", 0, onTap: () {
-          final userId = Supabase.instance.client.auth.currentUser?.id;
-          if (userId != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(conversationId: userId),
-              ),
-            );
+    final supabase = Supabase.instance.client;
+    final userId = supabase.auth.currentUser?.id ?? '';
+
+    return FutureBuilder<List<dynamic>>(
+      future: Future.wait([
+        supabase
+            .from('messages')
+            .select('id')
+            .eq('conversation_id', userId)
+            .then((r) => (r as List).length),
+        supabase
+            .from('orders')
+            .select('id')
+            .eq('user_id', userId)
+            .then((r) => (r as List).length),
+        supabase
+            .from('appointments')
+            .select('appointment_date')
+            .eq('patient_id', userId)
+            .order('appointment_date', ascending: false)
+            .limit(1)
+            .then((r) => (r as List).isNotEmpty ? r.first['appointment_date'] as String? : null),
+      ]),
+      builder: (context, snap) {
+        final msgs   = snap.data?[0] as int? ?? 0;
+        final orders = snap.data?[1] as int? ?? 0;
+        final lastAppt = snap.data?[2] as String?;
+
+        String apptLabel = 'لا يوجد';
+        if (lastAppt != null) {
+          final dt = DateTime.tryParse(lastAppt);
+          if (dt != null) {
+            final diff = DateTime.now().difference(dt).inDays;
+            apptLabel = diff == 0 ? 'اليوم' : diff == 1 ? 'أمس' : 'قبل $diff أيام';
           }
-        }),
-        const SizedBox(width: 12),
-        _buildStatCard(context, "📦 طلباتي", "3 طلبات", 1, onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const OrdersScreen()),
-          );
-        }),
-        const SizedBox(width: 12),
-        _buildStatCard(context, "⭐ آخر Ù…Ùˆعد", "أمس", 2),
-      ],
+        }
+
+        return Row(
+          children: [
+            _buildStatCard(context, "💬 رسائلي", '$msgs رسالة', 0, onTap: () {
+              if (userId.isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(conversationId: userId),
+                  ),
+                );
+              }
+            }),
+            const SizedBox(width: 12),
+            _buildStatCard(context, "📦 طلباتي", '$orders طلب', 1, onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OrdersScreen()),
+              );
+            }),
+            const SizedBox(width: 12),
+            _buildStatCard(context, "📅 آخر موعد", apptLabel, 2, onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MyAppointmentsScreen()),
+              );
+            }),
+          ],
+        );
+      },
     );
   }
 
@@ -428,7 +529,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           _buildInfoRow(
             Icons.phone,
             primaryLight,
-            "Ø±Ù‚م Ø§Ù„Ù‡اتف",
+            "رقم الهاتف",
             userPhone,
           ),
           Divider(
@@ -499,7 +600,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       ),
       child: Column(
         children: [
-          _buildActionTile(Icons.history, primaryLight, "طلباتي Ø§Ù„Ø³Ø§Ø¨Ù‚ة", onTap: () {
+          _buildActionTile(Icons.history, primaryLight, "طلباتي السابقة", onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const OrdersScreen()),
@@ -527,31 +628,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             );
 
             if (result != null && result is Map) {
-              // بعد التعديل Ø§Ù„Ù†اجح، Ù†Ù‚Ùˆم بتحديث Ø§Ù„Ø¨ÙŠØ§Ù†ات Ù…Ù† السيرفر
+              // بعد التعديل الناجح، نقوم بتحديث البيانات من السيرفر
               ref.invalidate(profileProvider);
             }
           }),
-          if (profile?.isAdmin == false) ...[
-            Divider(height: 1, color: inputBorder.withValues(alpha: 0.3), indent: 64),
-            _buildActionTile(
-              Icons.admin_panel_settings_rounded, 
-              danger, 
-              "ØªÙØ¹ÙŠÙ„ صلاحية الأدمن (تجريبي)", 
-              onTap: () async {
-                final supabase = Supabase.instance.client;
-                final userId = supabase.auth.currentUser?.id;
-                if (userId != null) {
-                  await supabase.from('profiles').update({'is_admin': true}).eq('id', userId);
-                  ref.invalidate(profileProvider);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("تم ØªÙØ¹ÙŠÙ„ صلاحية الأدمن! ÙŠØ±Ø¬Ù‰ إعادة تشغيل التطبيق.")),
-                    );
-                  }
-                }
-              }
-            ),
-          ],
+          // ملاحظة: صلاحية الأدمن تُمنح فقط من خلال لوحة التحكم الإدارية
         ],
       ),
     );
@@ -611,7 +692,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             const Icon(Icons.logout, color: danger, size: 20),
             const SizedBox(width: 12),
             Text(
-              "تسجيل Ø§Ù„Ø®Ø±Ùˆج",
+              "تسجيل الخروج",
               style: GoogleFonts.cairo(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -627,7 +708,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   Widget _buildFooter() {
     return Column(
       children: [
-        // استخدام Ø£ÙŠÙ‚ÙˆÙ†ة Ø¨Ø¯Ù„Ø§Ù‹ Ù…Ù† رابط Ø§Ù„ØµÙˆرة Ø§Ù„Ù…ÙƒØ³Ùˆر Ù„Ø¶Ù…Ø§Ù† Ø§Ø³ØªÙ‚رار Ø§Ù„ÙˆØ§Ø¬Ù‡ة
+        // استخدام أيقونة بدلاف‹ من رابط الصورة المكسور لضمان استقرار الواجهة
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -635,7 +716,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             shape: BoxShape.circle,
           ),
           child: const Icon(
-            Icons.eco_rounded, // Ø£ÙŠÙ‚ÙˆÙ†ة تعبر Ø¹Ù† الطبيعة Ùˆالأعشاب
+            Icons.eco_rounded, // أيقونة تعبر عن الطبيعة والأعشاب
             color: accent,
             size: 28,
           ),
@@ -684,7 +765,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
             const SizedBox(height: 24),
             Text(
-              "Ù‡ل تريد تسجيل الخروج؟",
+              "هل تريد تسجيل الخروج؟",
               style: GoogleFonts.cairo(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -693,7 +774,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              "ستحتاج لإدخال Ø±Ù‚Ù…Ùƒ مرة أخرى لاحقاً",
+              "ستحتاج لإدخال رقمك مرة أخرى لاحقاً",
               style: GoogleFonts.tajawal(fontSize: 14, color: textSecondary),
             ),
             const SizedBox(height: 32),
@@ -733,7 +814,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                       elevation: 0,
                     ),
                     child: Text(
-                      "Ø®Ø±Ùˆج",
+                      "خروج",
                       style: GoogleFonts.cairo(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -750,7 +831,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }
 }
 
-// Ù‚اطع المسار التموجي (Wave Clipper)
+// قاطع المسار التموجي (Wave Clipper)
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -765,7 +846,7 @@ class WaveClipper extends CustomClipper<Path> {
       firstEnd.dy,
     ); // Fix: firstEnd.dy
 
-    // تصحيح بسيط Ù„Ù„ØªÙ…Ùˆج ليصبح Ø§Ù†Ø³ÙŠØ§Ø¨ÙŠØ§Ù‹ Ø£Ùƒثر
+    // تصحيح بسيط للتموج ليصبح انسيابياف‹ أكثر
     path = Path();
     path.lineTo(0, size.height - 40);
     path.quadraticBezierTo(
@@ -789,7 +870,7 @@ class WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-// رسام الدائرة Ø§Ù„Ù…Ù†Ù‚طة
+// رسام الدائرة المنقطة
 class DashedCirclePainter extends CustomPainter {
   final Color color;
   DashedCirclePainter({required this.color});
@@ -818,7 +899,7 @@ class DashedCirclePainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-// رسام Ù†Ù‚ش Ø£ÙˆØ±Ø§Ù‚ الشجر Ø§Ù„Ø®ÙÙŠف
+// رسام نقش أوراق الشجر الخفيف
 class LeafPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -827,7 +908,7 @@ class LeafPatternPainter extends CustomPainter {
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 
-    // رسم Ø£Ø´Ùƒال بسيطة ØªÙˆحي بالأعشاب
+    // رسم أشكال بسيطة توحي بالأعشاب
     for (var i = 0; i < 10; i++) {
       canvas.drawCircle(
         Offset(size.width * (i / 10), size.height * 0.2),

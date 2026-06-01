@@ -1,0 +1,23 @@
+{
+  "app_name": "BioPara",
+  "welcome_back": "Bienvenue",
+  "calling": "Appel en cours...",
+  "active_call": "Appel actif",
+  "incoming_call": "Appel entrant...",
+  "accept": "Accepter",
+  "decline": "Décliner",
+  "end_call": "Terminer",
+  "retry": "Réessayer",
+  "error_occurred": "Une erreur est survenue",
+  "loading": "Chargement...",
+  "login": "Connexion",
+  "phone_number": "Numéro de téléphone",
+  "enter_otp": "Entrez le code OTP SMS",
+  "confirm": "Confirmer",
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "appointments": "Rendez-vous",
+  "chat": "Discussion",
+  "shop": "Boutique",
+  "cart": "Panier"
+}

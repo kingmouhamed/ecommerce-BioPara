@@ -1,4 +1,4 @@
-﻿// lib/screens/admin_dashboard_screen.dart
+// lib/screens/admin_dashboard_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -56,7 +56,11 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen>
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
-        return AdminHomeTab(onViewAllPatients: () => _onTabChanged(1));
+        return AdminHomeTab(
+          onViewAllPatients: () => _onTabChanged(1),
+          onViewAppointments: () => _onTabChanged(2),
+          onViewReports: () => _onTabChanged(3),
+        );
       case 1:
         return const AdminPatientsTab();
       case 2:
@@ -145,10 +149,10 @@ class _AdminNavRail extends StatelessWidget {
             const SizedBox(height: 30),
 
             // الأيقونات
-            _NavItem(icon: Icons.dashboard_rounded, label: 'الرئيسية', index: 0, width: width, selected: selectedIndex == 0, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.people_rounded, label: 'المرضى', index: 1, width: width, selected: selectedIndex == 1, badge: unreadCount, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.calendar_today_rounded, label: 'المواعيد', index: 2, width: width, selected: selectedIndex == 2, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.bar_chart_rounded, label: 'التقارير', index: 3, width: width, selected: selectedIndex == 3, onTap: onDestinationSelected),
+            _NavItem(icon: Icons.space_dashboard_rounded, label: 'الرئيسية', index: 0, width: width, selected: selectedIndex == 0, onTap: onDestinationSelected),
+            _NavItem(icon: Icons.groups_rounded, label: 'المرضى', index: 1, width: width, selected: selectedIndex == 1, badge: unreadCount, onTap: onDestinationSelected),
+            _NavItem(icon: Icons.event_note_rounded, label: 'المواعيد', index: 2, width: width, selected: selectedIndex == 2, onTap: onDestinationSelected),
+            _NavItem(icon: Icons.analytics_rounded, label: 'التقارير', index: 3, width: width, selected: selectedIndex == 3, onTap: onDestinationSelected),
 
             const Spacer(),
 

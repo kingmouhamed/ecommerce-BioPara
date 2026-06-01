@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 
 class MyAppointmentsScreen extends StatefulWidget {
   const MyAppointmentsScreen({super.key});
@@ -65,6 +65,13 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: textPrimary,
+        leading: Directionality(
+          textDirection: TextDirection.ltr,
+          child: IconButton(
+            icon: Icon(Icons.arrow_back, color: textPrimary),
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator(color: primary))
@@ -90,12 +97,12 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
           Icon(Icons.calendar_month_outlined, size: 80, color: primaryLight),
           const SizedBox(height: 20),
           Text(
-            'لا ØªÙˆجد Ù…Ùˆاعيد Ù…Ø­Ø¬Ùˆزة حالياً',
+            'لا توجد مواعيد محجوزة حالياً',
             style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary),
           ),
           const SizedBox(height: 10),
           Text(
-            'ÙŠÙ…ÙƒÙ†Ùƒ حجز Ø§Ø³ØªØ´Ø§Ø±ØªÙƒ Ø§Ù„Ø£ÙˆÙ„Ù‰ Ù…Ù† خلال شاشة الحجز',
+            'يمكنك حجز استشارتك الأولى من خلال شاشة الحجز',
             style: GoogleFonts.tajawal(color: textSecondary),
           ),
         ],
@@ -113,7 +120,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
     switch (status) {
       case 'confirmed':
         statusColor = Colors.green;
-        statusText = 'Ù…Ø¤Ùƒد';
+        statusText = 'مؤكد';
         break;
       case 'cancelled':
         statusColor = danger;
@@ -121,7 +128,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         break;
       default:
         statusColor = accent;
-        statusText = 'Ù‚يد Ø§Ù„Ø§Ù†تظار';
+        statusText = 'قيد الانتظار';
     }
 
     return Container(
@@ -168,7 +175,7 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
                   ],
                 ),
                 Text(
-                  'Ø±Ù‚م الحجز: #${appointment['id'].toString().substring(0, 8)}',
+                  'رقم الحجز: #${appointment['id'].toString().substring(0, 8)}',
                   style: GoogleFonts.tajawal(color: textSecondary, fontSize: 11),
                 ),
               ],
@@ -255,11 +262,11 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
 
   String _parseTypeFromNotes(String notes) {
     try {
-      if (notes.contains('Ù†Ùˆع الجلسة:')) {
-        return notes.split('Ù†Ùˆع الجلسة:')[1].split('\n')[0].trim();
+      if (notes.contains('نوع الجلسة:')) {
+        return notes.split('نوع الجلسة:')[1].split('\n')[0].trim();
       }
     } catch (_) {}
-    return 'استشارة Ø±ÙˆØ­Ø§Ù†ية';
+    return 'استشارة روحانية';
   }
 
   String _parseDurationFromNotes(String notes) {
@@ -268,6 +275,6 @@ class _MyAppointmentsScreenState extends State<MyAppointmentsScreen> {
         return notes.split('المدة:')[1].split('\n')[0].trim();
       }
     } catch (_) {}
-    return '30 Ø¯Ù‚ÙŠÙ‚ة';
+    return '30 دقيقة';
   }
 }

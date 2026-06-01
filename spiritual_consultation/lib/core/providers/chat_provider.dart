@@ -1,3 +1,7 @@
+// lib/core/providers/chat_provider.dart
+// ═══════════════════════════════════════════════════════════
+//  BioPara — مزود الدردشة مع stream محسّن
+// ═══════════════════════════════════════════════════════════
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,52 +10,191 @@ import '../models/message_model.dart';
 class ChatNotifier extends StateNotifier<List<MessageModel>> {
   final String conversationId;
   final _supabase = Supabase.instance.client;
+  RealtimeChannel? _channel;
 
   ChatNotifier(this.conversationId) : super([]) {
-    _subscribe();
+    _init();
   }
 
-  void _subscribe() {
-    _supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .eq('conversation_id', conversationId)
-        .order('created_at', ascending: false)
-        .listen((data) {
-          state = data
-              .map((m) => MessageModel.fromMap(m))
-              .toList();
-        }, onError: (error) {
-          // Handle stream error gracefully (e.g., timeout or channel error)
-          debugPrint('Supabase Stream Error ($conversationId): $error');
+  Future<void> _init() async {
+    // 1. تحميل الرسائل الموجودة أولاً
+    await _loadMessages();
+    // 2. الاشتراك في التحديثات الفورية
+    _subscribeRealtime();
+  }
+
+  /// تحميل الرسائل مرة واحدة من قاعدة البيانات
+  Future<void> _loadMessages() async {
+    try {
+      final data = await _supabase
+          .from('messages')
+          .select()
+          .eq('conversation_id', conversationId)
+          .eq('is_deleted', false)
+          .order('created_at', ascending: false)
+          .limit(200);
+
+      state = (data as List)
+          .map((m) => MessageModel.fromMap(m as Map<String, dynamic>))
+          .toList();
+
+      debugPrint('✅ Loaded ${state.length} messages for $conversationId');
+    } catch (e) {
+      debugPrint('❌ Load messages error: $e');
+    }
+  }
+
+  /// الاشتراك في التحديثات الفورية عبر Realtime
+  void _subscribeRealtime() {
+    _channel = _supabase
+        .channel('messages:$conversationId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'conversation_id',
+            value: conversationId,
+          ),
+          callback: (payload) {
+            final newMsg = MessageModel.fromMap(payload.newRecord);
+            // أضف الرسالة فقط إذا لم تكن موجودة
+            if (!state.any((m) => m.id == newMsg.id)) {
+              state = [newMsg, ...state];
+              debugPrint('📩 New message received: ${newMsg.content.substring(0, newMsg.content.length.clamp(0, 30))}...');
+            }
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'conversation_id',
+            value: conversationId,
+          ),
+          callback: (payload) {
+            final updatedMsg = MessageModel.fromMap(payload.newRecord);
+            state = state.map((m) => m.id == updatedMsg.id ? updatedMsg : m).toList();
+          },
+        )
+        .onPostgresChanges(
+          event: PostgresChangeEvent.delete,
+          schema: 'public',
+          table: 'messages',
+          callback: (payload) {
+            final deletedId = payload.oldRecord['id']?.toString();
+            if (deletedId != null) {
+              state = state.where((m) => m.id != deletedId).toList();
+            }
+          },
+        )
+        .subscribe((status, [error]) {
+          if (status == RealtimeSubscribeStatus.subscribed) {
+            debugPrint('✅ Realtime subscribed for $conversationId');
+          } else if (error != null) {
+            debugPrint('❌ Realtime error: $error — falling back to polling');
+            _startPolling();
+          }
         });
   }
 
-  Future<void> clearChat() async {
-    final audios = await _supabase
-        .from('messages')
-        .select('content')
-        .eq('conversation_id', conversationId)
-        .eq('message_type', 'audio');
-
-    for (final m in (audios as List)) {
-      await _deleteFromStorage(m['content']?.toString() ?? '');
-    }
-    
-    final res = await _supabase
-        .from('messages')
-        .delete()
-        .eq('conversation_id', conversationId)
-        .select();
-        
-    if (res.isEmpty) throw Exception('Ù‚اعدة Ø§Ù„Ø¨ÙŠØ§Ù†ات رفضت الحذف (Ù‚د ØªÙƒÙˆÙ† Ø§Ù„Ù…Ø´Ùƒلة ÙÙŠ الصلاحيات RLS)');
+  /// Polling كبديل إذا فشل Realtime
+  void _startPolling() {
+    Future.doWhile(() async {
+      if (!mounted) return false;
+      await Future.delayed(const Duration(seconds: 5));
+      if (!mounted) return false;
+      await _loadMessages();
+      return mounted;
+    });
   }
 
+  /// تحديث حالة القراءة لرسالة
+  Future<void> markAsRead(String messageId) async {
+    try {
+      await _supabase
+          .from('messages')
+          .update({'is_read': true, 'status': 'read'})
+          .eq('id', messageId);
+    } catch (e) {
+      debugPrint('markAsRead error: $e');
+    }
+  }
+
+  /// إضافة تفاعل (reaction) على رسالة
+  Future<void> addReaction(String messageId, String emoji, String userId) async {
+    final msg = state.firstWhere((m) => m.id == messageId, orElse: () => MessageModel(
+      id: '', conversationId: '', senderId: '', content: '',
+    ));
+    if (msg.id.isEmpty) return;
+
+    final currentReactions = Map<String, List<String>>.from(msg.reactions);
+    final users = List<String>.from(currentReactions[emoji] ?? []);
+
+    if (users.contains(userId)) {
+      users.remove(userId);
+    } else {
+      users.add(userId);
+    }
+
+    if (users.isEmpty) {
+      currentReactions.remove(emoji);
+    } else {
+      currentReactions[emoji] = users;
+    }
+
+    try {
+      await _supabase
+          .from('messages')
+          .update({'reactions': currentReactions})
+          .eq('id', messageId);
+    } catch (e) {
+      debugPrint('addReaction error: $e');
+    }
+  }
+
+  /// حذف رسالة (للجميع)
   Future<void> deleteMessage(String id, {String? audioUrl}) async {
-    if (audioUrl != null && audioUrl.isNotEmpty) await _deleteFromStorage(audioUrl);
-    
-    final res = await _supabase.from('messages').delete().eq('id', id).select();
-    if (res.isEmpty) throw Exception('لم يتم الحذف Ù…Ù† Ù‚اعدة Ø§Ù„Ø¨ÙŠØ§Ù†ات (صلاحيات RLS ØªÙ…Ù†ع ذلك)');
+    if (audioUrl != null && audioUrl.isNotEmpty) {
+      await _deleteFromStorage(audioUrl);
+    }
+    try {
+      await _supabase
+          .from('messages')
+          .update({'is_deleted': true, 'content': 'تم حذف هذه الرسالة'})
+          .eq('id', id);
+    } catch (e) {
+      debugPrint('deleteMessage error: $e');
+      rethrow;
+    }
+  }
+
+  /// تعديل رسالة نصية
+  Future<void> editMessage(String id, String newContent) async {
+    try {
+      await _supabase
+          .from('messages')
+          .update({'content': newContent, 'metadata': {'edited': true}})
+          .eq('id', id);
+    } catch (e) {
+      debugPrint('editMessage error: $e');
+    }
+  }
+
+  /// تفريغ المحادثة
+  Future<void> clearChat() async {
+    try {
+      await _supabase
+          .from('messages')
+          .update({'is_deleted': true})
+          .eq('conversation_id', conversationId);
+    } catch (e) {
+      debugPrint('clearChat error: $e');
+      rethrow;
+    }
   }
 
   Future<void> _deleteFromStorage(String url) async {
@@ -64,6 +207,12 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
       final path = segments.skip(idx + 1).join('/');
       await _supabase.storage.from('chat_media').remove([path]);
     } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    _channel?.unsubscribe();
+    super.dispose();
   }
 }
 

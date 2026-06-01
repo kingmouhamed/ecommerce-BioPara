@@ -1,4 +1,4 @@
-﻿// lib/screens/admin_appointments_tab.dart
+// lib/screens/admin_appointments_tab.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,12 +15,32 @@ final appointmentsProvider =
   try {
     final rows = await db
         .from('appointments')
-        .select('*, profiles!patient_id(full_name, avatar_url)')
+        .select('*')
         .gte('appointment_date', start.toIso8601String())
         .lt('appointment_date', end.toIso8601String())
         .order('appointment_date');
-    return List<Map<String, dynamic>>.from(rows as List);
-  } catch (_) {
+        
+    final result = <Map<String, dynamic>>[];
+    for (final r in rows) {
+      final pid = r['patient_id'] as String?;
+      Map<String, dynamic>? profile;
+      if (pid != null) {
+        try {
+          profile = await db
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', pid)
+              .maybeSingle();
+        } catch (_) {}
+      }
+      result.add({
+        ...Map<String, dynamic>.from(r as Map),
+        'profiles': profile,
+      });
+    }
+    return result;
+  } catch (e) {
+    debugPrint('appointmentsProvider error: $e');
     return [];
   }
 });

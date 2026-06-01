@@ -1,18 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/cart_item.dart';
 
-// Ù…Ø²Ùˆد سلة التسوق
+// مزود سلة التسوق
 final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
   return CartNotifier();
 });
 
-// Ù…Ø²Ùˆد Ø§Ù„Ùƒمية Ø§Ù„Ùƒلية
+// مزود الكمية الكلية
 final cartTotalPrice = Provider<double>((ref) {
   final cart = ref.watch(cartProvider);
   return cart.fold(0, (sum, item) => sum + item.total);
 });
 
-// Ù…Ø²Ùˆد عدد Ø§Ù„Ø¹Ù†اصر
+// مزود عدد العناصر
 final cartItemCount = Provider<int>((ref) {
   final cart = ref.watch(cartProvider);
   return cart.length;
@@ -21,20 +21,20 @@ final cartItemCount = Provider<int>((ref) {
 class CartNotifier extends StateNotifier<List<CartItem>> {
   CartNotifier() : super([]);
 
-  /// إضافة Ù…Ù†تج للسلة
+  /// إضافة منتج للسلة
   void addToCart({
     required String productId,
     required String productName,
     required double productPrice,
     String? imageUrl,
   }) {
-    // ØªØ­Ù‚Ù‚ إذا ÙƒØ§Ù† Ø§Ù„Ù…Ù†تج Ù…ÙˆØ¬Ùˆد Ø¨Ø§Ù„Ùعل
+    // تحقق إذا كان المنتج موجود بالفعل
     final existingIndex = state.indexWhere(
       (item) => item.productId == productId,
     );
 
     if (existingIndex != -1) {
-      // إذا Ù…ÙˆØ¬Ùˆد، زيادة Ø§Ù„Ùƒمية
+      // إذا موجود، زيادة الكمية
       final updatedItem = state[existingIndex].copyWith(
         quantity: state[existingIndex].quantity + 1,
       );
@@ -45,7 +45,7 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         ...state.sublist(existingIndex + 1),
       ];
     } else {
-      // إذا لا، أضيف Ù…Ù†تج جديد
+      // إذا لا، أضيف منتج جديد
       state = [
         ...state,
         CartItem(
@@ -59,12 +59,12 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }
   }
 
-  /// إزالة Ù…Ù†تج Ù…Ù† السلة
+  /// إزالة منتج من السلة
   void removeFromCart(String productId) {
     state = state.where((item) => item.productId != productId).toList();
   }
 
-  /// تحديث Ùƒمية Ø§Ù„Ù…Ù†تج
+  /// تحديث كمية المنتج
   void updateQuantity(String productId, int quantity) {
     if (quantity <= 0) {
       removeFromCart(productId);
@@ -83,15 +83,15 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }
   }
 
-  /// ØªÙØ±ÙŠغ السلة
+  /// تفريغ السلة
   void clearCart() {
     state = [];
   }
 
-  /// Ø§Ù„Ø­ØµÙˆل Ø¹Ù„Ù‰ عدد Ø§Ù„Ø¹Ù†اصر
+  /// الحصول على عدد العناصر
   int getItemCount() => state.length;
 
-  /// Ø§Ù„Ø­ØµÙˆل Ø¹Ù„Ù‰ Ø§Ù„Ùƒمية Ø§Ù„Ùƒلية
+  /// الحصول على الكمية الكلية
   double getTotalPrice() {
     return state.fold(0, (sum, item) => sum + item.total);
   }
