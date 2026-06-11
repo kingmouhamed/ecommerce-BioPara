@@ -90,6 +90,8 @@ export function TopProducts() {
           products.map((product, index) => (
             <div key={product.id} className="flex items-center space-x-4 p-4 hover:bg-gray-50 rounded-lg transition-colors">
               <div className="flex-shrink-0">
+                {/* Admin product URLs can come from arbitrary storage/CDN domains. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={product.image_url || '/images/products/product-placeholder.jpg'}
                   alt={product.name}

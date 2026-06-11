@@ -67,16 +67,16 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">الشحن والتوصيل</Link>
+                <Link href="/shipping" className="text-gray-400 hover:text-emerald-400 transition-colors">الشحن والتوصيل</Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الإرجاع</Link>
+                <Link href="/returns" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الإرجاع</Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">شروط الاستخدام</Link>
+                <Link href="/terms" className="text-gray-400 hover:text-emerald-400 transition-colors">شروط الاستخدام</Link>
               </li>
               <li>
-                <Link href="#" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الخصوصية</Link>
+                <Link href="/privacy" className="text-gray-400 hover:text-emerald-400 transition-colors">سياسة الخصوصية</Link>
               </li>
             </ul>
           </div>

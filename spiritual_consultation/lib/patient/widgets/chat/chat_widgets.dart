@@ -188,7 +188,32 @@ class Bubble extends ConsumerWidget {
         );
 
       case MessageType.callInvite:
-        final accent = isMe ? _kPrimary : Colors.redAccent;
+        // ── قراءة حالة المكالمة من metadata ──────────────────
+        final callStatus = (msg.metadata['call_status'] as String?) ?? '';
+        final callDuration = msg.metadata['call_duration'] as String?;
+        final callTime   = msg.createdAt ?? DateTime.now();
+        final ageSeconds = DateTime.now().difference(callTime).inSeconds;
+
+        // نعتبر المكالمة نشطة فقط إذا:
+        // 1. لم تُحدَّث بـ ended/cancelled/declined/missed
+        // 2. عمرها أقل من 90 ثانية
+        final isActiveCall = callStatus.isEmpty
+            ? ageSeconds < 90
+            : callStatus == 'active';
+        final isEndedCall  = callStatus == 'ended' ||
+            callStatus == 'cancelled' ||
+            callStatus == 'declined' ||
+            callStatus == 'missed';
+        final isMissedCall = !isActiveCall && !isMe;
+        final isVideo      = msg.content.contains('فيديو');
+
+        // المريض فقط يرى زر الانضمام (ليس المرسل نفسه)
+        final canJoin = isActiveCall && !isMe;
+
+        final accentColor = isEndedCall
+            ? Colors.grey
+            : (isMissedCall && !canJoin ? Colors.red.shade400 : _kPrimary);
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,28 +223,46 @@ class Bubble extends ConsumerWidget {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: accent.withValues(alpha: 0.15),
+                  backgroundColor: accentColor.withValues(alpha: 0.15),
                   child: Icon(
-                    msg.content.contains('فيديو') ? Icons.videocam : Icons.call,
-                    color: accent, size: 20),
+                    isVideo ? Icons.videocam : Icons.call,
+                    color: accentColor, size: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(msg.content,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: accent)),
-                      Text(isMe ? 'مكالمة صادرة' : 'مكالمة فائتة',
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.grey)),
+                      Text(
+                        isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                        ),
+                      ),
+                      Text(
+                        // ── عرض الحالة الصحيحة ──────────────
+                        canJoin
+                          ? 'مكالمة واردة...'
+                          : isMe
+                            ? (isEndedCall ? 'مكالمة صادرة' : 'جاري الاتصال...')
+                            : (isEndedCall ? 'مكالمة فائتة' : 'مكالمة فائتة'),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isMissedCall && !canJoin
+                              ? Colors.red.shade300
+                              : Colors.grey.shade500,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            if (!isMe) ...[
+
+            // ── زر الانضمام — فقط للمكالمات النشطة ──────────
+            if (canJoin) ...[
               const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
@@ -236,6 +279,22 @@ class Bubble extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
+              ),
+            ],
+
+            // ── مدة المكالمة للمكالمات المنتهية ─────────────
+            if (isEndedCall && callDuration != null && callDuration.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.access_time_rounded, size: 11, color: Colors.grey.shade400),
+                  const SizedBox(width: 3),
+                  Text(
+                    callDuration,
+                    style: TextStyle(fontSize: 10, color: Colors.grey.shade400),
+                  ),
+                ],
               ),
             ],
           ],
@@ -270,6 +329,9 @@ class Bubble extends ConsumerWidget {
             ],
           ),
         );
+      case MessageType.callSystem:
+        // أحداث المكالمة الداخلية — لا تُعرض (مُفلترة من القائمة لكن case مطلوب للـ exhaustive switch)
+        return const SizedBox.shrink();
     }
   }
 
@@ -376,6 +438,7 @@ class _AudioPlayerBubbleState extends ConsumerState<AudioPlayerBubble> {
   Duration _dur = Duration.zero;
   bool _playing = false;
   bool _prepared = false;
+  double _speed = 1.0;
 
   @override
   void initState() {
@@ -395,6 +458,24 @@ class _AudioPlayerBubbleState extends ConsumerState<AudioPlayerBubble> {
         setState(() => _playing = s == PlayerState.playing);
       }
     });
+    // 🔴 تحميل الـ duration فور إنشاء الـ widget (إصلاح 00:00 bug)
+    WidgetsBinding.instance.addPostFrameCallback((_) => _preloadDuration());
+  }
+
+  Future<void> _preloadDuration() async {
+    try {
+      final storage = ref.read(storageServiceProvider);
+      final path = storage.extractPath(widget.url);
+      final playUrl = path != null
+          ? await storage.getSignedUrl(path)
+          : widget.url;
+      if (!mounted || playUrl.isEmpty) return;
+      // نحمّل المصدر فقط - onDurationChanged سيتولى تحديث الـ _dur تلقائياً
+      await _player.setSource(UrlSource(playUrl));
+      _prepared = true;
+    } catch (_) {
+      // تجاهل أخطاء تحميل المصدر المسبقة بصمت
+    }
   }
 
   @override
@@ -447,6 +528,7 @@ class _AudioPlayerBubbleState extends ConsumerState<AudioPlayerBubble> {
                     }
                   }
                   await _player.resume();
+                  await _player.setPlaybackRate(_speed);
                 }
               } catch (e) {
                 debugPrint('Audio playback error: $e');
@@ -491,6 +573,40 @@ class _AudioPlayerBubbleState extends ConsumerState<AudioPlayerBubble> {
                   ),
                 ),
               ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_speed == 1.0) {
+                  _speed = 1.5;
+                } else if (_speed == 1.5) {
+                  _speed = 2.0;
+                } else {
+                  _speed = 1.0;
+                }
+              });
+              _player.setPlaybackRate(_speed);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              decoration: BoxDecoration(
+                color: _kPrimary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _kPrimary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
+              ),
+              child: Text(
+                '${_speed.toString().replaceAll('.0', '')}x',
+                style: GoogleFonts.tajawal(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: _kPrimary,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 8),
@@ -639,21 +755,39 @@ class SecureImage extends ConsumerWidget {
           ),
         );
       },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          imageUrl,
-          width: 220,
-          fit: BoxFit.cover,
-          loadingBuilder: (_, child, prog) => prog == null
-              ? child
-              : const SizedBox(
-                  width: 220, height: 150,
-                  child: Center(child: CircularProgressIndicator())),
-          errorBuilder: (_, _, _) => const SizedBox(
-            width: 220, height: 120,
-            child: Icon(Icons.broken_image, color: Colors.grey, size: 48)),
-        ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              imageUrl,
+              width: 220,
+              height: 280,
+              fit: BoxFit.cover,
+              loadingBuilder: (_, child, prog) => prog == null
+                  ? child
+                  : const SizedBox(
+                      width: 220, height: 150,
+                      child: Center(child: CircularProgressIndicator())),
+              errorBuilder: (_, _, _) => const SizedBox(
+                width: 220, height: 120,
+                child: Icon(Icons.broken_image, color: Colors.grey, size: 48)),
+            ),
+          ),
+          // أيقونة تكبير
+          Positioned(
+            bottom: 6,
+            right: 6,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.black45,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.zoom_in_rounded, color: Colors.white, size: 16),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -670,14 +804,31 @@ class FullScreenImage extends StatelessWidget {
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black54,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('عرض الصورة',
+            style: GoogleFonts.tajawal(color: Colors.white, fontSize: 16)),
+        actions: [
+          Tooltip(
+            message: 'فتح في المتصفح',
+            child: IconButton(
+              icon: const Icon(Icons.open_in_browser_rounded, color: Colors.white),
+              onPressed: () async {
+                final uri = Uri.parse(url);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Center(
         child: InteractiveViewer(
           minScale: 0.5,
-          maxScale: 4.0,
+          maxScale: 5.0,
           child: Hero(
             tag: url,
             child: Image.network(
@@ -685,6 +836,10 @@ class FullScreenImage extends StatelessWidget {
               fit: BoxFit.contain,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
+              loadingBuilder: (_, child, prog) => prog == null
+                  ? child
+                  : const Center(
+                      child: CircularProgressIndicator(color: Colors.white)),
             ),
           ),
         ),

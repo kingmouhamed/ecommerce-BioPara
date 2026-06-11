@@ -47,12 +47,20 @@ export default function LiveSearch() {
             setIsOpen(true);
 
             try {
-                // Assume an API route exists at /api/products/search
+                // Assume an API route exists at /api/products
                 const res = await fetch(`/api/products?q=${encodeURIComponent(debouncedQuery)}`);
                 const data = await res.json();
-                // Adjust depending on your actual API response structure
-                // Assuming data.data.products is our array
-                setResults(data.data?.products || []);
+                
+                // Extracting image from our product schema
+                const products = data.data?.products?.map((p: any) => ({
+                    id: p.id,
+                    name: p.name_ar || p.name,
+                    price: p.price,
+                    image: p.images?.[0] || p.image_url || '/images/products/product-placeholder.jpg',
+                    slug: p.slug
+                })) || [];
+                
+                setResults(products);
             } catch (error) {
                 console.error('Search failed:', error);
             } finally {
@@ -93,7 +101,7 @@ export default function LiveSearch() {
                                     >
                                         <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                             <Image
-                                                src={product.image || '/images/products/product-placeholder.jpg'}
+                                                src={product.image}
                                                 alt={product.name}
                                                 fill
                                                 className="object-cover"
@@ -110,8 +118,23 @@ export default function LiveSearch() {
                         </ul>
                     ) : (
                         !isSearching && query.length >= 2 && (
-                            <div className="p-4 text-center text-gray-500 text-sm">
-                                لم يتم العثور على نتائج لـ "{query}"
+                            <div className="p-6 text-center">
+                                <div className="mx-auto w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                                    <Search className="w-6 h-6 text-gray-400" />
+                                </div>
+                                <h3 className="text-gray-900 font-bold mb-1">لا توجد نتائج لـ &quot;{query}&quot;</h3>
+                                <p className="text-gray-500 text-sm mb-4">جرب البحث بكلمات مختلفة أو تصفح الأقسام المقترحة:</p>
+                                <div className="flex flex-wrap gap-2 justify-center">
+                                    <Link href="/products?category=energizing-herbs" onClick={() => setIsOpen(false)} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium hover:bg-emerald-100 transition">
+                                        الأعشاب المنشطة
+                                    </Link>
+                                    <Link href="/products?category=immunity-herbs" onClick={() => setIsOpen(false)} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium hover:bg-emerald-100 transition">
+                                        أعشاب المناعة
+                                    </Link>
+                                    <Link href="/products?category=essential-oils" onClick={() => setIsOpen(false)} className="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-full text-xs font-medium hover:bg-emerald-100 transition">
+                                        الزيوت العطرية
+                                    </Link>
+                                </div>
                             </div>
                         )
                     )}

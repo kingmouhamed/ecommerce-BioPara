@@ -10,6 +10,7 @@ enum MessageType {
   image,
   audio,
   callInvite,
+  callSystem, // أحداث المكالمة الداخلية — لا تُعرض في المحادثة
   document,
   product,
   video,
@@ -92,6 +93,11 @@ class MessageModel {
       case 'audio': return MessageType.audio;
       case 'callInvite':
       case 'call_invite': return MessageType.callInvite;
+      // أحداث المكالمة الداخلية — تُخفى من عرض المحادثة
+      case 'call_cancel':
+      case 'call_decline':
+      case 'call_accept':
+      case 'call_end': return MessageType.callSystem;
       case 'document': return MessageType.document;
       case 'product': return MessageType.product;
       case 'video': return MessageType.video;

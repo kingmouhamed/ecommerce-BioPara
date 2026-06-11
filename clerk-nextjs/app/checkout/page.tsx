@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
 import Image from 'next/image'
+import StepIndicator from '@/components/checkout/StepIndicator'
+import { Lock, ShieldCheck, RefreshCw } from 'lucide-react'
 
 export default function CheckoutPage() {
   const { cart, calculateSubtotal, calculateTotalWithShipping, calculateShipping, cartItemCount } = useCart()
@@ -68,12 +70,13 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-900 text-center mb-2">
             إتمام الطلب
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-center mb-8">
             أكمل معلوماتك لتأكيد الطلب
           </p>
+          <StepIndicator currentStep={2} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -182,22 +185,60 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              {/* Submit Button */}
-              <div className="flex items-center justify-between">
-                <Link
-                  href="/products"
-                  className="text-gray-600 hover:text-emerald-600 font-medium"
-                >
-                  العودة للمتجر
-                </Link>
+              {/* Submit Button & Trust Signals */}
+              <div className="flex flex-col space-y-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <Link
+                    href="/products"
+                    className="text-gray-600 hover:text-emerald-600 font-medium"
+                  >
+                    العودة للمتجر
+                  </Link>
 
-                <button
-                  type="submit"
-                  disabled={cartItemCount === 0}
-                  className="px-8 py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                >
-                  إرسال الطلب عبر واتساب
-                </button>
+                  <button
+                    type="submit"
+                    disabled={cartItemCount === 0}
+                    className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-lg flex items-center justify-center gap-2"
+                  >
+                    <Lock className="w-5 h-5" />
+                    إرسال الطلب عبر واتساب
+                  </button>
+                </div>
+                
+                {/* Trust Signals */}
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex flex-col md:flex-row items-center justify-between gap-6 mt-6">
+                  <div className="flex items-center gap-3">
+                    {/* CMI Logo SVG representation */}
+                    <div className="bg-white rounded px-2 py-1 border border-gray-200 shadow-sm flex items-center justify-center h-8">
+                      <span className="font-black text-sm text-[#0066CC] italic tracking-tighter">CMI</span>
+                    </div>
+                    {/* Visa Logo SVG */}
+                    <svg width="40" height="25" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="bg-white rounded p-1 border border-gray-200 shadow-sm h-8 w-auto">
+                      <path d="M35 15L25 45H10L20 15H35Z" fill="#1434CB"/>
+                      <path d="M55 15L45 45H30L40 15H55Z" fill="#1434CB"/>
+                      <path d="M75 15L65 45H50L60 15H75Z" fill="#1434CB"/>
+                      <text x="50" y="42" fontFamily="Arial" fontSize="30" fontWeight="900" fill="#1434CB" fontStyle="italic" textAnchor="middle">VISA</text>
+                    </svg>
+                    {/* Mastercard Logo SVG */}
+                    <svg width="40" height="25" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="bg-white rounded p-1 border border-gray-200 shadow-sm h-8 w-auto">
+                      <circle cx="35" cy="30" r="18" fill="#EB001B"/>
+                      <circle cx="65" cy="30" r="18" fill="#F79E1B" fillOpacity="0.8"/>
+                    </svg>
+                  </div>
+                  
+                  <div className="flex flex-col items-center md:items-end text-xs text-gray-600 gap-1.5">
+                    <div className="flex items-center gap-1.5 font-bold text-emerald-800 bg-emerald-50 px-2 py-1 rounded">
+                      <Lock className="w-3.5 h-3.5" />
+                      <span>دفع آمن ومشفر 100%</span>
+                    </div>
+                    <span className="text-[11px]">بياناتك محمية بتشفير SSL</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-emerald-50 px-3 py-2 rounded-full border border-emerald-100 shadow-sm">
+                    <RefreshCw className="w-4 h-4 text-emerald-600" />
+                    <span>ضمان استرجاع 7 أيام</span>
+                  </div>
+                </div>
               </div>
             </form>
           </div>

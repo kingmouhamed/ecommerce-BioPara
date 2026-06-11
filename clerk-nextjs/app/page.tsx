@@ -133,6 +133,7 @@ export default function Home() {
                   height={500}
                   className="w-full h-auto object-cover"
                   priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
                 {/* Floating badges on image */}
                 <div className="absolute top-5 right-5 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-black text-sm shadow-lg rotate-3">

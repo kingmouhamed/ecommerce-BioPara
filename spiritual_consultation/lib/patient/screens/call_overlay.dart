@@ -1,9 +1,16 @@
+// lib/patient/screens/call_overlay.dart
+// ═══════════════════════════════════════════════════════════
+//  BioPara — نظام مكالمات حقيقي (صوت + فيديو) مثل WhatsApp
+//  يعتمد على Jitsi Meet للصوت/الفيديو الفعلي عبر WebRTC
+// ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
+
+import 'call_bridge.dart' as call_bridge;
 
 enum CallMode { outgoing, incoming, active }
 
@@ -33,119 +40,185 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
   late CallMode _mode;
   bool _isMuted = false;
   bool _isSpeakerOn = false;
-  final bool _isVideoOff = false;
-  
+  bool _isVideoOff = false;
+  bool _jitsiStarted = false;
+
   // Timer for active call duration
   Timer? _durationTimer;
   int _durationSecs = 0;
 
+  // Polling timer — fallback in case realtime misses the event
+  Timer? _pollTimer;
+
   // Animation controller for pulsing calling avatar
   late AnimationController _pulseController;
-  
+
   // Supabase instance and real-time subscription
   final _supabase = Supabase.instance.client;
-  StreamSubscription<List<Map<String, dynamic>>>? _sub;
+  RealtimeChannel? _channel;
 
-  // Loop player for call ringtone/dialing sound
-  AudioPlayer? _ringPlayer;
+  bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
     _mode = widget.initialMode;
-    
-    // 1. Initialize animations
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
 
-    // 2. Start duration timer if active initially
     if (_mode == CallMode.active) {
       _startDurationTimer();
-    } else {
-      _startRingtone();
+      _launchJitsi();
     }
 
-    // 3. Listen to all messages in this conversation in real-time
-    // Bypasses RLS issues because each user reads the message stream they belong to,
-    // and accepts, declines, cancels, or ends are separate message inserts.
-    _sub = _supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .eq('conversation_id', widget.conversationId)
-        .listen((data) {
-          if (data.isNotEmpty) {
-            for (var msg in data) {
-              final type = msg['message_type'] as String? ?? 'text';
-              final content = msg['content'] as String? ?? '';
-              
-              if (content == widget.callId) {
-                if (mounted) {
-                  if (type == 'call_accept') {
-                    if (_mode != CallMode.active) {
-                      _stopRingtone();
-                      setState(() {
-                        _mode = CallMode.active;
-                      });
-                      _startDurationTimer();
-                    }
-                  } else if (type == 'call_decline' || type == 'call_cancel' || type == 'call_end') {
-                    _exit();
-                  }
-                }
-              }
-            }
-          }
-        }, onError: (e) {
-          debugPrint('⚠️ CallOverlay real-time stream error: $e');
-        });
+    // ── Realtime: listen for call state changes ──
+    _channel = _supabase
+        .channel('call_state_${widget.callId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'conversation_id',
+            value: widget.conversationId,
+          ),
+          callback: (payload) => _handleCallEvent(payload.newRecord),
+        );
+    _channel?.subscribe();
+
+    // ── Polling fallback (every 2s) — handles missed realtime events ──
+    if (_mode != CallMode.active) {
+      _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) => _pollCallStatus());
+    }
   }
 
+  // ────────────────────────────────────────────────────────────
+  // Handle incoming call event (realtime or poll)
+  // ────────────────────────────────────────────────────────────
+  void _handleCallEvent(Map<String, dynamic> msg) {
+    if (_disposed || !mounted) return;
+    final type = msg['message_type'] as String? ?? '';
+    final content = msg['content'] as String? ?? '';
+
+    // Only process events for THIS call
+    if (content != widget.callId) return;
+
+    if (type == 'call_accept' && _mode != CallMode.active) {
+      _pollTimer?.cancel();
+      setState(() => _mode = CallMode.active);
+      _startDurationTimer();
+      _launchJitsi();
+    } else if (type == 'call_decline' || type == 'call_cancel' || type == 'call_end') {
+      _pollTimer?.cancel();
+      _endJitsi();
+      _exit();
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Poll Supabase for latest call status (fallback)
+  // ────────────────────────────────────────────────────────────
+  Future<void> _pollCallStatus() async {
+    if (_disposed || !mounted || _mode == CallMode.active) return;
+    try {
+      final rows = await _supabase
+          .from('messages')
+          .select('message_type, content')
+          .eq('conversation_id', widget.conversationId)
+          .inFilter('message_type', ['call_accept', 'call_decline', 'call_cancel', 'call_end'])
+          .eq('content', widget.callId)
+          .order('created_at', ascending: false)
+          .limit(1);
+
+      if (rows.isEmpty) return;
+      final latest = rows.first;
+      _handleCallEvent(latest);
+    } catch (_) {}
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Jitsi Meet — real audio/video via JS bridge
+  // ────────────────────────────────────────────────────────────
+  void _launchJitsi() {
+    if (!kIsWeb || _jitsiStarted) return;
+    _jitsiStarted = true;
+
+    // Register JS callback for when Jitsi ends
+    call_bridge.setJitsiCallEndedCallback(() {
+      if (mounted && !_disposed) _endCall();
+    });
+
+    // Build a short, alphanumeric room name from callId
+    final roomName = 'biopara-${widget.callId.replaceAll('-', '').substring(0, 16)}';
+    final displayName = widget.name;
+    final isVideo = widget.isVideo;
+
+    try {
+      call_bridge.startJitsiCall(roomName, displayName, isVideo);
+    } catch (e) {
+      debugPrint('⚠️ Jitsi launch error: $e');
+    }
+  }
+
+  void _endJitsi() {
+    if (!kIsWeb || !_jitsiStarted) return;
+    try {
+      call_bridge.endJitsiCall();
+    } catch (_) {}
+    _jitsiStarted = false;
+  }
+
+  void _toggleJitsiMute() {
+    if (!kIsWeb) return;
+    try {
+      call_bridge.muteJitsiAudio(_isMuted);
+    } catch (_) {}
+    setState(() => _isMuted = !_isMuted);
+  }
+
+  void _toggleJitsiVideo() {
+    if (!kIsWeb) return;
+    try {
+      call_bridge.toggleJitsiVideo();
+    } catch (_) {}
+    setState(() => _isVideoOff = !_isVideoOff);
+  }
+
+  // ────────────────────────────────────────────────────────────
+  // Timers
+  // ────────────────────────────────────────────────────────────
   void _startDurationTimer() {
     _durationTimer?.cancel();
     _durationSecs = 0;
-    _durationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {
-        setState(() => _durationSecs++);
-      }
+    _durationTimer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (mounted) setState(() => _durationSecs++);
     });
   }
 
-  void _startRingtone() async {
-    try {
-      _ringPlayer = AudioPlayer();
-      await _ringPlayer?.setReleaseMode(ReleaseMode.loop);
-      // Play a realistic telephone ringing sound from a reliable public asset
-      await _ringPlayer?.play(UrlSource('https://assets.mixkit.co/active_storage/sfx/1359/1359-84.wav'));
-    } catch (e) {
-      debugPrint('Audio play error: $e');
-    }
-  }
-
-  void _stopRingtone() {
-    try {
-      _ringPlayer?.stop();
-      _ringPlayer?.dispose();
-      _ringPlayer = null;
-    } catch (e) {
-      debugPrint('Audio stop error: $e');
-    }
-  }
-
+  // ────────────────────────────────────────────────────────────
+  // Cleanup
+  // ────────────────────────────────────────────────────────────
   void _cleanup() {
+    if (_disposed) return;
+    _disposed = true;
     _durationTimer?.cancel();
+    _pollTimer?.cancel();
+    if (_pulseController.isAnimating) _pulseController.stop();
     _pulseController.dispose();
-    _sub?.cancel();
-    _stopRingtone();
+    _channel?.unsubscribe();
+    _channel = null;
+    _endJitsi();
   }
 
   void _exit() {
+    if (!mounted) return;
     _cleanup();
-    if (mounted) {
-      Navigator.of(context).pop();
-      widget.onEnd?.call();
-    }
+    Navigator.of(context).pop();
+    widget.onEnd?.call();
   }
 
   @override
@@ -154,78 +227,94 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     super.dispose();
   }
 
-  // ─── ACTIONS ───────────────────────────────────────────────
-  
-  // Caller cancels dialing
+  // ────────────────────────────────────────────────────────────
+  // Actions
+  // ────────────────────────────────────────────────────────────
+
   Future<void> _cancelCall() async {
+    _pollTimer?.cancel();
     try {
       await _supabase.from('messages').insert({
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'caller',
-        'content': widget.callId,
+        'content': widget.isVideo ? 'مكالمة فيديو ملغاة' : 'مكالمة صوتية ملغاة',
         'message_type': 'call_cancel',
         'status': 'cancelled',
+        'metadata': {'call_id': widget.callId, 'call_status': 'cancelled'},
       });
     } catch (e) {
-      debugPrint('Error cancelling call: $e');
+      debugPrint('Cancel call error: $e');
     }
     _exit();
   }
 
-  // Receiver declines ringing
   Future<void> _declineCall() async {
     try {
       await _supabase.from('messages').insert({
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'receiver',
-        'content': widget.callId,
+        'content': widget.isVideo ? 'مكالمة فيديو مرفوضة' : 'مكالمة صوتية مرفوضة',
         'message_type': 'call_decline',
         'status': 'declined',
+        'metadata': {'call_id': widget.callId, 'call_status': 'declined'},
       });
     } catch (e) {
-      debugPrint('Error declining call: $e');
+      debugPrint('Decline call error: $e');
     }
     _exit();
   }
 
-  // Receiver accepts ringing
   Future<void> _acceptCall() async {
     try {
       await _supabase.from('messages').insert({
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'receiver',
-        'content': widget.callId,
+        'content': widget.isVideo ? 'قُبلت مكالمة الفيديو' : 'قُبلت المكالمة الصوتية',
         'message_type': 'call_accept',
         'status': 'accepted',
+        'metadata': {'call_id': widget.callId, 'call_status': 'accepted'},
       });
-      _stopRingtone();
+      _pollTimer?.cancel();
       if (mounted) {
-        setState(() {
-          _mode = CallMode.active;
-        });
+        setState(() => _mode = CallMode.active);
         _startDurationTimer();
+        _launchJitsi();
       }
     } catch (e) {
-      debugPrint('Error accepting call: $e');
+      debugPrint('Accept call error: $e');
     }
   }
 
-  // Either side ends active call
   Future<void> _endCall() async {
+    _pollTimer?.cancel();
+    _endJitsi();
+    final dur = _fmt(Duration(seconds: _durationSecs));
     try {
       await _supabase.from('messages').insert({
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'user',
-        'content': widget.callId,
+        'content': widget.isVideo ? 'انتهت مكالمة الفيديو' : 'انتهت المكالمة الصوتية',
         'message_type': 'call_end',
         'status': 'ended',
+        'metadata': {
+          'call_id': widget.callId,
+          'call_status': 'ended',
+          'call_duration': dur,
+        },
       });
+      // تحديث رسالة الـ call_invite الأصلية لتمييزها كمنتهية
+      await _supabase.from('messages').update({
+        'metadata': {
+          'call_status': 'ended',
+          'call_duration': dur,
+        }
+      }).eq('id', widget.callId);
     } catch (e) {
-      debugPrint('Error ending call: $e');
+      debugPrint('End call error: $e');
     }
     _exit();
   }
@@ -233,115 +322,248 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
   String _fmt(Duration d) =>
       '${d.inMinutes.toString().padLeft(2, '0')}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
 
-  // ─── BUILD ─────────────────────────────────────────────────
+  // ────────────────────────────────────────────────────────────
+  // Build
+  // ────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF2D4A2E); // Beautiful Forest Green
-    const primaryDark = Color(0xFF1E351F);
-    
+    const primary = Color(0xFF1E2D20);
+    const primaryMid = Color(0xFF2D4A2E);
+    const accent = Color(0xFF4CAF78);
+
     return Scaffold(
+      backgroundColor: primary,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        height: double.infinity,
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [primary, primaryDark],
+            colors: [
+              primary,
+              primaryMid,
+              const Color(0xFF1A2E1A),
+            ],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              const SizedBox(height: 60),
-              
-              // Pulsing avatar for incoming/outgoing calls
+              const SizedBox(height: 56),
+
+              // ── Call Status Badge ──────────────────────────────
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _mode == CallMode.active
+                      ? accent.withValues(alpha: 0.2)
+                      : Colors.white.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _mode == CallMode.active
+                        ? accent.withValues(alpha: 0.6)
+                        : Colors.white24,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      widget.isVideo ? Icons.videocam_rounded : Icons.call_rounded,
+                      color: _mode == CallMode.active ? accent : Colors.white60,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      widget.isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
+                      style: GoogleFonts.tajawal(
+                        color: _mode == CallMode.active ? accent : Colors.white60,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // ── Avatar Pulsing ──────────────────────────────────
               AnimatedBuilder(
                 animation: _pulseController,
                 builder: (context, child) {
-                  final scale = 1.0 + (_pulseController.value * 0.12);
-                  return Transform.scale(
-                    scale: _mode == CallMode.active ? 1.0 : scale,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.white.withValues(alpha: _mode == CallMode.active ? 0.1 : 0.2 + (_pulseController.value * 0.15)),
-                            blurRadius: _mode == CallMode.active ? 20 : 25 + (_pulseController.value * 15),
-                            spreadRadius: _mode == CallMode.active ? 2 : 4 + (_pulseController.value * 8),
+                  final scale = _mode == CallMode.active
+                      ? 1.0
+                      : 1.0 + (_pulseController.value * 0.10);
+                  final glowOpacity = _mode == CallMode.active
+                      ? 0.15
+                      : 0.15 + (_pulseController.value * 0.20);
+                  final glowRadius = _mode == CallMode.active
+                      ? 24.0
+                      : 20.0 + (_pulseController.value * 20.0);
+
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Outer glow ring
+                      if (_mode != CallMode.active)
+                        Transform.scale(
+                          scale: scale * 1.25,
+                          child: Container(
+                            width: 136,
+                            height: 136,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: accent.withValues(alpha: glowOpacity * 0.5),
+                                width: 2,
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.white24,
-                        child: Text(
-                          widget.name.isNotEmpty ? widget.name[0] : '?',
-                          style: const TextStyle(
-                            fontSize: 44,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
+                        ),
+                      // Main avatar
+                      Transform.scale(
+                        scale: scale,
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: accent.withValues(alpha: glowOpacity),
+                                blurRadius: glowRadius,
+                                spreadRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
+                              style: TextStyle(
+                                fontSize: 50,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w300,
+                                shadows: [
+                                  Shadow(
+                                    color: accent.withValues(alpha: 0.5),
+                                    blurRadius: 12,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      // Active call: green ring
+                      if (_mode == CallMode.active)
+                        Container(
+                          width: 128,
+                          height: 128,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: accent, width: 2.5),
+                          ),
+                        ),
+                    ],
                   );
                 },
               ),
-              
-              const SizedBox(height: 32),
+
+              const SizedBox(height: 28),
+
+              // ── Name ────────────────────────────────────────────
               Text(
                 widget.name,
                 style: GoogleFonts.cairo(
                   fontSize: 28,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                 ),
               ),
+
               const SizedBox(height: 8),
-              
-              // Call State Label
-              Text(
-                _mode == CallMode.outgoing
-                    ? 'جاري الاتصال...'
-                    : _mode == CallMode.incoming
-                        ? (widget.isVideo ? 'مكالمة فيديو واردة...' : 'مكالمة صوتية واردة...')
-                        : _fmt(Duration(seconds: _durationSecs)),
-                style: GoogleFonts.tajawal(
-                  fontSize: 16,
-                  color: Colors.white70,
-                  fontWeight: FontWeight.w500,
-                  letterSpacing: _mode == CallMode.active ? 1.5 : 0.0,
+
+              // ── Status / Timer ──────────────────────────────────
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                child: Text(
+                  key: ValueKey(_mode),
+                  _mode == CallMode.outgoing
+                      ? 'جاري الاتصال...'
+                      : _mode == CallMode.incoming
+                          ? (widget.isVideo ? 'مكالمة فيديو واردة...' : 'مكالمة صوتية واردة...')
+                          : _fmt(Duration(seconds: _durationSecs)),
+                  style: GoogleFonts.tajawal(
+                    fontSize: 16,
+                    color: _mode == CallMode.active
+                        ? accent
+                        : Colors.white54,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: _mode == CallMode.active ? 2.0 : 0.0,
+                  ),
                 ),
               ),
-              
-              const Spacer(),
-              
-              // Video Feed Box placeholder (for video calls)
-              if (widget.isVideo && _mode == CallMode.active)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  height: 280,
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      _isVideoOff ? Icons.videocam_off : Icons.videocam, 
-                      color: _isVideoOff ? Colors.redAccent : Colors.white54, 
-                      size: 54,
-                    ),
+
+              // ── Signal quality dots (cosmetic) ──────────────────
+              if (_mode == CallMode.active)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(4, (i) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      width: 4,
+                      height: 4 + i * 2.0,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.6 + i * 0.1),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    )),
                   ),
                 ),
-                
+
               const Spacer(),
-              
-              // ─── CONTROL BUTTONS ────────────────────────────────────
+
+              // ── Info banner for Jitsi (active call) ─────────────
+              if (_mode == CallMode.active && kIsWeb)
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: accent.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.open_in_new, color: accent, size: 14),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'تم فتح نافذة المكالمة — تحدث في نافذة Jitsi المفتوحة',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.tajawal(
+                            color: accent,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 20),
+
+              // ── Control buttons ──────────────────────────────────
               Padding(
-                padding: const EdgeInsets.only(bottom: 60),
-                child: _buildControls(),
+                padding: const EdgeInsets.only(bottom: 56),
+                child: _buildControls(accent),
               ),
             ],
           ),
@@ -350,75 +572,111 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildControls() {
-    // 1. OUTGOING CALL (Dialing...) -> Single Cancel Button
+  Widget _buildControls(Color accent) {
+    // OUTGOING: cancel
     if (_mode == CallMode.outgoing) {
       return Column(
         children: [
           _CircleBtn(
-            icon: Icons.call_end, 
-            label: 'إلغاء', 
-            color: Colors.redAccent, 
+            icon: Icons.call_end_rounded,
+            label: 'إلغاء',
+            color: const Color(0xFFE53935),
+            size: 72,
+            iconSize: 32,
             onTap: _cancelCall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'اضغط لإلغاء الاتصال',
+            style: GoogleFonts.tajawal(color: Colors.white38, fontSize: 11),
           ),
         ],
       );
     }
-    
-    // 2. INCOMING CALL (Ringing...) -> Accept (Green) and Decline (Red) Side by Side
+
+    // INCOMING: accept + decline
     if (_mode == CallMode.incoming) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _CircleBtn(
-            icon: Icons.call, 
-            label: 'قبول', 
-            color: Colors.green, 
-            onTap: _acceptCall,
+          Column(
+            children: [
+              _CircleBtn(
+                icon: widget.isVideo ? Icons.videocam_rounded : Icons.call_rounded,
+                label: 'قبول',
+                color: const Color(0xFF43A047),
+                size: 72,
+                iconSize: 32,
+                onTap: _acceptCall,
+              ),
+            ],
           ),
-          _CircleBtn(
-            icon: Icons.call_end, 
-            label: 'رفض', 
-            color: Colors.redAccent, 
-            onTap: _declineCall,
+          Column(
+            children: [
+              _CircleBtn(
+                icon: Icons.call_end_rounded,
+                label: 'رفض',
+                color: const Color(0xFFE53935),
+                size: 72,
+                iconSize: 32,
+                onTap: _declineCall,
+              ),
+            ],
           ),
         ],
       );
     }
-    
-    // 3. ACTIVE CALL -> Mute (Mic), End (Red), and Speaker buttons
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+    // ACTIVE CALL: mute + end + speaker/video
+    return Column(
       children: [
-        _CircleBtn(
-          icon: _isMuted ? Icons.mic_off : Icons.mic, 
-          label: _isMuted ? 'ملغى الكتم' : 'كتم',
-          isActive: _isMuted,
-          onTap: () => setState(() => _isMuted = !_isMuted),
-        ),
-        _CircleBtn(
-          icon: Icons.call_end, 
-          label: 'إنهاء', 
-          color: Colors.redAccent, 
-          onTap: _endCall,
-        ),
-        _CircleBtn(
-          icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_down, 
-          label: 'مكبر الصوت',
-          isActive: _isSpeakerOn,
-          onTap: () => setState(() => _isSpeakerOn = !_isSpeakerOn),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _CircleBtn(
+              icon: _isMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
+              label: _isMuted ? 'رفع الكتم' : 'كتم',
+              isActive: _isMuted,
+              onTap: _toggleJitsiMute,
+            ),
+            _CircleBtn(
+              icon: Icons.call_end_rounded,
+              label: 'إنهاء',
+              color: const Color(0xFFE53935),
+              size: 72,
+              iconSize: 32,
+              onTap: _endCall,
+            ),
+            if (widget.isVideo)
+              _CircleBtn(
+                icon: _isVideoOff ? Icons.videocam_off_rounded : Icons.videocam_rounded,
+                label: _isVideoOff ? 'تشغيل كاميرا' : 'إيقاف كاميرا',
+                isActive: _isVideoOff,
+                onTap: _toggleJitsiVideo,
+              )
+            else
+              _CircleBtn(
+                icon: _isSpeakerOn ? Icons.volume_up_rounded : Icons.volume_down_rounded,
+                label: 'مكبر الصوت',
+                isActive: _isSpeakerOn,
+                onTap: () => setState(() => _isSpeakerOn = !_isSpeakerOn),
+              ),
+          ],
         ),
       ],
     );
   }
 }
 
+// ─── Reusable Circle Button ─────────────────────────────────
 class _CircleBtn extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color? color;
   final bool isActive;
   final VoidCallback onTap;
+  final double size;
+  final double iconSize;
 
   const _CircleBtn({
     required this.icon,
@@ -426,31 +684,61 @@ class _CircleBtn extends StatelessWidget {
     this.color,
     this.isActive = false,
     required this.onTap,
+    this.size = 60,
+    this.iconSize = 26,
   });
 
   @override
   Widget build(BuildContext context) {
+    const activeColor = Color(0xFF4CAF78);
+    final bgColor = color ?? (isActive ? activeColor : Colors.white.withValues(alpha: 0.12));
+    final iconColor = color != null ? Colors.white : (isActive ? Colors.white : Colors.white);
+
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
           onTap: onTap,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 65, height: 65,
+            width: size,
+            height: size,
             decoration: BoxDecoration(
-              color: color ?? (isActive ? Colors.white : Colors.white12),
+              color: bgColor,
               shape: BoxShape.circle,
-              boxShadow: isActive ? [BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 10)] : [],
+              border: Border.all(
+                color: isActive
+                    ? activeColor.withValues(alpha: 0.6)
+                    : Colors.white.withValues(alpha: 0.08),
+                width: 1.5,
+              ),
+              boxShadow: [
+                if (color != null)
+                  BoxShadow(
+                    color: color!.withValues(alpha: 0.35),
+                    blurRadius: 16,
+                    spreadRadius: 2,
+                  ),
+                if (isActive)
+                  BoxShadow(
+                    color: activeColor.withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+              ],
             ),
-            child: Icon(
-              icon, 
-              color: color != null ? Colors.white : (isActive ? const Color(0xFF2D4A2E) : Colors.white), 
-              size: 30,
-            ),
+            child: Icon(icon, color: iconColor, size: iconSize),
           ),
         ),
         const SizedBox(height: 8),
-        Text(label, style: GoogleFonts.cairo(color: Colors.white70, fontSize: 12)),
+        Text(
+          label,
+          style: GoogleFonts.tajawal(
+            color: Colors.white54,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }

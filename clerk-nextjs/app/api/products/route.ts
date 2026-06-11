@@ -12,12 +12,21 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '12')
     const featured = searchParams.get('featured') === 'true'
 
+    const minPriceStr = searchParams.get('minPrice')
+    const maxPriceStr = searchParams.get('maxPrice')
+    const minPrice = minPriceStr ? parseFloat(minPriceStr) : undefined
+    const maxPrice = maxPriceStr ? parseFloat(maxPriceStr) : undefined
+    const inStock = searchParams.get('inStock') === 'true'
+
     const productsData = await getProducts({
       query,
       category,
       page,
       limit,
-      featured
+      featured,
+      minPrice,
+      maxPrice,
+      inStock
     })
 
     // Ensure all products have slugs (fallback for missing slugs)

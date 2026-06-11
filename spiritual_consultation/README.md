@@ -1,17 +1,48 @@
-# spiritual_consultation
+# BioPara Mobile App
 
-A new Flutter project.
+Flutter application for BioPara patients and admins.
 
-## Getting Started
+## Entry Points
 
-This project is a starting point for a Flutter application.
+- `lib/main.dart` - default patient app used by `flutter run`.
+- `lib/main_patient.dart` - explicit patient build entry point.
+- `lib/main_admin.dart` - admin build entry point.
 
-A few resources to get you started if this is your first Flutter project:
+## Main Features
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Patient authentication and profile management.
+- Product shop, cart, orders, and order details.
+- Admin dashboard, patients, appointments, reports, orders, and chat.
+- Realtime chat, media upload, voice tools, and call screens.
+- Supabase, Firebase Messaging, Stripe, and AI integrations.
+- Arabic/French translations and RTL-first UI.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Setup
+
+```bash
+flutter pub get
+```
+
+Copy `.env.example` to `.env` and fill in the real project values.
+
+## Run
+
+```bash
+flutter run
+flutter run -t lib/main_patient.dart
+flutter run -t lib/main_admin.dart
+```
+
+## Test
+
+```bash
+flutter test
+```
+
+## Database
+
+SQL setup and migration files live in `supabase/`. Keep these scripts aligned with the web ecommerce schema when touching products, orders, profiles, chat, or admin roles.
+
+## Releases
+
+Generated APK files are stored under `releases/`. Treat them as build artifacts and rebuild them after dependency, Firebase, Supabase, or native Android changes.

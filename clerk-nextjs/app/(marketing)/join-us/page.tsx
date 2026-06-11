@@ -168,7 +168,7 @@ export default function JoinUsPage() {
                   ))}
                 </div>
                 <p className="text-gray-700 italic mb-3">
-                  "برنامج الولاء في BioPara غيّر تجربة التسوق الخاصة بي. العروض حصرية والخدمة ممتازة!"
+                  &quot;برنامج الولاء في BioPara غيّر تجربة التسوق الخاصة بي. العروض حصرية والخدمة ممتازة!&quot;
                 </p>
                 <p className="text-sm text-gray-600 font-semibold">- سارة أحمد، عضو ذهبي</p>
               </div>

@@ -18,7 +18,7 @@ if (keystorePropertiesFile.exists()) {
 android {
     namespace = "com.kingmouhamed.biopara"
     compileSdk = 36
-    ndkVersion = "28.2.13676358"
+    ndkVersion = "28.2.13676358" // NDK installed at sdk/ndk/28.2.13676358
 
 
 
@@ -78,6 +78,13 @@ android {
             } else {
                 signingConfig = signingConfigs.getByName("debug")
             }
+        }
+    }
+
+    // Keep native .so debug symbols as-is (avoids NDK strip tool requirement)
+    packaging {
+        jniLibs {
+            keepDebugSymbols += listOf("**/*.so")
         }
     }
 }

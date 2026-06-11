@@ -33,14 +33,27 @@ class ShopScreen extends ConsumerStatefulWidget {
 class _ShopScreenState extends ConsumerState<ShopScreen> {
   String _searchQuery = '';
   String _selectedCategory = 'الكل 🌿';
+  // التصنيفات يجب أن تتطابق مع قيم `category` في قاعدة البيانات
+  // الكلمة الأولى من كل تصنيف تُستخدم في الفلتر عبر contains()
   final List<String> _categories = [
     'الكل 🌿',
     'أعشاب طبية 🌱',
-    'شاي اعشاب 🍵',
+    'شاي أعشاب 🍵',
     'مكملات غذائية 💊',
     'زيوت طبية 🫙',
     'عسل طبيعي 🍯',
   ];
+
+  // خريطة: كلمة البحث → اسم التصنيف الكامل في DB
+  static const Map<String, String> _catDbMap = {
+    'الكل':     '',
+    'أعشاب':    'أعشاب طبية',
+    'شاي':      'شاي أعشاب',
+    'مكملات':  'مكملات غذائية',
+    'زيوت':    'زيوت طبية',
+    'عسل':     'عسل طبيعي',
+  };
+
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -80,10 +93,11 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
               ),
               productsAsync.when(
                 data: (allProducts) {
+                  final cleanCat = _selectedCategory.split(' ')[0];
+                  final dbCat = _catDbMap[cleanCat] ?? '';
                   final filteredProducts = allProducts.where((p) {
-                    final cleanCat = _selectedCategory.split(' ')[0];
-                    final matchSearch = p.name.contains(_searchQuery);
-                    final matchCat = cleanCat == 'الكل' || p.category.contains(cleanCat);
+                    final matchSearch = _searchQuery.isEmpty || p.name.contains(_searchQuery);
+                    final matchCat = dbCat.isEmpty || p.category == dbCat;
                     return matchSearch && matchCat;
                   }).toList();
 
@@ -237,8 +251,9 @@ class _ShopScreenState extends ConsumerState<ShopScreen> {
                     final count = productsAsync.when(
                       data: (prods) {
                         final cleanCat = cat.split(' ')[0];
-                        if (cleanCat == 'الكل') return prods.length;
-                        return prods.where((p) => p.category.contains(cleanCat)).length;
+                        final dbCat = _catDbMap[cleanCat] ?? '';
+                        if (dbCat.isEmpty) return prods.length;
+                        return prods.where((p) => p.category == dbCat).length;
                       },
                       loading: () => 0,
                       error: (err, stack) => 0,

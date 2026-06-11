@@ -17,6 +17,10 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
   }
 
   Future<void> _init() async {
+    if (conversationId.isEmpty) {
+      debugPrint('⚠️ ChatNotifier: conversationId is empty. Skipping initialization.');
+      return;
+    }
     // 1. تحميل الرسائل الموجودة أولاً
     await _loadMessages();
     // 2. الاشتراك في التحديثات الفورية
@@ -25,6 +29,7 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
 
   /// تحميل الرسائل مرة واحدة من قاعدة البيانات
   Future<void> _loadMessages() async {
+    if (conversationId.isEmpty) return;
     try {
       final data = await _supabase
           .from('messages')
@@ -46,6 +51,7 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
 
   /// الاشتراك في التحديثات الفورية عبر Realtime
   void _subscribeRealtime() {
+    if (conversationId.isEmpty) return;
     _channel = _supabase
         .channel('messages:$conversationId')
         .onPostgresChanges(
@@ -99,6 +105,18 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
             _startPolling();
           }
         });
+  }
+
+  /// إضافة رسالة محلياً لتحديث الواجهة فوراً
+  void addMessageLocal(MessageModel message) {
+    if (!state.any((m) => m.id == message.id)) {
+      state = [message, ...state];
+    }
+  }
+
+  /// إعادة تحميل الرسائل يدوياً
+  Future<void> reloadMessages() async {
+    await _loadMessages();
   }
 
   /// Polling كبديل إذا فشل Realtime

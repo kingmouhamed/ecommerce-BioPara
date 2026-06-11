@@ -12,20 +12,17 @@ import 'package:uuid/uuid.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:file_picker/file_picker.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:zego_uikit/zego_uikit.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:audio_waveforms/audio_waveforms.dart' hide PlayerState;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui' as ui;
 import 'package:record/record.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/shop_provider.dart';
-import '../../core/models/product_model.dart';
 
 import 'call_overlay.dart';
 import 'booking_screen.dart';
@@ -67,8 +64,7 @@ class ChatScreen extends ConsumerStatefulWidget {
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen>
-    with TickerProviderStateMixin {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _msgCtrl    = TextEditingController();
   final _scrollCtrl = ScrollController();
   final _supabase   = Supabase.instance.client;
@@ -89,21 +85,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   MessageModel? _replyToMsg;
   List<String> _starredMessages = [];
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
-  StreamSubscription<List<Map<String, dynamic>>>? _incomingCallSub;
+  RealtimeChannel? _incomingCallSub;
   final List<String> _processedCallIds = [];
-
-  // Reaction overlay state
-  String? _showReactionFor;
-  late AnimationController _reactionAnimCtrl;
 
   @override
   void initState() {
     super.initState();
     _userId = _supabase.auth.currentUser?.id;
-    _reactionAnimCtrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
     if (!kIsWeb) {
       _recorderCtrl = RecorderController();
     }
@@ -118,23 +106,29 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     // مراقبة مكالمات واردة
     _incomingCallSub = _supabase
-        .from('messages')
-        .stream(primaryKey: ['id'])
-        .eq('conversation_id', widget.conversationId)
-        .listen((messages) {
-          if (messages.isNotEmpty) {
-            final latestMsg = messages.last;
-            final type   = latestMsg['message_type'] as String? ?? 'text';
-            final status = latestMsg['status'] as String? ?? 'sent';
-            final senderId = latestMsg['sender_id'] as String? ?? '';
-            final msgId  = latestMsg['id'] as String? ?? '';
+        .channel('incoming_calls_${widget.conversationId}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'messages',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'conversation_id',
+            value: widget.conversationId,
+          ),
+          callback: (payload) {
+            final msg = payload.newRecord;
+            final type   = msg['message_type'] as String? ?? 'text';
+            final status = msg['status'] as String? ?? 'sent';
+            final senderId = msg['sender_id'] as String? ?? '';
+            final msgId  = msg['id'] as String? ?? '';
 
             if (type == 'call_invite' &&
                 status == 'ringing' &&
                 senderId != (_supabase.auth.currentUser?.id ?? _userId) &&
                 !_processedCallIds.contains(msgId)) {
               _processedCallIds.add(msgId);
-              final content = latestMsg['content'] as String? ?? '';
+              final content = msg['content'] as String? ?? '';
               final isVideo = content.contains('فيديو') || content.contains('video');
               Navigator.push(
                 context,
@@ -149,8 +143,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                 ),
               );
             }
-          }
-        });
+          },
+        );
+    _incomingCallSub?.subscribe();
   }
 
   Future<void> _loadStarredMessages() async {
@@ -180,8 +175,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     _audioRecorder.dispose();
     _recTimer?.cancel();
     _connectivitySub?.cancel();
-    _incomingCallSub?.cancel();
-    _reactionAnimCtrl.dispose();
+    _incomingCallSub?.unsubscribe();
     super.dispose();
   }
 
@@ -279,19 +273,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     setState(() => _selectedFiles.add(f));
   }
 
-  Future<void> _pickAndUploadFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'],
-      withData: true,
-    );
-    if (result != null) {
-      for (var file in result.files) {
-        if (file.path != null) setState(() => _selectedFiles.add(XFile(file.path!)));
-      }
-    }
-  }
-
   // ══════════════════════════════════════════════
   // Send Message — الدالة الرئيسية
   // ══════════════════════════════════════════════
@@ -373,7 +354,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
         'metadata': finalMetadata,
         'status': status,
         'is_ai': false,
+        'created_at': DateTime.now().toIso8601String(),
       };
+
+      // إضافة الرسالة محلياً فوراً لتحديث الواجهة فوراً
+      final localMsg = MessageModel.fromMap(payload);
+      ref.read(chatProvider(widget.conversationId).notifier).addMessageLocal(localMsg);
 
       try {
         await _supabase.from('messages').insert(payload);
@@ -416,17 +402,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     // إدراج رد الذكاء الاصطناعي — sender_id = auth.uid() وليس 'ai_agent'
     final uid = _supabase.auth.currentUser?.id ?? widget.conversationId;
+    final aiPayload = {
+      'id': const Uuid().v4(),
+      'conversation_id': widget.conversationId,
+      'sender_id': uid,  // استخدام uid حقيقي بدل 'ai_agent'
+      'content': aiResponse,
+      'message_type': MessageType.text.name,
+      'metadata': {'ai_generated': true},
+      'is_ai': true,
+      'status': 'delivered',
+      'created_at': DateTime.now().toIso8601String(),
+    };
     try {
-      await _supabase.from('messages').insert({
-        'id': const Uuid().v4(),
-        'conversation_id': widget.conversationId,
-        'sender_id': uid,  // استخدام uid حقيقي بدل 'ai_agent'
-        'content': aiResponse,
-        'message_type': MessageType.text.name,
-        'metadata': {'ai_generated': true},
-        'is_ai': true,
-        'status': 'delivered',
-      });
+      await _supabase.from('messages').insert(aiPayload);
+      
+      // إضافة رسالة الذكاء الاصطناعي محلياً فوراً
+      final localAiMsg = MessageModel.fromMap(aiPayload);
+      ref.read(chatProvider(widget.conversationId).notifier).addMessageLocal(localAiMsg);
       _scrollToTop();
     } catch (e) {
       debugPrint('AI response insert error: $e');
@@ -473,7 +465,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
       endDrawer: BioParaDrawer(conversationId: widget.conversationId),
       appBar: _buildAppBar(),
       body: GestureDetector(
-        onTap: () => setState(() => _showReactionFor = null),
+        onTap: () => FocusScope.of(context).unfocus(),
         child: Column(
           children: [
             Expanded(child: _buildMessages()),
@@ -515,8 +507,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     final presence = ref.watch(presenceProvider(widget.conversationId));
     String subtitle = 'متصل الآن';
-    if (presence.isRecording) subtitle = '🎙 يسجل مقطعاً صوتياً...';
-    else if (presence.isTyping) subtitle = '✍️ يكتب الآن...';
+    if (presence.isRecording) {
+      subtitle = '🎙 يسجل مقطعاً صوتياً...';
+    } else if (presence.isTyping) {
+      subtitle = '✍️ يكتب الآن...';
+    }
     final bool isOnline = subtitle == 'متصل الآن';
 
     return AppBar(
@@ -621,6 +616,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   Widget _buildMessages() {
     var messages = ref.watch(chatProvider(widget.conversationId));
 
+    // ── إخفاء رسائل النظام الداخلية والـ UUID ──────────────
+    // 1. إخفاء callSystem (call_cancel, call_end, call_accept, call_decline)
+    // 2. إخفاء أي رسالة محتواها UUID خام (رسائل قديمة قبل الإصلاح)
+    final uuidRegex = RegExp(
+        r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
+        caseSensitive: false);
+    messages = messages.where((m) {
+      if (m.type == MessageType.callSystem) return false;
+      if (uuidRegex.hasMatch(m.content.trim())) return false;
+      return true;
+    }).toList();
+
     if (_searchQuery.isNotEmpty) {
       messages = messages
           .where((m) => m.content.toLowerCase().contains(_searchQuery.toLowerCase()))
@@ -648,7 +655,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               if (i == messages.length) return _buildEncryptionNotice();
 
               final m  = messages[i];
-              final bool isMe = (_supabase.auth.currentUser?.id != null) &&
+              // رسائل الذكاء الاصطناعي تظهر دائماً على اليسار (كالمستشار)
+              final bool isMe = !m.isAi &&
+                  (_supabase.auth.currentUser?.id != null) &&
                   (m.senderId == _supabase.auth.currentUser!.id);
 
               // منطق التجميع
@@ -768,8 +777,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
   }
 
   Widget _buildMessageItem(MessageModel m, bool isMe, bool showTail) {
-    final bool showReactions = _showReactionFor == m.id;
-
     return GestureDetector(
       onLongPress: () {
         HapticFeedback.mediumImpact();
@@ -1044,28 +1051,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: TextField(
-                            controller: _msgCtrl,
-                            minLines: 1,
-                            maxLines: 5,
-                            onChanged: (v) {
-                              final typing = v.trim().isNotEmpty;
-                              if (typing != _isTyping) {
-                                setState(() => _isTyping = typing);
-                                ref.read(presenceProvider(widget.conversationId).notifier)
-                                    .updateTyping(typing);
+                          child: Focus(
+                            onKeyEvent: (node, event) {
+                              if (event is KeyDownEvent &&
+                                  event.logicalKey == LogicalKeyboardKey.enter) {
+                                if (!HardwareKeyboard.instance.isShiftPressed) {
+                                  if (_isTyping || _selectedFiles.isNotEmpty) {
+                                    _sendMessage();
+                                  }
+                                  return KeyEventResult.handled;
+                                }
                               }
+                              return KeyEventResult.ignored;
                             },
-                            style: GoogleFonts.tajawal(fontSize: 15),
-                            textInputAction: TextInputAction.newline,
-                            onSubmitted: (_) => _sendMessage(),
-                            decoration: InputDecoration(
-                              hintText: 'اكتب رسالتك...',
-                              hintStyle: GoogleFonts.tajawal(
-                                  color: Colors.grey.shade400, fontSize: 14),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
+                            child: TextField(
+                              controller: _msgCtrl,
+                              minLines: 1,
+                              maxLines: 5,
+                              onChanged: (v) {
+                                final typing = v.trim().isNotEmpty;
+                                if (typing != _isTyping) {
+                                  setState(() => _isTyping = typing);
+                                  ref.read(presenceProvider(widget.conversationId).notifier)
+                                      .updateTyping(typing);
+                                }
+                              },
+                              style: GoogleFonts.tajawal(fontSize: 15),
+                              textInputAction: TextInputAction.send,
+                              onSubmitted: (_) {
+                                if (_isTyping || _selectedFiles.isNotEmpty) {
+                                  _sendMessage();
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'اكتب رسالتك...',
+                                hintStyle: GoogleFonts.tajawal(
+                                    color: Colors.grey.shade400, fontSize: 14),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                              ),
                             ),
                           ),
                         ),
