@@ -1,4 +1,19 @@
 {
+  "name": "biopara-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BioPara ecommerce web store and Flutter mobile applications.",
+  "scripts": {
+    "web:dev": "npm --prefix clerk-nextjs run dev",
+    "web:build": "npm --prefix clerk-nextjs run build",
+    "web:start": "npm --prefix clerk-nextjs run start",
+    "web:test": "npm --prefix clerk-nextjs run test",
+    "web:lint": "npm --prefix clerk-nextjs run lint",
+    "web:install": "npm --prefix clerk-nextjs install",
+    "mobile:get": "cd spiritual_consultation && flutter pub get",
+    "mobile:run": "cd spiritual_consultation && flutter run",
+    "mobile:test": "cd spiritual_consultation && flutter test"
+  },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1"

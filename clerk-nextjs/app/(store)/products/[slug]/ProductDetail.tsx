@@ -68,7 +68,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50 pb-28 lg:pb-0" dir="rtl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8 text-sm">
@@ -258,7 +258,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               </div>
 
               {/* Main Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="fixed bottom-0 left-0 right-0 z-40 bg-white p-4 border-t border-gray-200 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] lg:relative lg:p-0 lg:border-0 lg:shadow-none lg:bg-transparent lg:z-auto flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
@@ -285,6 +285,26 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <div className="flex items-center justify-center gap-2 text-xs font-medium text-gray-500">
                 <ShieldCheckIcon className="w-4 h-4 text-emerald-600" />
                 <span>دفع آمن عند الاستلام وتوصيل سريع</span>
+              </div>
+
+              {/* Estimated Delivery Date */}
+              <div className="bg-emerald-50/80 rounded-xl p-4 flex items-start gap-3 border border-emerald-100/50">
+                <TruckIcon className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-gray-800">التوصيل المتوقع</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {(() => {
+                      const today = new Date();
+                      const minDate = new Date(today);
+                      minDate.setDate(today.getDate() + 2);
+                      const maxDate = new Date(today);
+                      maxDate.setDate(today.getDate() + 4);
+                      
+                      const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'short', day: 'numeric' };
+                      return `بين ${minDate.toLocaleDateString('ar-MA', options)} و ${maxDate.toLocaleDateString('ar-MA', options)}`;
+                    })()}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -439,6 +459,29 @@ function ShieldCheckIcon(props: any) {
     >
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
       <path d="m9 12 2 2 4-4" />
+    </svg>
+  )
+}
+
+function TruckIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10 17h4V5H2v12h3" />
+      <path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5" />
+      <path d="M14 17h1" />
+      <circle cx="7.5" cy="17.5" r="2.5" />
+      <circle cx="17.5" cy="17.5" r="2.5" />
     </svg>
   )
 }

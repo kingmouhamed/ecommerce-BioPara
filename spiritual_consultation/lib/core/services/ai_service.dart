@@ -13,16 +13,20 @@ class AiService {
   /// يريّح الاتصال ويفحص النماذج البديلة تلقائياً في حالة تعذر تشغيل النموذج الافتراضي
   Future<T> _runWithFallback<T>(Future<T> Function(GenerativeModel model) action) async {
     final apiKey = dotenv.env['GEMINI_API_KEY'];
+    if (apiKey != null) {
+      debugPrint('Loaded GEMINI_API_KEY prefix: ${apiKey.substring(0, apiKey.length > 5 ? 5 : apiKey.length)}... length: ${apiKey.length}');
+    }
     if (apiKey == null || apiKey.isEmpty) {
       throw Exception('Gemini API Key is missing in .env');
     }
 
     final candidateModels = [
+      'gemini-3.5-flash',
       'gemini-2.5-flash',
-      'gemini-2.5-pro',
       'gemini-2.0-flash',
       'gemini-flash-latest',
       'gemini-pro-latest',
+      'gemini-2.5-pro',
     ];
 
     if (_currentModelIndex >= candidateModels.length) {

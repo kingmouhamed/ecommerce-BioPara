@@ -1,5 +1,6 @@
 // lib/main_admin.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -63,9 +64,9 @@ void main() async {
     );
     debugPrint('✅ Supabase initialized (Admin App)');
     
-    // ── Check Database Schema ───────────────────
-    await debugCheckSchema(); 
-    // ────────────────────────────────────────────
+    // ── Check Database Schema (debug only) ───────────────────
+    if (kDebugMode) await debugCheckSchema();
+    // ──────────────────────────────────────────────────────────
   } catch (e) {
     debugPrint('❌ Supabase init error: $e');
   }

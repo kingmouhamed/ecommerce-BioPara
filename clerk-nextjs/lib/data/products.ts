@@ -56,6 +56,9 @@ export interface ProductFilters {
   limit?: number
   featured?: boolean
   active?: boolean
+  minPrice?: number
+  maxPrice?: number
+  inStock?: boolean
 }
 
 export interface PaginatedProducts {
@@ -80,7 +83,10 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Paginat
     page = 1,
     limit = 12,
     featured = false,
-    active = true
+    active = true,
+    minPrice,
+    maxPrice,
+    inStock
   } = filters
 
   try {
@@ -124,7 +130,23 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Paginat
 
     if (query && query.trim()) {
       const q = query.toLowerCase().trim()
-      queryBuilder = queryBuilder.or(`name.ilike.%${q}%,name_ar.ilike.%${q}%,description.ilike.%${q}%,description_ar.ilike.%${q}%`)
+      // Use Supabase Arabic full-text search vector built by our migration
+      queryBuilder = queryBuilder.textSearch('fts_arabic', `'${q}'`, {
+        type: 'websearch',
+        config: 'arabic'
+      })
+    }
+
+    if (minPrice !== undefined) {
+      queryBuilder = queryBuilder.gte('price', minPrice)
+    }
+
+    if (maxPrice !== undefined) {
+      queryBuilder = queryBuilder.lte('price', maxPrice)
+    }
+
+    if (inStock) {
+      queryBuilder = queryBuilder.gt('stock_quantity', 0)
     }
 
     const from = (page - 1) * limit
@@ -161,7 +183,7 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Paginat
 
 // Helper function to filter demo products
 function getDemoProducts(filters: ProductFilters, categories: Category[], products: Product[]): PaginatedProducts {
-  const { query = '', category = '', page = 1, limit = 12, featured = false } = filters
+  const { query = '', category = '', page = 1, limit = 12, featured = false, minPrice, maxPrice, inStock } = filters
 
   let filteredProducts = [...products]
 
@@ -177,10 +199,21 @@ function getDemoProducts(filters: ProductFilters, categories: Category[], produc
     const q = query.toLowerCase()
     filteredProducts = filteredProducts.filter(p =>
       p.name.toLowerCase().includes(q) ||
-      p.name_ar.toLowerCase().includes(q) ||
-      (p.description && p.description.toLowerCase().includes(q)) ||
-      (p.description_ar && p.description_ar.toLowerCase().includes(q))
+      (p.description && p.description.toLowerCase().includes(q))
     )
+  }
+
+  // Filter by price
+  if (minPrice !== undefined) {
+    filteredProducts = filteredProducts.filter(p => p.price >= minPrice)
+  }
+  if (maxPrice !== undefined) {
+    filteredProducts = filteredProducts.filter(p => p.price <= maxPrice)
+  }
+
+  // Filter by stock
+  if (inStock) {
+    filteredProducts = filteredProducts.filter(p => p.stock_quantity ? p.stock_quantity > 0 : p.stock > 0)
   }
 
   // Filter by featured

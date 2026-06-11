@@ -32,6 +32,9 @@
   <title>BioPara</title>
   <link rel="manifest" href="manifest.json">
 
+  <!-- Jitsi Meet API for Real Audio/Video Calls -->
+  <script src="https://8x8.vc/vpaas-magic-cookie-free/external_api.js" async></script>
+
   <!-- Arabic Google Fonts — Tajawal + Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,8 +53,116 @@
       font-family: 'Tajawal', 'Cairo', Arial, sans-serif !important;
     }
   </style>
+
+  <style>
+    #jitsi-container {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background: #1E2A1E;
+    }
+    #jitsi-container.visible {
+      display: block;
+    }
+  </style>
 </head>
 <body>
+  <!-- Jitsi Meet iframe container -->
+  <div id="jitsi-container"></div>
+
+  <script>
+    var jitsiApi = null;
+
+    window.startJitsiCall = function(roomId, displayName, isVideo) {
+      var container = document.getElementById('jitsi-container');
+      if (!container) return;
+
+      // Clean up any existing session
+      if (jitsiApi) {
+        try { jitsiApi.dispose(); } catch(e) {}
+        jitsiApi = null;
+      }
+
+      container.classList.add('visible');
+
+      var domain = '8x8.vc';
+      var options = {
+        roomName: 'vpaas-magic-cookie-free/' + roomId,
+        parentNode: container,
+        width: '100%',
+        height: '100%',
+        userInfo: { displayName: displayName || 'BioPara User' },
+        configOverwrite: {
+          startWithAudioMuted: false,
+          startWithVideoMuted: !isVideo,
+          disableDeepLinking: true,
+          prejoinPageEnabled: false,
+          disableInitialGUM: false,
+          enableLayerSuspension: true,
+          p2p: { enabled: true },
+          toolbarButtons: isVideo
+            ? ['microphone','camera','hangup','chat','tileview','fullscreen']
+            : ['microphone','hangup','chat'],
+        },
+        interfaceConfigOverwrite: {
+          SHOW_JITSI_WATERMARK: false,
+          SHOW_BRAND_WATERMARK: false,
+          SHOW_CHROME_EXTENSION_BANNER: false,
+          TOOLBAR_ALWAYS_VISIBLE: true,
+          DEFAULT_BACKGROUND: '#1E2A1E',
+          LANG_DETECTION: false,
+          DEFAULT_LANGUAGE: 'ar',
+        },
+      };
+
+      try {
+        jitsiApi = new JitsiMeetExternalAPI(domain, options);
+
+        jitsiApi.addEventListeners({
+          readyToClose: function() {
+            window.onJitsiCallEnded && window.onJitsiCallEnded();
+          },
+          videoConferenceLeft: function() {
+            window.onJitsiCallEnded && window.onJitsiCallEnded();
+          },
+          participantJoined: function(e) {
+            window.onJitsiParticipantJoined && window.onJitsiParticipantJoined(e.id);
+          },
+        });
+      } catch(err) {
+        console.error('Jitsi init error:', err);
+        container.classList.remove('visible');
+      }
+    };
+
+    window.endJitsiCall = function() {
+      var container = document.getElementById('jitsi-container');
+      if (jitsiApi) {
+        try { jitsiApi.executeCommand('hangup'); } catch(e) {}
+        setTimeout(function() {
+          try { jitsiApi.dispose(); } catch(e) {}
+          jitsiApi = null;
+        }, 500);
+      }
+      if (container) container.classList.remove('visible');
+    };
+
+    window.muteJitsiAudio = function(mute) {
+      if (jitsiApi) {
+        try { jitsiApi.executeCommand('toggleAudio'); } catch(e) {}
+      }
+    };
+
+    window.toggleJitsiVideo = function() {
+      if (jitsiApi) {
+        try { jitsiApi.executeCommand('toggleVideo'); } catch(e) {}
+      }
+    };
+  </script>
+
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

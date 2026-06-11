@@ -12,7 +12,6 @@ import 'admin_shared_constants.dart';
 // Provider لمشاركة التبويب المحدد عبر الشاشات
 final selectedTabProvider = StateProvider<int>((ref) => 0);
 
-
 // ══════════════════════════════════════════════════════════════════
 class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -76,7 +75,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen>
   Widget build(BuildContext context) {
     final unreadAsync = ref.watch(adminUnreadProvider);
     final unread = unreadAsync.valueOrNull ?? 0;
-    
+
     // ✅ تجاوب القائمة الجانبية: تصبح أصغر على الشاشات الصغيرة جداً
     final screenWidth = MediaQuery.of(context).size.width;
     final railWidth = screenWidth < 400 ? 70.0 : 80.0;
@@ -87,10 +86,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen>
         children: [
           // ── المحتوى ──
           Expanded(
-            child: FadeTransition(
-              opacity: _fadeAnim,
-              child: _buildContent(),
-            ),
+            child: FadeTransition(opacity: _fadeAnim, child: _buildContent()),
           ),
 
           const VerticalDivider(width: 1, thickness: 1, color: Colors.black12),
@@ -129,7 +125,11 @@ class _AdminNavRail extends StatelessWidget {
       decoration: const BoxDecoration(
         color: kAdminPrimary,
         boxShadow: [
-          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(-2, 0)),
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(-2, 0),
+          ),
         ],
       ),
       child: SafeArea(
@@ -137,22 +137,59 @@ class _AdminNavRail extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
 
-            // شعار صغير
+            // صورة المدير الشخصية
             Container(
-              width: width * 0.6, height: width * 0.6,
+              width: width * 0.6,
+              height: width * 0.6,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: kAdminGold.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
               ),
-              child: const Icon(Icons.spa_rounded, color: kAdminGold, size: 28),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset('assets/images/King.png', fit: BoxFit.cover),
+              ),
             ),
             const SizedBox(height: 30),
 
             // الأيقونات
-            _NavItem(icon: Icons.space_dashboard_rounded, label: 'الرئيسية', index: 0, width: width, selected: selectedIndex == 0, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.groups_rounded, label: 'المرضى', index: 1, width: width, selected: selectedIndex == 1, badge: unreadCount, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.event_note_rounded, label: 'المواعيد', index: 2, width: width, selected: selectedIndex == 2, onTap: onDestinationSelected),
-            _NavItem(icon: Icons.analytics_rounded, label: 'التقارير', index: 3, width: width, selected: selectedIndex == 3, onTap: onDestinationSelected),
+            _NavItem(
+              icon: Icons.space_dashboard_rounded,
+              label: 'الرئيسية',
+              index: 0,
+              width: width,
+              selected: selectedIndex == 0,
+              onTap: onDestinationSelected,
+            ),
+            _NavItem(
+              icon: Icons.groups_rounded,
+              label: 'المرضى',
+              index: 1,
+              width: width,
+              selected: selectedIndex == 1,
+              badge: unreadCount,
+              onTap: onDestinationSelected,
+            ),
+            _NavItem(
+              icon: Icons.event_note_rounded,
+              label: 'المواعيد',
+              index: 2,
+              width: width,
+              selected: selectedIndex == 2,
+              onTap: onDestinationSelected,
+            ),
+            _NavItem(
+              icon: Icons.analytics_rounded,
+              label: 'التقارير',
+              index: 3,
+              width: width,
+              selected: selectedIndex == 3,
+              onTap: onDestinationSelected,
+            ),
 
             const Spacer(),
 
@@ -160,7 +197,11 @@ class _AdminNavRail extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: IconButton(
-                icon: const Icon(Icons.logout_rounded, color: Colors.redAccent, size: 24),
+                icon: const Icon(
+                  Icons.logout_rounded,
+                  color: Colors.redAccent,
+                  size: 24,
+                ),
                 onPressed: () => _confirmSignOut(context),
               ),
             ),
@@ -174,13 +215,22 @@ class _AdminNavRail extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('خروج', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        title: Text(
+          'خروج',
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+        ),
         content: const Text('هل تريد تسجيل الخروج؟'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('إلغاء')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () { Navigator.pop(context); Supabase.instance.client.auth.signOut(); },
+            onPressed: () {
+              Navigator.pop(context);
+              Supabase.instance.client.auth.signOut();
+            },
             child: const Text('خروج', style: TextStyle(color: Colors.white)),
           ),
         ],
@@ -190,9 +240,22 @@ class _AdminNavRail extends StatelessWidget {
 }
 
 class _NavItem extends StatelessWidget {
-  final IconData icon; final String label; final int index; final bool selected; final int? badge; final double width;
+  final IconData icon;
+  final String label;
+  final int index;
+  final bool selected;
+  final int? badge;
+  final double width;
   final ValueChanged<int> onTap;
-  const _NavItem({required this.icon, required this.label, required this.index, required this.selected, required this.onTap, required this.width, this.badge});
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.index,
+    required this.selected,
+    required this.onTap,
+    required this.width,
+    this.badge,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -200,23 +263,56 @@ class _NavItem extends StatelessWidget {
       onTap: () => onTap(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: width, padding: const EdgeInsets.symmetric(vertical: 16),
+        width: width,
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: selected ? Colors.white12 : Colors.transparent,
-          border: selected ? const Border(right: BorderSide(color: kAdminGold, width: 3)) : null,
+          border: selected
+              ? const Border(right: BorderSide(color: kAdminGold, width: 3))
+              : null,
         ),
-        child: Column(children: [
-          Stack(clipBehavior: Clip.none, children: [
-            Icon(icon, color: selected ? kAdminGold : Colors.white60, size: 24),
-            if (badge != null && badge! > 0)
-              Positioned(top: -5, right: -8, child: Container(
-                padding: const EdgeInsets.all(4), decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
-                child: Text('$badge', style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
-              )),
-          ]),
-          const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.tajawal(color: selected ? kAdminGold : Colors.white60, fontSize: 9)),
-        ]),
+        child: Column(
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  color: selected ? kAdminGold : Colors.white60,
+                  size: 24,
+                ),
+                if (badge != null && badge! > 0)
+                  Positioned(
+                    top: -5,
+                    right: -8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.redAccent,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '$badge',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.tajawal(
+                color: selected ? kAdminGold : Colors.white60,
+                fontSize: 9,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

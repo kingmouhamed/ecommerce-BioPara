@@ -20,6 +20,9 @@ interface ProductsPageProps {
     q?: string
     category?: string
     page?: string
+    minPrice?: string
+    maxPrice?: string
+    inStock?: string
   }>
 }
 
@@ -28,6 +31,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const query = resolvedSearchParams.q || ''
   const category = resolvedSearchParams.category || ''
   const page = parseInt(resolvedSearchParams.page || '1')
+  const minPrice = resolvedSearchParams.minPrice ? parseFloat(resolvedSearchParams.minPrice) : undefined
+  const maxPrice = resolvedSearchParams.maxPrice ? parseFloat(resolvedSearchParams.maxPrice) : undefined
+  const inStock = resolvedSearchParams.inStock === 'true'
 
   let productsData;
   let categories: any[] = [];
@@ -36,7 +42,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   try {
     // جلب البيانات من الخادم
     [productsData, categories] = await Promise.all([
-      getProducts({ query, category, page }),
+      getProducts({ query, category, page, minPrice, maxPrice, inStock }),
       getCategories()
     ])
   } catch (error) {
@@ -65,6 +71,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         initialQuery={query}
         initialCategory={category}
         initialPage={page}
+        initialMinPrice={minPrice}
+        initialMaxPrice={maxPrice}
+        initialInStock={inStock}
       />
     </Suspense>
   )

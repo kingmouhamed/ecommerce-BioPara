@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,13 +13,6 @@ class StorageService {
   /// Generates a signed URL for private access.
   Future<String> getSignedUrl(String path,
       {String bucket = defaultBucket, int expiresIn = 3600}) async {
-    final user = _supabase.auth.currentUser;
-    if (user == null) {
-      debugPrint('DEBUG: No authenticated user found while signing URL!');
-    } else {
-      debugPrint('DEBUG: User ${user.id} (${user.email}) is requesting sign for $path');
-    }
-    
     try {
       return await _supabase.storage
           .from(bucket)

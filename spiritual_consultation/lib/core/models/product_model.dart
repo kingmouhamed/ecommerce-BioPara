@@ -41,6 +41,47 @@ class Product {
   static String _inferImage(String name, String category) {
     final n = name.toLowerCase();
 
+    // ── شاي أعشاب (herbal-tea) — صور حقيقية من Supabase ────
+    if (n.contains('يانسون') || n.contains('anise') || n.contains('anis')) {
+      return '$_base/herbal-tea/anise-herb.jpg';
+    }
+    if (n.contains('بابونج') || n.contains('chamomile') || n.contains('camomile')) {
+      return '$_base/herbal-tea/camomile-herb.jpg';
+    }
+    if (n.contains('قرفة') || n.contains('cinnamon')) {
+      return '$_base/herbal-tea/cinnamon-herb.jpg';
+    }
+    if (n.contains('زنجبيل') || n.contains('ginger')) {
+      return '$_base/herbal-tea/ginger-herb.jpg';
+    }
+    if (n.contains('كركديه') || n.contains('hibiscus')) {
+      return '$_base/herbal-tea/hibiscus-herb.jpg';
+    }
+    if (n.contains('خزامى') || n.contains('lavender') || n.contains('خزامى')) {
+      return '$_base/herbal-tea/lavender-herb.jpg';
+    }
+    if (n.contains('لويزة') || n.contains('verbena') || n.contains('lemon verbena')) {
+      return '$_base/herbal-tea/lemon-verbena-herb.jpg';
+    }
+    if (n.contains('نعناع') || n.contains('mint')) {
+      return '$_base/herbal-tea/mint-herb.jpg';
+    }
+    if (n.contains('إكليل') || n.contains('rosemary')) {
+      return '$_base/herbal-tea/rosemary-herb.jpg';
+    }
+    if (n.contains('مريمية') || n.contains('sage')) {
+      return '$_base/herbal-tea/sage-herb.jpg';
+    }
+    if (n.contains('زعتر') || n.contains('thyme')) {
+      return '$_base/herbal-tea/thyme-herb.jpg';
+    }
+    if (n.contains('كركم') || n.contains('turmeric')) {
+      return '$_base/herbal-tea/turmeric-herb.jpg';
+    }
+    if (category == 'شاي أعشاب' || n.contains('شاي')) {
+      return '$_base/herbal-tea/mint-herb.jpg';
+    }
+
     // ── عسل طبيعي (natural-honey) ──────────────────────────
     if (n.contains('داغموس') || n.contains('daghmos')) {
       return '$_base/natural-honey/daghmos-honey.jpg';
@@ -60,22 +101,22 @@ class Product {
     if (n.contains('flower') || n.contains('أزهار') || n.contains('زهور')) {
       return '$_base/natural-honey/flower-honey.jpg';
     }
-    if (n.contains('thyme') || n.contains('زعتر') && n.contains('عسل')) {
+    if (n.contains('thyme honey') || (n.contains('زعتر') && (n.contains('عسل') || category == 'عسل طبيعي'))) {
       return '$_base/natural-honey/thyme-honey.jpg';
     }
-    if (n.contains('blackseed') || n.contains('حبة سوداء') && n.contains('عسل')) {
+    if (n.contains('blackseed honey') || (n.contains('حبة السوداء') && (n.contains('عسل') || category == 'عسل طبيعي'))) {
       return '$_base/natural-honey/blackseed-honey.jpg';
     }
     if (n.contains('carob') || n.contains('خروب')) {
       return '$_base/natural-honey/carob-honey.jpg';
     }
-    if (n.contains('كافور') || n.contains('camphor') || n.contains('eucalyptus') && n.contains('عسل')) {
+    if (n.contains('كافور') || n.contains('camphor') || (n.contains('eucalyptus') && (n.contains('عسل') || category == 'عسل طبيعي'))) {
       return '$_base/natural-honey/eucalyptus-honey.jpg';
     }
     if (n.contains('طلح') || n.contains('acacia')) {
       return '$_base/natural-honey/acacia-honey.jpg';
     }
-    if (n.contains('سدر') || n.contains('sidr') && n.contains('عسل')) {
+    if ((n.contains('سدر') || n.contains('sidr')) && (n.contains('عسل') || category == 'عسل طبيعي')) {
       return '$_base/natural-honey/sidr-honey.jpg';
     }
     if (n.contains('عسل')) {
@@ -98,10 +139,10 @@ class Product {
     if (n.contains('musk') || n.contains('مسك')) {
       return '$_base/medicinal-oils/musk-oil.jpg';
     }
-    if (n.contains('black seed') || n.contains('nigella') || (n.contains('حبة') && n.contains('سوداء') && n.contains('زيت'))) {
+    if (n.contains('black seed') || n.contains('nigella') || (n.contains('حبة') && n.contains('سوداء') && (n.contains('زيت') || category == 'زيوت طبية'))) {
       return '$_base/medicinal-oils/premium-black-seed-oil.png';
     }
-    if (n.contains('زيت زيتون') || n.contains('olive oil')) {
+    if (n.contains('زيت زيتون') || n.contains('زيتون') || n.contains('olive oil')) {
       return '$_base/medicinal-oils/olive-oil.jpg';
     }
     if (n.contains('زنجبيل') && n.contains('زيت')) {
@@ -110,7 +151,7 @@ class Product {
     if (n.contains('لوز') || n.contains('almond')) {
       return '$_base/medicinal-oils/almond-oil.jpg';
     }
-    if (n.contains('sidr') && n.contains('oil')) {
+    if ((n.contains('سدر') || n.contains('sidr')) && (n.contains('زيت') || category == 'زيوت طبية')) {
       return '$_base/medicinal-oils/sidr-oil.jpg';
     }
     if (n.contains('زيت')) {
@@ -202,46 +243,16 @@ class Product {
       return '$_base/medicinal-herbs/Thyme.jpg';
     }
 
-    // ── شاي أعشاب (herbal-tea) — صور حقيقية من Supabase ────
-    if (n.contains('يانسون') || n.contains('anise') || n.contains('anis')) {
-      return '$_base/herbal-tea/anise-herb.jpg';
-    }
-    if (n.contains('بابونج') || n.contains('chamomile') || n.contains('camomile')) {
-      return '$_base/herbal-tea/camomile-herb.jpg';
-    }
-    if (n.contains('قرفة') || n.contains('cinnamon')) {
-      return '$_base/herbal-tea/cinnamon-herb.jpg';
-    }
-    if (n.contains('زنجبيل') || n.contains('ginger')) {
-      return '$_base/herbal-tea/ginger-herb.jpg';
-    }
-    if (n.contains('كركديه') || n.contains('hibiscus')) {
-      return '$_base/herbal-tea/hibiscus-herb.jpg';
-    }
-    if (n.contains('خزامى') || n.contains('lavender')) {
-      return '$_base/herbal-tea/lavender-herb.jpg';
-    }
-    if (n.contains('لويزة') || n.contains('verbena') || n.contains('lemon verbena')) {
-      return '$_base/herbal-tea/lemon-verbena-herb.jpg';
-    }
-    if (n.contains('نعناع') || n.contains('mint')) {
+    if (category == 'شاي أعشاب' || n.contains('شاي')) {
       return '$_base/herbal-tea/mint-herb.jpg';
-    }
-    if (n.contains('إكليل') || n.contains('rosemary')) {
-      return '$_base/herbal-tea/rosemary-herb.jpg';
-    }
-    if (n.contains('مريمية') || n.contains('sage')) {
-      return '$_base/herbal-tea/sage-herb.jpg';
-    }
-    if (n.contains('زعتر') || n.contains('thyme') || n.contains('كركم') || n.contains('turmeric')) {
-      return '$_base/herbal-tea/thyme-herb.jpg';
     }
 
     // ── Fallback حسب التصنيف ─────────────────────────────────
     if (category == 'عسل طبيعي')      return '$_base/natural-honey/flower-honey.jpg';
     if (category == 'زيوت طبية')      return '$_base/medicinal-oils/olive-oil.jpg';
     if (category == 'مكملات غذائية') return '$_base/dietary-supplements/multivitamins.jpg';
-    if (category == 'شاي أعشاب')     return '$_base/herbal-tea/herb-tea-2.jpg';
+    if (category == 'شاي أعشاب')     return '$_base/herbal-tea/mint-herb.jpg';
+    if (category == 'أعشاب طبية')    return '$_base/medicinal-herbs/Moringa.jpg';
 
     return '$_base/medicinal-herbs/Moringa.jpg';
   }

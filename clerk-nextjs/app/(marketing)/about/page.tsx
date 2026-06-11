@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Leaf, Award, Users, Zap } from 'lucide-react';
 
 export default function AboutPage() {
@@ -135,12 +136,12 @@ export default function AboutPage() {
           <p className="text-lg text-green-100 mb-6">
             اكتشف مجموعة واسعة من الأعشاب الطبية الطبيعية
           </p>
-          <a
+          <Link
             href="/products"
             className="inline-block bg-white text-primary-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-all"
           >
             استكشف المنتجات
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -126,6 +126,7 @@ export default function BestSellers() {
                                                     src={(product.images && product.images.length > 0) ? product.images[0] : '/images/products/product-placeholder.jpg'}
                                                     alt={product.name_ar || product.name}
                                                     fill
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                                                 />
                                             </Link>

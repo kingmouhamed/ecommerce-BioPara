@@ -80,6 +80,7 @@ export const viewport: Viewport = {
 
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import WhatsAppFloatingButton from '@/components/actions/WhatsAppFloatingButton';
 
 export default function RootLayout({
   children,
@@ -104,6 +105,7 @@ export default function RootLayout({
             <Footer />
             <CookieConsent />
             <CartDrawer />
+            <WhatsAppFloatingButton />
           </Providers>
         </div>
       </body>

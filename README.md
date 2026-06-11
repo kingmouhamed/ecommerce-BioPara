@@ -1,178 +1,121 @@
-# BioPara Ecommerce Platform
+# BioPara Platform
 
-A modern ecommerce application built with Next.js 14, React 18, Tailwind CSS, and Clerk authentication for selling natural and organic parapharmacy products.
+BioPara is split into two products that share the same business domain:
 
-## 🚀 Features
+- `clerk-nextjs/` - the ecommerce web store built with Next.js, React, Tailwind CSS, Clerk, Supabase, Stripe, and email providers.
+- `spiritual_consultation/` - the Flutter mobile app with patient/admin entry points, shop, orders, chat, calls, Supabase, Firebase, Stripe, and AI support.
 
-- **Modern Frontend**: Next.js 14 with React 18, Tailwind CSS, and responsive design
-- **User Authentication**: Clerk-based authentication system
-- **Product Management**: Complete CRUD operations for products
-- **Shopping Cart**: Persistent cart with local storage
-- **Multi-language**: French/Arabic support with RTL
-- **SEO Optimized**: Next.js built-in SEO optimizations
-- **Mobile Responsive**: Optimized for all device sizes
+## Project Structure
 
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **React 18** - Modern React with hooks
-- **Tailwind CSS** - Utility-first CSS framework
-- **Clerk** - Authentication and user management
-- **Lucide React** - Beautiful icons
-- **TypeScript** - Type safety
-
-### Additional Libraries
-- **Material-UI** - React components
-- **Supabase** - Database and backend services
-- **Swiper** - Carousel/slider components
-- **React Helmet Async** - Document head management
-
-## 📁 Project Structure
-
-```
-/
-├── clerk-nextjs/             # Next.js application
-│   ├── app/                 # App Router pages and layouts
-│   ├── components/          # Reusable UI components
-│   ├── contexts/            # React contexts
-│   ├── lib/                 # Utility functions
-│   ├── public/              # Public static files
+```text
+.
+├── clerk-nextjs/                 # Web ecommerce app
+│   ├── app/                      # Next.js App Router pages and API routes
+│   ├── components/               # UI, layout, cart, checkout, admin components
+│   ├── lib/                      # Supabase, services, security, SEO, utilities
+│   ├── public/                   # Product images, banners, icons, static assets
+│   ├── database/                 # SQL schemas
 │   └── package.json
-├── package.json             # Root package.json with scripts
+├── spiritual_consultation/       # Flutter mobile apps
+│   ├── lib/main.dart             # Default patient app entry point
+│   ├── lib/main_patient.dart     # Patient app entry point
+│   ├── lib/main_admin.dart       # Admin app entry point
+│   ├── lib/core/                 # Models, providers, services, theme
+│   ├── lib/patient/              # Patient screens and widgets
+│   ├── lib/admin/                # Admin screens
+│   ├── supabase/                 # Flutter app database scripts
+│   └── releases/                 # Generated APK release artifacts
+├── package.json                  # Root convenience scripts
 └── README.md
 ```
 
-## 🚀 Getting Started
+## Requirements
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
+- Node.js 20 or newer for the web app dependencies.
+- npm for JavaScript package management.
+- Flutter SDK 3.11.4 or compatible for the mobile app.
+- Supabase project credentials.
+- Clerk, Stripe, SendGrid/Resend, Cloudinary, Firebase, and Redis credentials as needed by enabled features.
 
-### Installation
+## Web App
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ecommerce-biopara
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm run install-deps
-   # or
-   cd clerk-nextjs && npm install
-   ```
-
-3. **Setup environment variables**
-   ```bash
-   cd clerk-nextjs
-   cp .env.local.example .env.local
-   # Edit .env.local with your Clerk credentials
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   # or
-   cd clerk-nextjs && npm run dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## 📋 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run install-deps` - Install dependencies
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create `.env.local` in the `clerk-nextjs` directory:
-
-```env
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-CLERK_SECRET_KEY=your_clerk_secret_key
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
-```
-
-## 🗄️ Database
-
-The application uses Supabase for data persistence. The database schema includes:
-- **Users**: User accounts managed by Clerk
-- **Products**: Product catalog with categories
-- **Orders**: Order management and tracking
-- **Categories**: Product categorization
-
-## 🔐 Authentication
-
-- Clerk handles user authentication and session management
-- Protected routes for user-specific functionality
-- User registration and login through Clerk components
-- Social login providers supported
-
-## 🎨 UI Components
-
-### Key Components
-- **Cart**: Shopping cart with quantity management
-- **ProductCard**: Product display card
-- **Header**: Navigation with cart and user menu
-- **Footer**: Site information and links
-- **Carousel**: Product showcase slider
-
-### Styling
-- **Tailwind CSS**: Utility-first styling
-- **Material-UI**: Additional React components
-- **Responsive Design**: Mobile-first approach
-- **RTL Support**: Arabic language support
-
-## 📱 Pages
-
-- **Home**: Landing page with featured products
-- **Products**: Product catalog with filtering
-- **Cart**: Shopping cart management
-- **Checkout**: Order completion process
-- **Login/Signup**: User authentication
-- **About**: Company information
-- **Contact**: Contact information
-- **Favorites**: User wishlist
-
-## 🧪 Testing
+Install and run from the repository root:
 
 ```bash
-cd clerk-nextjs
-npm run test
+npm run web:install
+npm run web:dev
 ```
 
-## 🚀 Deployment
+Useful commands:
 
-### Build for Production
 ```bash
-npm run build
+npm run web:build
+npm run web:start
+npm run web:test
+npm run web:lint
 ```
 
-### Deploy on Vercel
-The easiest way to deploy is using the Vercel Platform from the creators of Next.js.
+The local web app runs at `http://localhost:3000` by default.
 
-## 🤝 Contributing
+Create `clerk-nextjs/.env.local` from `clerk-nextjs/.env.local.example` and fill in real values. Keep real secret files out of commits.
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+## Mobile App
 
-## 📄 License
+Install Flutter packages:
 
-This project is licensed under the ISC License.
+```bash
+npm run mobile:get
+```
 
-## 📞 Support
+Run the default patient app:
 
-For support, email info@biopara.ma or contact us through the website.
+```bash
+npm run mobile:run
+```
+
+Run a specific entry point:
+
+```bash
+cd spiritual_consultation
+flutter run -t lib/main_patient.dart
+flutter run -t lib/main_admin.dart
+```
+
+Run tests:
+
+```bash
+npm run mobile:test
+```
+
+Create `spiritual_consultation/.env` from `spiritual_consultation/.env.example` and fill in the required values.
+
+## Database
+
+Web SQL scripts live in:
+
+- `clerk-nextjs/database/`
+- `clerk-nextjs/app/supabase/migrations/`
+
+Mobile SQL scripts live in:
+
+- `spiritual_consultation/supabase/`
+- `spiritual_consultation/supabase/migrations/`
+
+Apply schema changes carefully and keep web/mobile assumptions aligned when products, orders, profiles, or chat tables change.
+
+## Security Notes
+
+- Do not commit `.env`, `.env.local`, API keys, service-role keys, webhook secrets, or private Firebase files.
+- `clerk-nextjs/.env.local` was removed from git tracking and should remain local only. Rotate any exposed keys if this repository has been shared or pushed before this cleanup.
+- Firebase files such as `google-services.json` and `GoogleService-Info.plist` can contain project configuration. Confirm whether they are safe for your deployment policy before publishing the repository.
+
+## Operational Checklist
+
+Before deployment:
+
+- Run `npm run web:test` and `npm run web:build`.
+- Run `npm run mobile:test`.
+- Confirm environment variables are set in Vercel/hosting and mobile build environments.
+- Confirm Supabase migrations and seed scripts are applied to the correct project.
+- Confirm Stripe webhook secrets match the deployed webhook endpoint.
+- Confirm Firebase configuration matches the Android/iOS app IDs.

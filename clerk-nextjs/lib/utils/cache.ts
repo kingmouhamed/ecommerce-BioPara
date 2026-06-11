@@ -2,8 +2,6 @@
 // CACHING SERVICE
 // =================================
 
-import { supabaseServer } from '@/lib/supabase/server';
-
 interface CacheEntry {
   data: any;
   expiresAt: number;

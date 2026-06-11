@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -23,6 +23,27 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [categoriesOpen, setCategoriesOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [touchStartX, setTouchStartX] = useState<number | null>(null);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const controlNavbar = () => {
+            if (typeof window !== 'undefined') {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                    setIsVisible(false); // Scroll down -> hide
+                } else {
+                    setIsVisible(true);  // Scroll up -> show
+                }
+                setLastScrollY(window.scrollY);
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('scroll', controlNavbar);
+            return () => window.removeEventListener('scroll', controlNavbar);
+        }
+    }, [lastScrollY]);
 
     const cartItemCount = useCartStore((state: CartStore) => state.getCartCount());
     const openCart = useCartStore((state: CartStore) => state.openCart);
@@ -38,6 +59,26 @@ export default function Navbar() {
     const closeMenus = () => {
         setCategoriesOpen(false);
         setMobileMenuOpen(false);
+    };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStartX(e.touches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (touchStartX === null) return;
+        const currentX = e.touches[0].clientX;
+        const diff = currentX - touchStartX;
+        
+        // If swiped right by more than 50px (closing the drawer in RTL context)
+        if (diff > 50) {
+            closeMenus();
+            setTouchStartX(null);
+        }
+    };
+
+    const handleTouchEnd = () => {
+        setTouchStartX(null);
     };
 
     return (
@@ -71,7 +112,7 @@ export default function Navbar() {
             </div>
 
             {/* Main Navigation */}
-            <header className="bg-white shadow-md sticky top-0 z-40">
+            <header className={`bg-white shadow-md sticky top-0 z-40 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex justify-between items-center h-20">
                         {/* Logo */}
@@ -145,12 +186,12 @@ export default function Navbar() {
                         {/* Desktop & Mobile Actions */}
                         <div className="flex items-center gap-3">
                             {/* Wishlist Mobile/Desktop */}
-                            <Link href="/wishlist" className="hidden sm:flex relative p-2.5 bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm">
+                            <Link href="/wishlist" className="hidden sm:flex items-center justify-center relative bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm min-w-[44px] min-h-[44px]">
                                 <Heart className="w-5 h-5" />
                             </Link>
 
                             {/* Cart */}
-                            <button onClick={openCart} className="relative p-2.5 bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm">
+                            <button onClick={openCart} className="relative flex items-center justify-center bg-gray-100 text-gray-800 rounded-full border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors shadow-sm min-w-[44px] min-h-[44px]">
                                 <ShoppingCart className="w-5 h-5" />
                                 {cartItemCount > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-md animate-bounce border border-white">
@@ -177,7 +218,7 @@ export default function Navbar() {
                             {/* Mobile Menu Toggle */}
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                className="lg:hidden p-2.5 bg-gray-100 text-gray-800 rounded-full border border-gray-200 focus:outline-none hover:bg-emerald-50 hover:text-emerald-600 shadow-sm"
+                                className="lg:hidden flex items-center justify-center bg-gray-100 text-gray-800 rounded-full border border-gray-200 focus:outline-none hover:bg-emerald-50 hover:text-emerald-600 shadow-sm min-w-[44px] min-h-[44px]"
                                 aria-label="القائمة"
                             >
                                 {mobileMenuOpen ? <X className="w-5 h-5 text-emerald-600" /> : <Menu className="w-5 h-5" />}
@@ -194,16 +235,29 @@ export default function Navbar() {
                 </div>
             </header>
 
+            {/* Announcement Bar */}
+            <div className="bg-emerald-50 border-b border-emerald-100 py-2 hidden sm:block">
+                <div className="container mx-auto px-4 text-center">
+                    <p className="text-emerald-800 text-sm font-bold flex items-center justify-center gap-2">
+                        <Truck className="w-4 h-4 text-emerald-600" />
+                        توصيل مجاني للطلبات فوق 200 درهم | التوصيل خلال 2-4 أيام عمل
+                    </p>
+                </div>
+            </div>
+
             {/* Mobile Sidebar Menu */}
             <div className={`fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity ${mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={closeMenus}>
                 <div
                     className={`fixed top-0 right-0 bottom-0 w-[280px] bg-white shadow-2xl transition-transform duration-300 ease-out transform overflow-y-auto ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}
                     onClick={e => e.stopPropagation()}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
                 >
                     <div className="p-6">
                         <div className="flex items-center justify-between mb-8">
                             <span className="text-2xl font-bold text-emerald-700">القائمة</span>
-                            <button onClick={closeMenus} className="p-2 bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200"><X className="w-5 h-5" /></button>
+                            <button onClick={closeMenus} className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-gray-100 rounded-full text-gray-600 hover:bg-gray-200"><X className="w-5 h-5" /></button>
                         </div>
 
                         <div className="space-y-6">
