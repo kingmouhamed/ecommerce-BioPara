@@ -55,14 +55,18 @@ export default function AdminPage() {
   }, [products, searchQuery, selectedCategory]);
 
   const handleDeleteProduct = async (productId: number) => {
-    if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-      // API call to delete to be implemented
-      setProducts(products.filter(p => p.id !== productId));
-      addToast({
-        type: 'success',
-        title: 'تم الحذف',
-        message: 'تم الحذف بنجاح (Simulation)'
-      });
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+    try {
+      const res = await fetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setProducts(products.filter(p => p.id !== productId));
+        addToast({ type: 'success', title: 'تم الحذف', message: 'تم حذف المنتج بنجاح' });
+      } else {
+        addToast({ type: 'error', title: 'خطأ', message: data.error || 'فشل في حذف المنتج' });
+      }
+    } catch {
+      addToast({ type: 'error', title: 'خطأ', message: 'حدث خطأ في الاتصال' });
     }
   };
 

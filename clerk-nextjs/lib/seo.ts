@@ -68,7 +68,7 @@ export const generateOrganizationStructuredData = () => {
     description: 'متجر إلكتروني متخصص في المنتجات الطبيعية والعلاجية',
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '+212-XXX-XXXXXX',
+      telephone: process.env.NEXT_PUBLIC_CONTACT_PHONE || '+212-600-000000',
       contactType: 'customer service',
       availableLanguage: ['Arabic', 'English']
     },
