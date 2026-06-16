@@ -11,7 +11,7 @@ import { Product } from '@/lib/data/products';
 export default function SearchBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [query, setQuery] = useState("");
-    const [debouncedQuery] = useDebounce(query, 500); // 500ms debounce
+    const [debouncedQuery] = useDebounce(query, 300); // 300ms debounce
     const [results, setResults] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -71,7 +71,7 @@ export default function SearchBar() {
                         value={query}
                         onChange={(e) => {
                             setQuery(e.target.value);
-                            setIsOpen(true);
+                            if (e.target.value) setIsOpen(true);
                         }}
                         onFocus={() => setIsOpen(true)}
                         placeholder="ابحث عن الأعشاب والمنتجات الطبيعية..."
@@ -101,7 +101,7 @@ export default function SearchBar() {
                                 {results.map((product) => (
                                     <li key={product.id}>
                                         <Link
-                                            href={`/products/${product.id}`}
+                                            href={`/products/${product.slug || product.id}`}
                                             onClick={() => setIsOpen(false)}
                                             className="flex items-center gap-4 px-4 py-3 hover:bg-emerald-50/50 transition-colors"
                                         >

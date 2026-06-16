@@ -33,11 +33,11 @@ export function generateProductSchema(product: Product, storeUrl: string = "http
         }
     };
 
-    if (product.rating && product.rating > 0) {
+    if ((product as any).rating && (product as any).rating > 0) {
         // BioPara products typically have ~24 reviews as per mockup, we'll use a dynamic fallback if reviews count isn't in product
         schema.aggregateRating = {
             "@type": "AggregateRating",
-            "ratingValue": product.rating.toString(),
+            "ratingValue": (product as any).rating.toString(),
             "reviewCount": "24" 
         };
     }

@@ -1,12 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
 import Providers from '@/components/layout/Providers';
 import CookieConsent from '@/components/layout/CookieConsent';
 import CartDrawer from '@/components/cart/CartDrawer';
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BioPara - Premium Natural Wellness | Global Delivery",
@@ -95,7 +92,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={inter.className || 'font-sans antialiased'}>
+      <body className="font-sans antialiased">
         <div className="min-h-screen bg-[var(--color-background)] font-sans flex flex-col" dir="rtl">
           <Providers>
             <Navbar />
