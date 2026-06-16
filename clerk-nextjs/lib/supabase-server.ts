@@ -14,6 +14,13 @@ function initializeSupabase() {
       !supabaseUrl && 'NEXT_PUBLIC_SUPABASE_URL',
       !supabaseServiceKey && 'SUPABASE_SERVICE_ROLE_KEY',
     ].filter(Boolean).join(', ');
+    // During build, return a proxy that throws on actual DB calls (not on import)
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+      supabaseAdmin = new Proxy({}, {
+        get: () => () => { throw new Error(`Missing env: ${missing}`); }
+      });
+      return supabaseAdmin;
+    }
     throw new Error(`Missing required environment variables: ${missing}. Set them in .env.local`);
   }
 
