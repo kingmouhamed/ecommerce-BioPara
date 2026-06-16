@@ -237,26 +237,111 @@ async function addCartItem(data: any) {
 async function updateCartItem(data: any) {
   const { userId, sessionId, productId, quantity } = data;
 
-  // Similar logic to addCartItem but update existing item
-  // Implementation details...
-  
-  return { success: true, cart: null };
+  if (!userId && !sessionId) {
+    return { success: false, error: 'User ID or Session ID is required' };
+  }
+
+  const cartQuery = supabaseAdmin.from('carts').select('id');
+  const { data: cart } = userId
+    ? await cartQuery.eq('user_id', userId).single()
+    : await cartQuery.eq('session_id', sessionId).single();
+
+  if (!cart) {
+    return { success: false, error: 'Cart not found' };
+  }
+
+  if (quantity <= 0) {
+    const { error } = await supabaseAdmin
+      .from('cart_items')
+      .delete()
+      .eq('cart_id', cart.id)
+      .eq('product_id', productId);
+
+    if (error) return { success: false, error: error.message };
+  } else {
+    const { data: product } = await supabaseAdmin
+      .from('products')
+      .select('stock_quantity')
+      .eq('id', productId)
+      .single();
+
+    if (product && product.stock_quantity < quantity) {
+      return { success: false, error: 'Insufficient stock' };
+    }
+
+    const { error } = await supabaseAdmin
+      .from('cart_items')
+      .update({ quantity })
+      .eq('cart_id', cart.id)
+      .eq('product_id', productId);
+
+    if (error) return { success: false, error: error.message };
+  }
+
+  const { data: updatedCart } = await supabaseAdmin
+    .from('carts')
+    .select(`*, cart_items (*, products (id, name, slug, price, images))`)
+    .eq('id', cart.id)
+    .single();
+
+  return { success: true, cart: updatedCart };
 }
 
 async function removeCartItem(data: any) {
   const { userId, sessionId, productId } = data;
 
-  // Find cart and remove item
-  // Implementation details...
-  
-  return { success: true, cart: null };
+  if (!userId && !sessionId) {
+    return { success: false, error: 'User ID or Session ID is required' };
+  }
+
+  const cartQuery = supabaseAdmin.from('carts').select('id');
+  const { data: cart } = userId
+    ? await cartQuery.eq('user_id', userId).single()
+    : await cartQuery.eq('session_id', sessionId).single();
+
+  if (!cart) {
+    return { success: false, error: 'Cart not found' };
+  }
+
+  const { error } = await supabaseAdmin
+    .from('cart_items')
+    .delete()
+    .eq('cart_id', cart.id)
+    .eq('product_id', productId);
+
+  if (error) return { success: false, error: error.message };
+
+  const { data: updatedCart } = await supabaseAdmin
+    .from('carts')
+    .select(`*, cart_items (*, products (id, name, slug, price, images))`)
+    .eq('id', cart.id)
+    .single();
+
+  return { success: true, cart: updatedCart };
 }
 
 async function clearCart(data: any) {
   const { userId, sessionId } = data;
 
-  // Find cart and clear all items
-  // Implementation details...
-  
-  return { success: true, cart: null };
+  if (!userId && !sessionId) {
+    return { success: false, error: 'User ID or Session ID is required' };
+  }
+
+  const cartQuery = supabaseAdmin.from('carts').select('id');
+  const { data: cart } = userId
+    ? await cartQuery.eq('user_id', userId).single()
+    : await cartQuery.eq('session_id', sessionId).single();
+
+  if (!cart) {
+    return { success: false, error: 'Cart not found' };
+  }
+
+  const { error } = await supabaseAdmin
+    .from('cart_items')
+    .delete()
+    .eq('cart_id', cart.id);
+
+  if (error) return { success: false, error: error.message };
+
+  return { success: true, cart: { ...cart, cart_items: [] } };
 }
