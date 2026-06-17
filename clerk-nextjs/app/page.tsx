@@ -291,25 +291,6 @@ export default function Home() {
           12. NEWSLETTER + LEAD MAGNET
       ═══════════════════════════════════════════════════ */}
       <NewsletterSection />
-
-      {/* ═══════════════════════════════════════════════════
-          FLOATING WHATSAPP BUTTON
-      ═══════════════════════════════════════════════════ */}
-      <a
-        href="https://wa.me/212673020264"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 left-6 bg-green-500 text-white p-4 rounded-full shadow-2xl hover:bg-green-600 transition-all hover:scale-110 z-50 group"
-        aria-label="تواصل عبر واتساب"
-      >
-        {/* Pulse rings */}
-        <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-40" />
-        <MessageCircle className="w-6 h-6 relative z-10" />
-        {/* Tooltip */}
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          استشارة مجانية 🌿
-        </span>
-      </a>
     </div>
   );
 }
