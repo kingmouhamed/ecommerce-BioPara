@@ -68,7 +68,7 @@ export default function SidebarFilters({
 
   if (!mounted) return <div className="animate-pulse bg-white p-6 rounded-2xl h-96"></div>
 
-  const FilterContent = () => (
+  const filterContent = (
     <div className="space-y-6">
       {/* Search Input */}
       <div>
@@ -197,7 +197,7 @@ export default function SidebarFilters({
           <Filter className="w-5 h-5 text-emerald-600" />
           الفلاتر
         </h2>
-        <FilterContent />
+        {filterContent}
       </div>
 
       {/* Mobile Bottom Sheet */}
@@ -225,7 +225,7 @@ export default function SidebarFilters({
               <X className="w-5 h-5" />
             </button>
           </div>
-          <FilterContent />
+          {filterContent}
         </div>
       </div>
     </>

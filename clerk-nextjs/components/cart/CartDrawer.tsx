@@ -4,17 +4,20 @@ import { Fragment, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react';
-import { useCartStore } from '@/store/useCartStore';
+import { useCart } from '@/contexts/CartContext';
 
 export default function CartDrawer() {
     const {
-        isOpen,
-        closeCart,
-        items,
-        removeItem,
+        isCartOpen: isOpen,
+        setIsCartOpen,
+        cart: items,
+        removeFromCart: removeItem,
         updateQuantity,
-        getCartTotal
-    } = useCartStore();
+        calculateSubtotal,
+    } = useCart();
+
+    const closeCart = () => setIsCartOpen(false);
+    const getCartTotal = () => calculateSubtotal();
 
     // Prevent hydration mismatch errors caused by localStorage persistence
     const [mounted, setMounted] = useState(false);
@@ -72,7 +75,7 @@ export default function CartDrawer() {
                                     <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
                                         <Image
                                             src={item.image}
-                                            alt={item.name}
+                                            alt={item.title}
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform"
                                             sizes="96px"
@@ -86,7 +89,7 @@ export default function CartDrawer() {
                                                 onClick={closeCart}
                                                 className="font-bold text-gray-900 hover:text-emerald-600 line-clamp-2 text-sm leading-tight pl-2"
                                             >
-                                                {item.name}
+                                                {item.title}
                                             </Link>
                                             <button
                                                 onClick={() => removeItem(item.id)}

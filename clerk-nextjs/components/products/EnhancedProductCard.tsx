@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingCart, Eye, Heart, CheckCircle2 } from 'lucide-react';
-import { useCartStore, type CartStore } from '@/store/useCartStore';
+import { useCart } from '@/contexts/CartContext';
 import ProductImage from '@/components/ui/ProductImage';
 import { Product } from '@/lib/data/products';
 
 export default function EnhancedProductCard({ product }: { product: Product }) {
-  const addItem = useCartStore((state: CartStore) => state.addItem);
+  const { addToCart, setIsCartOpen } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
 
@@ -22,13 +22,14 @@ export default function EnhancedProductCard({ product }: { product: Product }) {
     e.preventDefault(); // Prevent navigating to the product page
     if (isOutOfStock) return;
 
-    addItem({
-      id: product.id.toString(), // Convert to string for Zustand store if it's number
-      name: product.name,
+    addToCart({
+      id: product.id.toString(),
+      title: product.name,
       price: product.price,
       slug: product.slug,
       image: product.images?.[0] || '/images/products/product-placeholder.jpg',
     });
+    setIsCartOpen(true);
 
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
