@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Gift, Star, ShoppingCart, Zap } from 'lucide-react';
-import { useCartStore } from '@/store/useCartStore';
+import { useCart } from '@/contexts/CartContext';
 
 const bundles = [
     {
@@ -49,18 +49,17 @@ const bundles = [
 ];
 
 export default function ProductBundles() {
-    const openCart = useCartStore(s => s.openCart);
-    const addItem = useCartStore(s => s.addItem);
+    const { addToCart, setIsCartOpen } = useCart();
 
     const handleBundleAdd = (bundle: typeof bundles[0]) => {
-        addItem({
+        addToCart({
             id: bundle.id,
-            name: bundle.title,
+            title: bundle.title,
             price: bundle.bundlePrice,
             slug: bundle.slug,
             image: '/images/products/product-placeholder.jpg',
         });
-        openCart();
+        setIsCartOpen(true);
     };
 
     return (

@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+import { Suspense } from 'react';
 import Providers from '@/components/layout/Providers';
 import CookieConsent from '@/components/layout/CookieConsent';
 import CartDrawer from '@/components/cart/CartDrawer';
+import ScrollToTop from '@/components/layout/ScrollToTop';
 
 export const metadata: Metadata = {
   title: "BioPara - Premium Natural Wellness | Global Delivery",
@@ -95,6 +97,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <div className="min-h-screen bg-[var(--color-background)] font-sans flex flex-col" dir="rtl">
           <Providers>
+            <Suspense fallback={null}>
+              <ScrollToTop />
+            </Suspense>
             <Navbar />
             <main className="flex-1">
               {children}

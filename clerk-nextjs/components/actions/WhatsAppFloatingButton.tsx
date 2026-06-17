@@ -2,10 +2,15 @@
 
 import React from 'react'
 import { MessageCircle } from 'lucide-react'
+import { usePathname } from 'next/navigation'
 
 export default function WhatsAppFloatingButton() {
   const phoneNumber = "212673020264"
   const whatsappUrl = `https://wa.me/${phoneNumber}`
+  const pathname = usePathname()
+
+  // Hide the floating button on the checkout page to avoid clutter / overlap
+  if (pathname === '/checkout') return null
 
   return (
     <a

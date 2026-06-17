@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/nextjs';
-import { useCartStore, type CartStore } from '@/store/useCartStore';
+import { useCart } from '@/contexts/CartContext';
 import LiveSearch from '@/components/search/LiveSearch';
 import {
     ShoppingCart, Menu, X, ChevronDown,
@@ -45,8 +45,8 @@ export default function Navbar() {
         }
     }, [lastScrollY]);
 
-    const cartItemCount = useCartStore((state: CartStore) => state.getCartCount());
-    const openCart = useCartStore((state: CartStore) => state.openCart);
+    const { cartItemCount, setIsCartOpen } = useCart();
+    const openCart = () => setIsCartOpen(true);
     const router = useRouter();
 
     const handleSearch = (e: React.FormEvent) => {

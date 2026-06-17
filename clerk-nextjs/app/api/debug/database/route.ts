@@ -5,6 +5,11 @@ import { getSupabaseAdmin } from '@/lib/supabase-server'
 const supabaseAdmin = getSupabaseAdmin()
 
 export async function GET() {
+  // Never expose internal database diagnostics in production
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not available' }, { status: 403 })
+  }
+
   try {
     // Test database connection
     const { data: connectionTest, error: connectionError } = await supabaseAdmin
