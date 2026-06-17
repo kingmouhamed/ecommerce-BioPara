@@ -11,17 +11,11 @@ import {
 
 // ─── Section Components ───────────────────────────────────────────────────────
 import HeroCountdown from '@/components/sections/HeroCountdown';
-import TrustBadges from '@/components/sections/TrustBadges';
 import CategorySection from '@/components/sections/CategorySection';
 import BestSellers from '@/components/sections/BestSellers';
-import HerbsByBenefit from '@/components/sections/HerbsByBenefit';
 import ProductBundles from '@/components/sections/ProductBundles';
 import WhyBioPara from '@/components/sections/WhyBioPara';
 import Testimonials from '@/components/sections/Testimonials';
-import WhatsAppConsultation from '@/components/sections/WhatsAppConsultation';
-import HerbalRecipes from '@/components/sections/HerbalRecipes';
-import BlogSection from '@/components/sections/BlogSection';
-import FAQSection from '@/components/sections/FAQSection';
 import NewsletterSection from '@/components/sections/NewsletterSection';
 import Banner from '@/components/layout/Banner';
 
@@ -178,22 +172,12 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════
-          2. TRUST & SOCIAL PROOF BADGES
-      ═══════════════════════════════════════════════════ */}
-      <TrustBadges />
-
-      {/* ═══════════════════════════════════════════════════
           3. CATEGORIES GRID
       ═══════════════════════════════════════════════════ */}
       <CategorySection />
 
       {/* ═══════════════════════════════════════════════════
-          4. HERBS BY BENEFIT
-      ═══════════════════════════════════════════════════ */}
-      <HerbsByBenefit />
-
-      {/* ═══════════════════════════════════════════════════
-          3. BEST SELLING PRODUCTS
+          4. BEST SELLING PRODUCTS
       ═══════════════════════════════════════════════════ */}
       <BestSellers />
 
@@ -268,27 +252,7 @@ export default function Home() {
       <Testimonials />
 
       {/* ═══════════════════════════════════════════════════
-          8. WHATSAPP CONSULTATION
-      ═══════════════════════════════════════════════════ */}
-      <WhatsAppConsultation />
-
-      {/* ═══════════════════════════════════════════════════
-          9. HERBAL RECIPES
-      ═══════════════════════════════════════════════════ */}
-      <HerbalRecipes />
-
-      {/* ═══════════════════════════════════════════════════
-          10. BLOG / EDUCATIONAL CONTENT
-      ═══════════════════════════════════════════════════ */}
-      <BlogSection />
-
-      {/* ═══════════════════════════════════════════════════
-          11. FAQ SECTION
-      ═══════════════════════════════════════════════════ */}
-      <FAQSection />
-
-      {/* ═══════════════════════════════════════════════════
-          12. NEWSLETTER + LEAD MAGNET
+          8. NEWSLETTER + LEAD MAGNET
       ═══════════════════════════════════════════════════ */}
       <NewsletterSection />
     </div>
