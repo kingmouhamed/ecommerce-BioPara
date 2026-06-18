@@ -13,6 +13,7 @@ source .env
 set +a
 
 flutter build apk --release \
+  --split-per-abi \
   --flavor patient \
   -t lib/main_patient.dart \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
@@ -26,4 +27,7 @@ flutter build apk --release \
   --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
   --dart-define=FIREBASE_MEASUREMENT_ID="$FIREBASE_MEASUREMENT_ID"
 
-echo "Built: build/app/outputs/flutter-apk/app-patient-release.apk"
+echo "Built (per-ABI APKs) in: build/app/outputs/flutter-apk/"
+echo "  app-patient-armeabi-v7a-release.apk"
+echo "  app-patient-arm64-v8a-release.apk"
+echo "  app-patient-x86_64-release.apk"
