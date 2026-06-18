@@ -13,6 +13,7 @@ source .env
 set +a
 
 flutter build apk --release \
+  --split-per-abi \
   --flavor admin \
   -t lib/main_admin.dart \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
@@ -26,4 +27,7 @@ flutter build apk --release \
   --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
   --dart-define=FIREBASE_MEASUREMENT_ID="$FIREBASE_MEASUREMENT_ID"
 
-echo "Built: build/app/outputs/flutter-apk/app-admin-release.apk"
+echo "Built (per-ABI APKs) in: build/app/outputs/flutter-apk/"
+echo "  app-admin-armeabi-v7a-release.apk"
+echo "  app-admin-arm64-v8a-release.apk"
+echo "  app-admin-x86_64-release.apk"
