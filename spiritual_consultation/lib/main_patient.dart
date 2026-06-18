@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,19 +12,20 @@ import 'patient/screens/splash_screen.dart';
 import 'core/utils/custom_error_screen.dart';
 import 'core/utils/app_logger.dart';
 import 'core/services/cache_service.dart';
+import 'core/config/app_config.dart';
 
 Future<void> _initializeFirebase() async {
   try {
     if (kIsWeb) {
-      final apiKey = dotenv.env['FIREBASE_API_KEY'];
-      if (apiKey == null || apiKey.isEmpty) return;
+      final apiKey = AppConfig.firebaseApiKey;
+      if (apiKey.isEmpty) return;
       await Firebase.initializeApp(
         options: FirebaseOptions(
           apiKey: apiKey,
-          appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
-          messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
-          projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
-          measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'],
+          appId: AppConfig.firebaseAppId,
+          messagingSenderId: AppConfig.firebaseMessagingSenderId,
+          projectId: AppConfig.firebaseProjectId,
+          measurementId: AppConfig.firebaseMeasurementId,
         ),
       );
     } else {
@@ -73,14 +73,14 @@ void main() async {
 
   GoogleFonts.config.allowRuntimeFetching = false;
   await _loadArabicFonts();
-  await dotenv.load(fileName: '.env');
+  await AppConfig.tryLoadDotEnvForLocalDev();
   await _initializeFirebase();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   try {
     await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
     );
   } catch (e) {
     debugPrint('Supabase init error: $e');

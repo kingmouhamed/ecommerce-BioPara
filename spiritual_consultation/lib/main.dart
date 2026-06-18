@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,22 +16,23 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'patient/screens/login_screen.dart';
 import 'patient/screens/chat_screen.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/config/app_config.dart';
 
 Future<void> _initializeFirebase() async {
   try {
     if (kIsWeb) {
-      final apiKey = dotenv.env['FIREBASE_API_KEY'];
-      if (apiKey == null || apiKey.isEmpty) {
-        debugPrint('⚠️ Firebase Web initialization skipped: FIREBASE_API_KEY is missing in .env');
+      final apiKey = AppConfig.firebaseApiKey;
+      if (apiKey.isEmpty) {
+        debugPrint('⚠️ Firebase Web initialization skipped: FIREBASE_API_KEY is missing');
         return;
       }
       await Firebase.initializeApp(
         options: FirebaseOptions(
           apiKey: apiKey,
-          appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
-          messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
-          projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
-          measurementId: dotenv.env['FIREBASE_MEASUREMENT_ID'],
+          appId: AppConfig.firebaseAppId,
+          messagingSenderId: AppConfig.firebaseMessagingSenderId,
+          projectId: AppConfig.firebaseProjectId,
+          measurementId: AppConfig.firebaseMeasurementId,
         ),
       );
     } else {
@@ -51,15 +51,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
+  await AppConfig.tryLoadDotEnvForLocalDev();
   await _initializeFirebase();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await initializeDateFormatting('ar', null);
 
   try {
     await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
     );
     debugPrint('✅ Supabase initialized successfully.');
   } catch (e) {

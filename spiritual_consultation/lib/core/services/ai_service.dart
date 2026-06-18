@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:flutter/foundation.dart';
+
+import '../config/app_config.dart';
 
 class AiService {
   static final AiService _instance = AiService._internal();
@@ -12,12 +13,9 @@ class AiService {
 
   /// يريّح الاتصال ويفحص النماذج البديلة تلقائياً في حالة تعذر تشغيل النموذج الافتراضي
   Future<T> _runWithFallback<T>(Future<T> Function(GenerativeModel model) action) async {
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey != null) {
-      debugPrint('Loaded GEMINI_API_KEY prefix: ${apiKey.substring(0, apiKey.length > 5 ? 5 : apiKey.length)}... length: ${apiKey.length}');
-    }
-    if (apiKey == null || apiKey.isEmpty) {
-      throw Exception('Gemini API Key is missing in .env');
+    final apiKey = AppConfig.geminiApiKey;
+    if (apiKey.isEmpty) {
+      throw Exception('Gemini API Key is missing');
     }
 
     final candidateModels = [
