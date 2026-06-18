@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -15,6 +14,7 @@ import 'core/providers/auth_provider.dart';
 import 'core/utils/custom_error_screen.dart';
 import 'core/utils/app_logger.dart';
 import 'core/services/cache_service.dart';
+import 'core/config/app_config.dart';
 
 // ── Load Arabic fonts locally (fixes Web CanvasKit garbled text) ──────────
 Future<void> _loadArabicFonts() async {
@@ -55,12 +55,12 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
   await _loadArabicFonts();
 
-  await dotenv.load(fileName: '.env');
+  await AppConfig.tryLoadDotEnvForLocalDev();
 
   try {
     await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
     );
     debugPrint('✅ Supabase initialized (Admin App)');
     

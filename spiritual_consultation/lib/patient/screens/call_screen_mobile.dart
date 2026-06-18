@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../../core/config/app_config.dart';
 
 Widget buildMobileCallScreen(
   BuildContext context,
@@ -9,9 +10,9 @@ Widget buildMobileCallScreen(
   String userName,
   bool isVideoCall,
 ) {
-  final rawAppID = dotenv.env['ZEGO_APP_ID'];
-  final appSign = dotenv.env['ZEGO_APP_SIGN'] ?? '';
-  final appID = int.tryParse(rawAppID ?? '') ?? 0;
+  final rawAppID = AppConfig.zegoAppId;
+  final appSign = AppConfig.zegoAppSign;
+  final appID = int.tryParse(rawAppID) ?? 0;
 
   if (appID == 0 || appSign.isEmpty) {
     return const Scaffold(body: Center(child: Text('خطأ في إعدادات الاتصال')));
