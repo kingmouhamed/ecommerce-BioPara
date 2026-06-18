@@ -13,6 +13,7 @@ source .env
 set +a
 
 flutter build apk --release \
+  --flavor patient \
   -t lib/main_patient.dart \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
   --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
@@ -25,4 +26,4 @@ flutter build apk --release \
   --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
   --dart-define=FIREBASE_MEASUREMENT_ID="$FIREBASE_MEASUREMENT_ID"
 
-echo "Built: build/app/outputs/flutter-apk/app-release.apk"
+echo "Built: build/app/outputs/flutter-apk/app-patient-release.apk"
