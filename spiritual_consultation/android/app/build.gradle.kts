@@ -57,6 +57,24 @@ android {
         multiDexEnabled = true
     }
 
+    // ── Product flavors: patient & admin as separately-installable apps ──
+    // Distinct applicationIds let both APKs coexist on the same device.
+    flavorDimensions += "app"
+    productFlavors {
+        create("patient") {
+            dimension = "app"
+            applicationIdSuffix = ".patient"
+            // Final applicationId: com.kingmouhamed.biopara.patient
+            manifestPlaceholders["appLabel"] = "BioPara"
+        }
+        create("admin") {
+            dimension = "app"
+            applicationIdSuffix = ".admin"
+            // Final applicationId: com.kingmouhamed.biopara.admin
+            manifestPlaceholders["appLabel"] = "BioPara Admin"
+        }
+    }
+
     /*
     splits {
         abi {

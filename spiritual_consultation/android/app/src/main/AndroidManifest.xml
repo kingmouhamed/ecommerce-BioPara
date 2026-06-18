@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     
     <application
-        android:label="BioPara"
+        android:label="${appLabel}"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
