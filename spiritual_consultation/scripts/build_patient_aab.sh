@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# Builds the release Patient APK with all secrets injected via --dart-define.
-# Reads values from a local .env file (never committed, never bundled).
+# Builds the release Patient Android App Bundle (.aab) for the Play Store.
+# Play Store generates per-device APKs from the AAB, so users download only
+# the ABI + resources their device needs (40-60% smaller than a fat APK).
+# Secrets are injected via --dart-define and are never bundled as assets.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -12,8 +14,7 @@ set -a
 source .env
 set +a
 
-flutter build apk --release \
-  --split-per-abi \
+flutter build appbundle --release \
   --obfuscate --split-debug-info=build/patient/symbols \
   --flavor patient \
   -t lib/main_patient.dart \
@@ -28,7 +29,4 @@ flutter build apk --release \
   --dart-define=FIREBASE_APP_ID="$FIREBASE_APP_ID" \
   --dart-define=FIREBASE_MEASUREMENT_ID="$FIREBASE_MEASUREMENT_ID"
 
-echo "Built (per-ABI APKs) in: build/app/outputs/flutter-apk/"
-echo "  app-patient-armeabi-v7a-release.apk"
-echo "  app-patient-arm64-v8a-release.apk"
-echo "  app-patient-x86_64-release.apk"
+echo "Built: build/app/outputs/bundle/patientRelease/app-patient-release.aab"

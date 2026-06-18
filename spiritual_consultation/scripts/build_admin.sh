@@ -14,6 +14,7 @@ set +a
 
 flutter build apk --release \
   --split-per-abi \
+  --obfuscate --split-debug-info=build/admin/symbols \
   --flavor admin \
   -t lib/main_admin.dart \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
