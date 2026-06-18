@@ -99,10 +99,13 @@ android {
         }
     }
 
-    // Keep native .so debug symbols as-is (avoids NDK strip tool requirement)
+    // Native .so libraries are stripped of debug symbols (requires the pinned
+    // ndkVersion above). Keeping them unstripped previously inflated the APK
+    // by hundreds of MB (ZEGO/zego_zim/Firebase native libs).
     packaging {
         jniLibs {
-            keepDebugSymbols += listOf("**/*.so")
+            // Compress native libs in the APK; modern Android extracts as needed.
+            useLegacyPackaging = false
         }
     }
 }
