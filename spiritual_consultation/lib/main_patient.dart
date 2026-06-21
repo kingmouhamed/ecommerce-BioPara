@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
+import 'core/services/zego_call_service.dart';
 
 import 'patient/screens/splash_screen.dart';
 import 'core/utils/custom_error_screen.dart';
@@ -62,6 +63,8 @@ Future<void> _loadArabicFonts() async {
   }
 }
 
+// ── ZegoCloud مُوحَّد في ZegoCallService ─────────────────────
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheService().init();
@@ -86,6 +89,31 @@ void main() async {
     debugPrint('Supabase init error: $e');
   }
 
+  // ✅ ZegoCallService: تسجيل دخول المريض (موبايل فقط)
+  // يُستدعى بعد Supabase.initialize() مباشرةً
+  if (!kIsWeb) {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user != null) {
+      await ZegoCallService.instance.onUserLogin(
+        user.id,
+        'مريض BioPara',
+      );
+    }
+
+    // الاستماع لتغييرات المصادقة مستقبلاً
+    Supabase.instance.client.auth.onAuthStateChange.listen((event) async {
+      if (event.event == AuthChangeEvent.signedIn &&
+          event.session?.user != null) {
+        await ZegoCallService.instance.onUserLogin(
+          event.session!.user.id,
+          'مريض BioPara',
+        );
+      } else if (event.event == AuthChangeEvent.signedOut) {
+        await ZegoCallService.instance.onUserLogout();
+      }
+    });
+  }
+
   // ProviderScope مباشرةً — بدون EasyLocalization (التطبيق عربي ثابت)
   runApp(
     const ProviderScope(
@@ -102,6 +130,8 @@ class BioParaPatientApp extends StatelessWidget {
     return MaterialApp(
       title: 'BioPara',
       debugShowCheckedModeBanner: false,
+      // ✅ مطلوب لـ Zego: يفتح شاشة المكالمة تلقائياً عند قبول الدعوة
+      navigatorKey: ZegoCallService.navigatorKey,
       // اللغة العربية ثابتة — لا حاجة لـ EasyLocalization
       locale: const Locale('ar'),
       theme: ThemeData(

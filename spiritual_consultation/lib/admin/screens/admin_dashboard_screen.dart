@@ -71,34 +71,143 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen>
     }
   }
 
+  void _confirmSignOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(
+          'خروج',
+          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+        ),
+        content: const Text('هل تريد تسجيل الخروج؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () {
+              Navigator.pop(context);
+              Supabase.instance.client.auth.signOut();
+            },
+            child: const Text('خروج', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavBar(int unread) {
+    return Container(
+      decoration: BoxDecoration(
+        color: kAdminPrimary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            _BottomNavItem(
+              icon: Icons.space_dashboard_rounded,
+              label: 'الرئيسية',
+              selected: _selectedIndex == 0,
+              onTap: () => _onTabChanged(0),
+            ),
+            _BottomNavItem(
+              icon: Icons.groups_rounded,
+              label: 'المرضى',
+              selected: _selectedIndex == 1,
+              badge: unread,
+              onTap: () => _onTabChanged(1),
+            ),
+            _BottomNavItem(
+              icon: Icons.event_note_rounded,
+              label: 'المواعيد',
+              selected: _selectedIndex == 2,
+              onTap: () => _onTabChanged(2),
+            ),
+            _BottomNavItem(
+              icon: Icons.analytics_rounded,
+              label: 'التقارير',
+              selected: _selectedIndex == 3,
+              onTap: () => _onTabChanged(3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final unreadAsync = ref.watch(adminUnreadProvider);
     final unread = unreadAsync.valueOrNull ?? 0;
 
-    // ✅ تجاوب القائمة الجانبية: تصبح أصغر على الشاشات الصغيرة جداً
     final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
     final railWidth = screenWidth < 400 ? 70.0 : 80.0;
 
     return Scaffold(
       backgroundColor: kAdminBg,
-      body: Row(
-        children: [
-          // ── المحتوى ──
-          Expanded(
-            child: FadeTransition(opacity: _fadeAnim, child: _buildContent()),
-          ),
+      // ✅ BottomNavigationBar — mobile only
+      bottomNavigationBar: isMobile ? _buildBottomNavBar(unread) : null,
+      appBar: isMobile
+          ? AppBar(
+              backgroundColor: kAdminPrimary,
+              elevation: 0,
+              title: Text(
+                'لوحة التحكم',
+                style: GoogleFonts.cairo(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                  onPressed: () => _confirmSignOut(context),
+                ),
+              ],
+            )
+          : null,
+      body: SafeArea(
+        bottom: false, // let BottomNavBar handle bottom
+        child: Row(
+          children: [
+            // ✅ Content — always fills available space
+            Expanded(
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: _buildContent(),
+              ),
+            ),
 
-          const VerticalDivider(width: 1, thickness: 1, color: Colors.black12),
-
-          // ── القائمة الجانبية (Navigation Rail) ──
-          _AdminNavRail(
-            width: railWidth,
-            selectedIndex: _selectedIndex,
-            unreadCount: unread,
-            onDestinationSelected: _onTabChanged,
-          ),
-        ],
+            // ✅ Sidebar Rail — tablet/desktop only
+            if (!isMobile) ...[
+              const VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: Colors.black12,
+              ),
+              _AdminNavRail(
+                width: railWidth,
+                selectedIndex: _selectedIndex,
+                unreadCount: unread,
+                onDestinationSelected: _onTabChanged,
+                onSignOut: () => _confirmSignOut(context),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -110,12 +219,14 @@ class _AdminNavRail extends StatelessWidget {
   final int selectedIndex;
   final int unreadCount;
   final ValueChanged<int> onDestinationSelected;
+  final VoidCallback onSignOut;
 
   const _AdminNavRail({
     required this.width,
     required this.selectedIndex,
     required this.unreadCount,
     required this.onDestinationSelected,
+    required this.onSignOut,
   });
 
   @override
@@ -202,38 +313,11 @@ class _AdminNavRail extends StatelessWidget {
                   color: Colors.redAccent,
                   size: 24,
                 ),
-                onPressed: () => _confirmSignOut(context),
+                onPressed: onSignOut,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _confirmSignOut(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(
-          'خروج',
-          style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
-        ),
-        content: const Text('هل تريد تسجيل الخروج؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () {
-              Navigator.pop(context);
-              Supabase.instance.client.auth.signOut();
-            },
-            child: const Text('خروج', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
@@ -247,6 +331,7 @@ class _NavItem extends StatelessWidget {
   final int? badge;
   final double width;
   final ValueChanged<int> onTap;
+  
   const _NavItem({
     required this.icon,
     required this.label,
@@ -259,59 +344,147 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => onTap(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: width,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: selected ? Colors.white12 : Colors.transparent,
-          border: selected
-              ? const Border(right: BorderSide(color: kAdminGold, width: 3))
-              : null,
-        ),
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Icon(
-                  icon,
-                  color: selected ? kAdminGold : Colors.white60,
-                  size: 24,
-                ),
-                if (badge != null && badge! > 0)
-                  Positioned(
-                    top: -5,
-                    right: -8,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Colors.redAccent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '$badge',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
+    // ✅ Custom sizing based on Rail width (FIX-05)
+    final iconSize = width > 75 ? 26.0 : 22.0;
+    final labelSize = width > 75 ? 10.0 : 9.0;
+
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 60), // ✅ minimum touch target
+      child: InkWell(
+        onTap: () => onTap(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: width,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: selected ? Colors.white12 : Colors.transparent,
+            border: selected
+                ? const Border(right: BorderSide(color: kAdminGold, width: 3))
+                : null,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    icon,
+                    color: selected ? kAdminGold : Colors.white60,
+                    size: iconSize,
+                  ),
+                  if (badge != null && badge! > 0)
+                    Positioned(
+                      top: -5,
+                      right: -8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.redAccent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          badge! > 99 ? '99+' : '$badge',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.tajawal(
-                color: selected ? kAdminGold : Colors.white60,
-                fontSize: 9,
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: GoogleFonts.tajawal(
+                  color: selected ? kAdminGold : Colors.white60,
+                  fontSize: labelSize,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── عنصر التنقل السفلي للهواتف ───────────────────────────────────
+class _BottomNavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final int? badge;
+  final VoidCallback onTap;
+
+  const _BottomNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        splashColor: Colors.white12,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            border: selected
+                ? const Border(top: BorderSide(color: kAdminGold, width: 2.5))
+                : null,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    icon,
+                    size: 26, // ✅ Larger icon for mobile touch target
+                    color: selected ? kAdminGold : Colors.white60,
+                  ),
+                  if (badge != null && badge! > 0)
+                    Positioned(
+                      top: -6,
+                      right: -10,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.redAccent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          badge! > 99 ? '99+' : '$badge',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: GoogleFonts.tajawal(
+                  fontSize: 11, // ✅ Readable label size
+                  color: selected ? kAdminGold : Colors.white60,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

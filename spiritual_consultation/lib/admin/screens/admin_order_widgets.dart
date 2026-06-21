@@ -8,18 +8,20 @@ import 'admin_shared_constants.dart';
 
 /// بطاقة إحصاء صغيرة
 class AdminMiniStatCard extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final Widget? iconWidget;
   final String label;
   final String value;
   final Color color;
 
   const AdminMiniStatCard({
     super.key,
-    required this.icon,
+    this.icon,
+    this.iconWidget,
     required this.label,
     required this.value,
     required this.color,
-  });
+  }) : assert(icon != null || iconWidget != null, 'Provide either icon or iconWidget');
 
   @override
   Widget build(BuildContext context) {
@@ -39,34 +41,39 @@ class AdminMiniStatCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
+          iconWidget ?? Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 22),
+            child: Icon(icon!, color: color, size: 22),
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: GoogleFonts.cairo(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    value,
+                    style: GoogleFonts.cairo(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
                 ),
-              ),
-              Text(
-                label,
-                style: GoogleFonts.tajawal(
-                  fontSize: 11,
-                  color: Colors.grey[600],
+                Text(
+                  label,
+                  style: GoogleFonts.tajawal(
+                    fontSize: 11,
+                    color: Colors.grey[600],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

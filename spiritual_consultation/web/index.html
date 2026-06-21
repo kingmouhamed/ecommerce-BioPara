@@ -152,7 +152,17 @@
 
     window.muteJitsiAudio = function(mute) {
       if (jitsiApi) {
-        try { jitsiApi.executeCommand('toggleAudio'); } catch(e) {}
+        try {
+          jitsiApi.isAudioMuted().then(function(muted) {
+            if (muted !== mute) {
+              jitsiApi.executeCommand('toggleAudio');
+            }
+          }).catch(function() {
+            jitsiApi.executeCommand('toggleAudio');
+          });
+        } catch(e) {
+          jitsiApi.executeCommand('toggleAudio');
+        }
       }
     };
 

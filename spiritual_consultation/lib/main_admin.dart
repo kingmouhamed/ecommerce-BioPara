@@ -6,7 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
+import 'core/services/zego_call_service.dart';
 import 'admin/screens/admin_login_screen.dart';
 import 'admin/screens/admin_dashboard_screen.dart';
 import 'admin/debug_helper.dart'; // ✅ Debug helper
@@ -39,6 +42,37 @@ Future<void> _loadArabicFonts() async {
   }
 }
 
+// ── Firebase init ──────────────────────────────────────────────
+Future<void> _initializeFirebase() async {
+  try {
+    if (kIsWeb) {
+      final apiKey = AppConfig.firebaseApiKey;
+      if (apiKey.isEmpty) return;
+      await Firebase.initializeApp(
+        options: FirebaseOptions(
+          apiKey: apiKey,
+          appId: AppConfig.firebaseAppId,
+          messagingSenderId: AppConfig.firebaseMessagingSenderId,
+          projectId: AppConfig.firebaseProjectId,
+          measurementId: AppConfig.firebaseMeasurementId.isEmpty ? null : AppConfig.firebaseMeasurementId,
+        ),
+      );
+    } else {
+      await Firebase.initializeApp();
+    }
+    debugPrint('✅ Firebase initialized (Admin)');
+  } catch (e) {
+    debugPrint('⚠️ Firebase init error (Admin): $e');
+  }
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await _initializeFirebase();
+}
+
+// ── ZegoCloud مُوحَّد في ZegoCallService ─────────────────────
+
 // ── Main ───────────────────────────────────────────────────
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +91,10 @@ void main() async {
 
   await AppConfig.tryLoadDotEnvForLocalDev();
 
+  // ── Firebase init (needed for push call notifications) ──
+  await _initializeFirebase();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   try {
     await Supabase.initialize(
       url: AppConfig.supabaseUrl,
@@ -69,6 +107,22 @@ void main() async {
     // ──────────────────────────────────────────────────────────
   } catch (e) {
     debugPrint('❌ Supabase init error: $e');
+  }
+
+  // ✅ ZegoCallService: الأدمن يسجّل بالـ adminUserId الثابت (موبايل فقط)
+  // حاسم: يجب أن يتطابق مع targetId الذي يستهدفه المريض في chat_screen
+  if (!kIsWeb) {
+    await ZegoCallService.instance.onUserLogin(
+      ZegoCallService.adminUserId,    // 'biopara_admin' — ثابت ومتطابق مع جهة المريض
+      ZegoCallService.adminUserName,  // 'المستشار الروحاني'
+    );
+
+    // الاستماع لتغييرات المصادقة (logout فقط)
+    Supabase.instance.client.auth.onAuthStateChange.listen((event) async {
+      if (event.event == AuthChangeEvent.signedOut) {
+        await ZegoCallService.instance.onUserLogout();
+      }
+    });
   }
 
   runApp(
@@ -89,6 +143,8 @@ class BioParaAdminApp extends StatelessWidget {
     return MaterialApp(
       title: 'BioPara Admin',
       debugShowCheckedModeBanner: false,
+      // ✅ مطلوب لـ Zego: يفتح شاشة المكالمة تلقائياً عند قبول الدعوة
+      navigatorKey: ZegoCallService.navigatorKey,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,

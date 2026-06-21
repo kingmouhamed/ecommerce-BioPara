@@ -222,12 +222,18 @@ class AdminHomeTab extends ConsumerWidget {
     final dateStr =
         '${days[now.weekday - 1]}، ${now.day} ${months[now.month - 1]} ${now.year}';
 
-    final isMobile = MediaQuery.of(context).size.width < 800;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile = screenWidth < 600;
 
     return Container(
       color: kAdminBg,
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(isMobile ? 16 : 32),
+        padding: EdgeInsets.only(
+          left: isMobile ? 16 : 32,
+          right: isMobile ? 16 : 32,
+          top: isMobile ? 16 : 32,
+          bottom: isMobile ? 90 : 32, // ✅ Extra bottom padding to clear BottomNavBar
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -288,7 +294,7 @@ class AdminHomeTab extends ConsumerWidget {
 
             convsAsync.when(
               data: (convs) => convs.isEmpty
-                  ? _buildEmptyState()
+                  ? _buildEmptyState(context)
                   : Column(
                       children: convs
                           .map((c) => _PatientRow(data: c))
@@ -311,59 +317,82 @@ class AdminHomeTab extends ConsumerWidget {
             const SizedBox(height: 32),
 
             // ── قسم الإيرادات والطلبات ───────────────────────
-            Row(children: [
-              const Icon(Icons.shopping_bag_outlined, color: kAdminPrimary, size: 20),
-              const SizedBox(width: 8),
-              Text(
+            ExpansionTile(
+              initiallyExpanded: !isMobile, // collapsed by default on mobile
+              leading: const Icon(Icons.shopping_bag_outlined, color: kAdminPrimary),
+              title: Text(
                 'الطلبات والإيرادات',
                 style: GoogleFonts.cairo(
-                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: kAdminPrimary,
+                  fontSize: 18,
                 ),
               ),
-            ]),
-            const SizedBox(height: 12),
-
-            // بطاقتا الطلبات والإيرادات
-            Row(children: [
-              Expanded(
-                child: AdminMiniStatCard(
-                  icon: Icons.receipt_long_outlined,
-                  label: 'إجمالي الطلبات',
-                  value: ordersAsync.when(
-                    data: (v) => '$v',
-                    loading: () => '...',
-                    error: (e, s) => '0',
-                  ),
-                  color: kAdminPrimary,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: AdminMiniStatCard(
-                  icon: Icons.attach_money_rounded,
-                  label: 'الإيرادات (درهم)',
-                  value: revenueAsync.when(
-                    data: (v) => v.toStringAsFixed(0),
-                    loading: () => '...',
-                    error: (e, s) => '0',
-                  ),
-                  color: kAdminGold,
-                ),
-              ),
-            ]),
-            const SizedBox(height: 16),
-
-            // قائمة الطلبات المعلّقة
-            recentOrdersAsync.when(
-              data: (orders) => orders.isEmpty
-                  ? const SizedBox.shrink()
-                  : Column(
-                      children: orders.map((o) => AdminOrderRow(data: o)).toList(),
+              trailing: isMobile ? null : const SizedBox.shrink(),
+              shape: const Border(),
+              collapsedShape: const Border(),
+              children: [
+                const SizedBox(height: 12),
+                // بطاقتا الطلبات والإيرادات
+                Row(
+                  children: [
+                    Expanded(
+                      child: AdminMiniStatCard(
+                        icon: Icons.receipt_long_outlined,
+                        label: 'إجمالي الطلبات',
+                        value: ordersAsync.when(
+                          data: (v) => '$v',
+                          loading: () => '...',
+                          error: (e, s) => '0',
+                        ),
+                        color: kAdminPrimary,
+                      ),
                     ),
-              loading: () => const SizedBox.shrink(),
-              error: (e, s) => const SizedBox.shrink(),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: AdminMiniStatCard(
+                        iconWidget: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: kAdminGold.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'د', // Arabic letter for Dirham
+                              style: GoogleFonts.cairo(
+                                color: kAdminGold,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        label: 'الإيرادات (درهم)',
+                        value: revenueAsync.when(
+                          data: (v) => '${v.toStringAsFixed(0)} د.م',
+                          loading: () => '...',
+                          error: (e, s) => '0',
+                        ),
+                        color: kAdminGold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // قائمة الطلبات المعلّقة
+                recentOrdersAsync.when(
+                  data: (orders) => orders.isEmpty
+                      ? const SizedBox.shrink()
+                      : Column(
+                          children: orders.map((o) => AdminOrderRow(data: o)).toList(),
+                        ),
+                  loading: () => const SizedBox.shrink(),
+                  error: (e, s) => const SizedBox.shrink(),
+                ),
+              ],
             ),
 
             const SizedBox(height: 24),
@@ -373,29 +402,35 @@ class AdminHomeTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(40),
+        padding: EdgeInsets.all(isMobile ? 24 : 40),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.people_outline, size: 64, color: Colors.grey.shade300),
-            const SizedBox(height: 12),
+            Icon(
+              Icons.people_outline,
+              size: isMobile ? 40 : 64,
+              color: Colors.grey.shade300,
+            ),
+            SizedBox(height: isMobile ? 8 : 12),
             Text(
               'لا يوجد مرضى نشطون الآن',
               style: GoogleFonts.tajawal(
-                fontSize: 16,
+                fontSize: isMobile ? 14 : 16,
                 color: Colors.grey.shade500,
               ),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: isMobile ? 4 : 6),
             Text(
               'ستظهر المحادثات الجديدة هنا تلقائياً',
               style: GoogleFonts.tajawal(
-                fontSize: 12,
+                fontSize: isMobile ? 11 : 12,
                 color: Colors.grey.shade400,
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -571,8 +606,8 @@ class _StatsGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isMobile = screenWidth < 850;
-    final isTiny = screenWidth < 500;
+    final isMobile = screenWidth < 600;
+    final isTiny = screenWidth < 400;
     final total = totalAsync.valueOrNull ?? 1;
 
     final cards = [
@@ -614,9 +649,9 @@ class _StatsGrid extends ConsumerWidget {
       crossAxisCount: isTiny ? 1 : (isMobile ? 2 : 4),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: 16,
-      mainAxisSpacing: 16,
-      childAspectRatio: isTiny ? 2.5 : (isMobile ? 1.3 : 1.25),
+      crossAxisSpacing: isMobile ? 12 : 16,
+      mainAxisSpacing: isMobile ? 12 : 16,
+      childAspectRatio: isTiny ? 2.2 : (isMobile ? 1.5 : 1.25),
       children: cards
           .map((c) => _StatCard(
                 icon: c.$1,

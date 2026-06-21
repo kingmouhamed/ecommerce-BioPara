@@ -23,6 +23,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/shop_provider.dart';
+import '../../core/services/zego_call_service.dart';
 
 import 'call_overlay.dart';
 import 'booking_screen.dart';
@@ -123,7 +124,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             final senderId = msg['sender_id'] as String? ?? '';
             final msgId  = msg['id'] as String? ?? '';
 
-            if (type == 'call_invite' &&
+            if ((type == 'call_invite' || type == 'callInvite') &&
                 status == 'ringing' &&
                 senderId != (_supabase.auth.currentUser?.id ?? _userId) &&
                 !_processedCallIds.contains(msgId)) {
@@ -433,6 +434,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         type: MessageType.callInvite,
         content: isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
         status: 'ringing',
+        metadata: {
+          'call_id': activeCallId,
+          'call_type': isVideo ? 'video' : 'voice',
+          'call_status': 'active',
+          'call_started_at': DateTime.now().toIso8601String(),
+        },
       );
     }
     if (mounted) {
@@ -589,24 +596,49 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildCallButton({required bool isVideo}) {
+    // على الويب: Zego غير مدعوم — أظهر رسالة
     if (kIsWeb) {
       return IconButton(
         icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
             color: Colors.white, size: 20),
-        onPressed: () => _startCall(isVideo),
+        onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('المكالمات متاحة على تطبيق الهاتف فقط')),
+        ),
       );
     }
-    final targetId   = _isAdmin() ? widget.conversationId : "admin_consultant_1";
-    final targetName = _isAdmin() ? "المريض" : "المستشار بيوبارا";
+
+    // ── تحديد الطرف المستهدَف (موحّد مع تسجيل الدخول في main_*) ──
+    // المريض → يتصل بالأدمن الثابت (biopara_admin)
+    // الأدمن → يتصل بالمريض عبر معرّف المحادثة (= patient uid)
+    final bool callerIsAdmin = _isAdmin();
+    final String targetId = callerIsAdmin
+        ? widget.conversationId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_') // patient uid
+        : ZegoCallService.adminUserId;   // 'biopara_admin' — متطابق مع main_admin!
+    final String targetName = callerIsAdmin
+        ? 'المريض'
+        : ZegoCallService.adminUserName;
+
     return ZegoSendCallInvitationButton(
       isVideoCall: isVideo,
       invitees: [ZegoUIKitUser(id: targetId, name: targetName)],
-      resourceID: "biopara_calls",
+      resourceID: 'biopara_calls', // يجب أن يطابق resource فـ Zego Console
+      timeoutSeconds: 30,
       iconSize: const Size(40, 40),
       buttonSize: const Size(40, 40),
-      onPressed: (code, message, errorInvitees) => _startCall(isVideo),
-      icon: ButtonIcon(icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-          color: Colors.white, size: 20)),
+      onPressed: (code, message, errorInvitees) {
+        // Zego يفتح شاشة المكالمة تلقائياً — لا نستدعي _startCall هنا
+        if (errorInvitees.isNotEmpty && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('تعذر الاتصال — تأكد أن المستخدم الآخر متصل',
+                style: GoogleFonts.tajawal()),
+            backgroundColor: Colors.red,
+          ));
+        }
+      },
+      icon: ButtonIcon(
+        icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
+            color: Colors.white, size: 20),
+      ),
     );
   }
 

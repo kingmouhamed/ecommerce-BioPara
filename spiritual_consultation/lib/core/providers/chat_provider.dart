@@ -31,15 +31,30 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
   Future<void> _loadMessages() async {
     if (conversationId.isEmpty) return;
     try {
-      final data = await _supabase
-          .from('messages')
-          .select()
-          .eq('conversation_id', conversationId)
-          .eq('is_deleted', false)
-          .order('created_at', ascending: false)
-          .limit(200);
+      List<dynamic> data;
+      try {
+        data = await _supabase
+            .from('messages')
+            .select()
+            .eq('conversation_id', conversationId)
+            .eq('is_deleted', false)
+            .order('created_at', ascending: false)
+            .limit(200);
+      } on PostgrestException catch (e) {
+        if (e.code == '42703' || e.message.contains('is_deleted')) {
+          // Column is_deleted doesn't exist yet in the DB schema, fallback to query without it
+          data = await _supabase
+              .from('messages')
+              .select()
+              .eq('conversation_id', conversationId)
+              .order('created_at', ascending: false)
+              .limit(200);
+        } else {
+          rethrow;
+        }
+      }
 
-      state = (data as List)
+      state = data
           .map((m) => MessageModel.fromMap(m as Map<String, dynamic>))
           .toList();
 
@@ -180,10 +195,22 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
       await _deleteFromStorage(audioUrl);
     }
     try {
-      await _supabase
-          .from('messages')
-          .update({'is_deleted': true, 'content': 'تم حذف هذه الرسالة'})
-          .eq('id', id);
+      try {
+        await _supabase
+            .from('messages')
+            .update({'is_deleted': true, 'content': 'تم حذف هذه الرسالة'})
+            .eq('id', id);
+      } on PostgrestException catch (e) {
+        if (e.code == '42703' || e.message.contains('is_deleted')) {
+          // Column is_deleted doesn't exist yet, fallback to updating content only
+          await _supabase
+              .from('messages')
+              .update({'content': 'تم حذف هذه الرسالة'})
+              .eq('id', id);
+        } else {
+          rethrow;
+        }
+      }
     } catch (e) {
       debugPrint('deleteMessage error: $e');
       rethrow;
@@ -205,10 +232,22 @@ class ChatNotifier extends StateNotifier<List<MessageModel>> {
   /// تفريغ المحادثة
   Future<void> clearChat() async {
     try {
-      await _supabase
-          .from('messages')
-          .update({'is_deleted': true})
-          .eq('conversation_id', conversationId);
+      try {
+        await _supabase
+            .from('messages')
+            .update({'is_deleted': true})
+            .eq('conversation_id', conversationId);
+      } on PostgrestException catch (e) {
+        if (e.code == '42703' || e.message.contains('is_deleted')) {
+          // Column is_deleted doesn't exist yet, physically delete the messages as a fallback
+          await _supabase
+              .from('messages')
+              .delete()
+              .eq('conversation_id', conversationId);
+        } else {
+          rethrow;
+        }
+      }
     } catch (e) {
       debugPrint('clearChat error: $e');
       rethrow;

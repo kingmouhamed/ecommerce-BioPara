@@ -57,10 +57,6 @@ class ZegoCallService {
         userName: userName.isEmpty ? 'مستخدم BioPara' : userName,
         plugins: [ZegoUIKitSignalingPlugin()],
 
-        // يضمن وصول الدعوة حتى إذا كان التطبيق في الخلفية أو مُغلق تماماً —
-        // هذا هو سبب بقاء الأدمن عالقاً على "جاري الاتصال".
-        notifyWhenAppRunningInBackgroundOrQuit: true,
-
         // ── إعداد الإشعارات ──
         notificationConfig: ZegoCallInvitationNotificationConfig(
           androidNotificationConfig: ZegoCallAndroidNotificationConfig(
@@ -76,7 +72,7 @@ class ZegoCallService {
 
         // ── إعداد المكالمة (صوت + فيديو) ──
         requireConfig: (ZegoCallInvitationData data) {
-          final isVideo = data.type == ZegoCallType.videoCall;
+          final isVideo = data.type == ZegoCallInvitationType.videoCall;
           final config = isVideo
               ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
               : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
@@ -86,15 +82,24 @@ class ZegoCallService {
               _buildCallAvatar(user?.name ?? '?', size);
 
           // تحسينات UX: تأكيد إنهاء المكالمة
-          config.hangUpConfirmDialog.info = ZegoCallHangUpConfirmDialogInfo(
-            title: 'إنهاء المكالمة',
-            message: 'هل تريد إنهاء المكالمة؟',
-            cancelButtonName: 'إلغاء',
-            confirmButtonName: 'إنهاء',
+          config.hangUpConfirmDialog = ZegoCallHangUpConfirmDialogConfig(
+            info: ZegoCallHangUpConfirmDialogInfo(
+              title: 'إنهاء المكالمة',
+              message: 'هل تريد إنهاء المكالمة؟',
+            )
+              ..cancelButtonName = 'إلغاء'
+              ..confirmButtonName = 'إنهاء',
           );
 
           return config;
         },
+
+        events: ZegoUIKitPrebuiltCallEvents(
+          onCallEnd: (event, defaultAction) {
+            debugPrint('📞 ZegoCallService: انتهت المكالمة. السبب: ${event.reason}');
+            defaultAction.call();
+          },
+        ),
       );
 
       _initialized = true;

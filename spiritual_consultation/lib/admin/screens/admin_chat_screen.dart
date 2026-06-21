@@ -42,6 +42,12 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../core/services/offline_queue_service.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'package:zego_uikit/zego_uikit.dart';
+
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+
 import '../../patient/screens/call_overlay.dart';
 
 
@@ -212,7 +218,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
 
 
-              if (type == 'call_invite' && 
+              if ((type == 'call_invite' || type == 'callInvite') && 
 
                   status == 'ringing' && 
 
@@ -664,20 +670,32 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     final callId = const Uuid().v4();
 
     
+    // Build payload with call metadata for proper status tracking
+    final payload = {
+      'id': callId,
+      'conversation_id': widget.conversationId,
+      'sender_id': _supabase.auth.currentUser!.id,
+      'content': isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
+      'message_type': 'call_invite',
+      'status': 'ringing',
+      'metadata': {
+        'call_id': callId,
+        'call_type': isVideo ? 'video' : 'voice',
+        'call_status': 'active',
+        'call_started_at': DateTime.now().toIso8601String(),
+      },
+      'created_at': DateTime.now().toIso8601String(),
+    };
 
-    await _sendMessage(
+    // Add locally for immediate UI update
+    final localMsg = MessageModel.fromMap(payload);
+    ref.read(chatProvider(widget.conversationId).notifier).addMessageLocal(localMsg);
 
-      customId: callId,
-
-      type: 'call_invite',
-
-      text: isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
-
-      status: 'ringing',
-
-    );
-
-
+    try {
+      await _supabase.from('messages').insert(payload);
+    } catch (e) {
+      debugPrint('Call invite insert error: $e');
+    }
 
     if (mounted) {
 
@@ -1107,22 +1125,64 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
                   onPressed: _generateSessionReport),
 
-          IconButton(
-
-            icon: const Icon(Icons.call_rounded),
-
-            tooltip: 'مكالمة صوتية',
-
-            onPressed: () => _startCall(false)),
-
-          IconButton(
-
-            icon: const Icon(Icons.videocam_rounded),
-
-            tooltip: 'مكالمة فيديو',
-
-            onPressed: () => _startCall(true)),
-
+          // ── أزرار المكالمة (Zego يتكفّل بالاتصال تلقائياً) ──
+          if (kIsWeb) ...[
+            // على الويب: بتونات عادية (خطأ فقط)
+            IconButton(
+              icon: const Icon(Icons.call_rounded),
+              tooltip: 'مكالمة صوتية',
+              onPressed: () => _startCall(false)),
+            IconButton(
+              icon: const Icon(Icons.videocam_rounded),
+              tooltip: 'مكالمة فيديو',
+              onPressed: () => _startCall(true)),
+          ] else ...[
+            // على الموبايل: Zego Invitation — يتصل بمريض بالـ patient uid
+            ZegoSendCallInvitationButton(
+              isVideoCall: false,
+              invitees: [ZegoUIKitUser(
+                id: widget.patientId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'),
+                name: widget.patientName,
+              )],
+              resourceID: 'biopara_calls',
+              timeoutSeconds: 30,
+              iconSize: const Size(40, 40),
+              buttonSize: const Size(40, 40),
+              onPressed: (code, message, errorInvitees) {
+                if (errorInvitees.isNotEmpty && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('تعذر الاتصال — المريض غير متصل',
+                        style: GoogleFonts.tajawal()),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              },
+              icon: ButtonIcon(icon: const Icon(Icons.call_rounded,
+                  color: Colors.white, size: 22)),
+            ),
+            ZegoSendCallInvitationButton(
+              isVideoCall: true,
+              invitees: [ZegoUIKitUser(
+                id: widget.patientId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'),
+                name: widget.patientName,
+              )],
+              resourceID: 'biopara_calls',
+              timeoutSeconds: 30,
+              iconSize: const Size(40, 40),
+              buttonSize: const Size(40, 40),
+              onPressed: (code, message, errorInvitees) {
+                if (errorInvitees.isNotEmpty && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('تعذر الاتصال — المريض غير متصل',
+                        style: GoogleFonts.tajawal()),
+                    backgroundColor: Colors.red,
+                  ));
+                }
+              },
+              icon: ButtonIcon(icon: const Icon(Icons.videocam_rounded,
+                  color: Colors.white, size: 22)),
+            ),
+          ],
           const SizedBox(width: 4),
 
         ],
@@ -1921,7 +1981,7 @@ class _MessageBubbleNew extends ConsumerWidget {
 
     // ─── دعوة مكالمة صوتية/فيديو ──────────────────────────────
 
-    if (type == 'call_invite' || content.contains('مكالمة')) {
+    if (type == 'call_invite' || type == 'callInvite' || content.contains('مكالمة')) {
 
       final isVideo = content.contains('فيديو') ||
 
