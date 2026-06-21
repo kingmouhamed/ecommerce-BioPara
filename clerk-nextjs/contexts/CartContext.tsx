@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
+import { useCartStore } from '@/store/useCartStore';
 
 // --- Type Definitions ---
 interface CartItem {
@@ -47,120 +48,73 @@ export const useCart = (): CartContextType => {
 
 // --- Provider Component ---
 export const CartProvider = ({ children }: CartProviderProps) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-    try {
-      const storedCart = localStorage.getItem('cart');
-      if (storedCart) {
-        const parsedCart = JSON.parse(storedCart);
-        if (Array.isArray(parsedCart)) {
-          setCart(parsedCart);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to parse cart from localStorage", error);
-      // Clear corrupted data
-      try {
-        localStorage.removeItem('cart');
-      } catch (clearError) {
-        console.error("Failed to clear corrupted cart data", clearError);
-      }
-    }
-  }, [mounted]);
+  const items = useCartStore((state) => state.items);
+  const isOpen = useCartStore((state) => state.isOpen);
+  const addItem = useCartStore((state) => state.addItem);
+  const removeItem = useCartStore((state) => state.removeItem);
+  const updateQty = useCartStore((state) => state.updateQuantity);
+  const clear = useCartStore((state) => state.clearCart);
+  const openCart = useCartStore((state) => state.openCart);
+  const closeCart = useCartStore((state) => state.closeCart);
+  const getCartTotal = useCartStore((state) => state.getCartTotal);
+  const getCartCount = useCartStore((state) => state.getCartCount);
 
-  // Debounced localStorage write for performance
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      try {
-        if (cart.length > 0) {
-          localStorage.setItem('cart', JSON.stringify(cart));
-        } else {
-          localStorage.removeItem('cart');
-        }
-      } catch (error) {
-        console.error("Failed to save cart to localStorage", error);
-        // Handle quota exceeded error
-        if (error instanceof Error && error.name === 'QuotaExceededError') {
-          console.warn('Storage quota exceeded, cart data not saved');
-        }
-      }
-    }, 300); // 300ms debounce
-
-    return () => clearTimeout(timeoutId);
-  }, [cart]);
+  // Map Zustand items to Context CartItem structure
+  const cart: CartItem[] = useMemo(() => {
+    if (!mounted) return [];
+    return items.map((item) => ({
+      id: item.id,
+      title: item.name, // Map Zustand's name to Context's title
+      price: item.price,
+      image: item.image,
+      quantity: item.quantity,
+      brand: 'BioPara',
+      inStock: true,
+      slug: item.slug
+    }));
+  }, [items, mounted]);
 
   const addToCart = useCallback((product: Omit<CartItem, 'quantity'>, quantity = 1) => {
-    // Validate quantity
-    if (quantity <= 0 || quantity > 99) {
-      console.warn('Invalid quantity:', quantity);
-      return;
-    }
-
-    setCart(prevCart => {
-      const existingProduct = prevCart.find(item => item.id === product.id);
-      if (existingProduct) {
-        const newQuantity = existingProduct.quantity + quantity;
-        // Check if new quantity exceeds limit
-        if (newQuantity > 99) {
-          console.warn('Quantity exceeds maximum limit:', newQuantity);
-          return prevCart;
-        }
-        return prevCart.map(item =>
-          item.id === product.id ? { ...item, quantity: newQuantity } : item
-        );
-      }
-      return [...prevCart, { ...product, quantity }];
+    addItem({
+      id: product.id.toString(),
+      name: product.title, // Map Context's title to Zustand's name
+      price: product.price,
+      image: product.image,
+      slug: product.slug || '',
+      quantity,
     });
-  }, []);
+  }, [addItem]);
 
   const removeFromCart = useCallback((productId: number | string) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
-  }, []);
+    removeItem(productId.toString());
+  }, [removeItem]);
 
   const updateQuantity = useCallback((productId: number | string, quantity: number) => {
-    // Validate quantity
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    if (quantity > 99) {
-      console.warn('Quantity exceeds maximum limit:', quantity);
-      return;
-    }
-
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
-  }, [removeFromCart]);
+    updateQty(productId.toString(), quantity);
+  }, [updateQty]);
 
   const clearCart = useCallback(() => {
-    setCart([]);
-  }, []);
+    clear();
+  }, [clear]);
 
-  const cartItemCount = cart.reduce((count, item) => count + item.quantity, 0);
+  const cartItemCount = mounted ? getCartCount() : 0;
 
   const calculateSubtotal = useCallback((): number => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
-  }, [cart]);
+    return mounted ? getCartTotal() : 0;
+  }, [mounted, getCartTotal]);
 
   const calculateShipping = useCallback((): number => {
     const subtotal = calculateSubtotal();
-    // Free shipping for orders over 299 درهم
-    if (subtotal >= 299) {
+    if (subtotal === 0 || subtotal >= 299) {
       return 0;
     }
-    // Standard shipping fee
-    return 30; // 30 درهم
+    return 30; // 30 MAD standard shipping
   }, [calculateSubtotal]);
 
   const calculateTotalWithShipping = useCallback((): number => {
@@ -168,9 +122,13 @@ export const CartProvider = ({ children }: CartProviderProps) => {
   }, [calculateSubtotal, calculateShipping]);
 
   const calculateTotal = useCallback((): string => {
-    const total = calculateTotalWithShipping();
-    return total.toFixed(2);
+    return calculateTotalWithShipping().toFixed(2);
   }, [calculateTotalWithShipping]);
+
+  const setIsCartOpen = useCallback((open: boolean) => {
+    if (open) openCart();
+    else closeCart();
+  }, [openCart, closeCart]);
 
   const value = useMemo<CartContextType>(() => ({
     cart,
@@ -179,14 +137,26 @@ export const CartProvider = ({ children }: CartProviderProps) => {
     updateQuantity,
     clearCart,
     cartItemCount,
-    isCartOpen,
+    isCartOpen: isOpen,
     setIsCartOpen,
     calculateTotal,
     calculateSubtotal,
     calculateShipping,
     calculateTotalWithShipping,
-  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, cartItemCount, isCartOpen, setIsCartOpen, calculateTotal, calculateSubtotal, calculateShipping, calculateTotalWithShipping]);
+  }), [
+    cart,
+    isOpen,
+    cartItemCount,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    setIsCartOpen,
+    calculateTotal,
+    calculateSubtotal,
+    calculateShipping,
+    calculateTotalWithShipping,
+  ]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
-

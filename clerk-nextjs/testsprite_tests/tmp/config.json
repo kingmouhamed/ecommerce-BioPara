@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "executionArgs": {
+    "projectName": "clerk-nextjs",
+    "projectPath": "c:\\Users\\msi\\Desktop\\Ecommerce BioPara\\clerk-nextjs",
+    "testIds": [
+      "TC015"
+    ],
+    "additionalInstruction": "For any test that requires authentication or logging in, use the following credentials: Email: 'testuser@biopara.com', Password: 'BioParaTest$2026@Secure!'. Do not attempt to sign up, just log in with these credentials.",
+    "serverMode": "development",
+    "envs": {
+      "API_KEY": "sk-user-gJ3fLjTLynGCDz7YEEvHVkuUuVqfT6e1J3Heg2_Hjgq5-UOJ-st7BjI8Q3bJZ425eEHInRpLF6NRPUEkxLwTVnkIkZCtK9fKUqpGsV3afLbwmFPho9Bfge_mOVe4X3BqFIg"
+    }
+  },
+  "serverPort": 61135
+}

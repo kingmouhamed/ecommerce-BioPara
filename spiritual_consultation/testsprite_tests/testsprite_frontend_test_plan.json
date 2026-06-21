@@ -1,0 +1,2144 @@
+[
+  {
+    "id": "TC001",
+    "title": "Complete checkout from the cart",
+    "description": "A patient can proceed from cart to checkout and complete an order successfully.",
+    "category": "Patient Purchase Flow",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the catalog"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Proceed to checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a successful order confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Add a product to the cart from product details",
+    "description": "An authenticated patient can open a product and add it to the cart successfully.",
+    "category": "Product Shop and Product Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the catalog"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart contains the added product"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Open and continue a patient conversation from admin chat",
+    "description": "An admin can open a patient conversation from the admin workspace and see the chat thread.",
+    "category": "Realtime Admin Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Open the chat for a patient"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin chat thread is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Complete patient phone sign-in and reach the patient experience",
+    "description": "A patient can finish onboarding, sign in with a Moroccan phone number and OTP, and access authenticated patient screens afterward.",
+    "category": "Patient Authentication and Onboarding",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /splash"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the app loading screen is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to continue past the splash screen"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to continue onboarding"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to begin phone sign-in"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the patient experience is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Admin can sign in and reach the dashboard",
+    "description": "This test verifies that an admin can log in with valid credentials and access the dashboard workspace after verification.",
+    "category": "Admin Authentication and Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin dashboard is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Send a text message in patient chat",
+    "description": "An authenticated patient can open chat, send a text message, and see it appear in the conversation thread.",
+    "category": "Patient Realtime Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the message field with a unique text message"
+      },
+      {
+        "type": "action",
+        "description": "Send the message"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sent message appears in the conversation thread"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Start a voice or video call from chat",
+    "description": "This verifies a logged-in patient can open chat and initiate a call that reaches the call screen.",
+    "category": "Patient Voice and Video Calls",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "action",
+        "description": "Start a call from the chat screen"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the call screen is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Add a product to the cart from the shop",
+    "description": "This verifies that an authenticated patient can open a product from the shop and add it to the cart.",
+    "category": "Shopping Cart and Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the product list"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected product is displayed in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart total is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Protect authenticated patient screens from unauthenticated access",
+    "description": "A user who is not signed in is redirected away from protected patient screens and cannot view authenticated content.",
+    "category": "Patient Authentication and Onboarding",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the login screen is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the login screen is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Review and adjust items in the cart before checkout",
+    "description": "A patient can open the cart, change item quantities, and see the updated cart state before checkout.",
+    "category": "Patient Purchase Flow",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the catalog"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Change the quantity of an item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated cart state is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "End a call and return to chat",
+    "description": "This verifies a patient can end an active call and return to the chat conversation.",
+    "category": "Patient Voice and Video Calls",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /call"
+      },
+      {
+        "type": "action",
+        "description": "End the call"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the chat screen is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Admin can send a reply in patient chat",
+    "description": "This test verifies that an authenticated admin can open a patient conversation and send a message that appears in the thread.",
+    "category": "Admin Patient Management and Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Select a patient conversation"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the message field with a short reply"
+      },
+      {
+        "type": "action",
+        "description": "Send the message"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new message appears in the conversation thread"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Book an appointment and view it in appointment history",
+    "description": "A patient can book an appointment and then confirm it appears in their appointment history.",
+    "category": "Appointment Booking and History",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /booking"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid appointment date"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid appointment time"
+      },
+      {
+        "type": "action",
+        "description": "Submit the booking"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /my-appointments"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the booked appointment appears in history"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Book an appointment and see it added to history",
+    "description": "This verifies a patient can schedule an appointment from booking to confirmation and then find it in appointment history.",
+    "category": "Appointment Booking and History",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /booking"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid appointment date"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid appointment time"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the booking"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment appears in the schedule"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /my-appointments"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new appointment is listed in appointment history"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "View a placed order in order history and details",
+    "description": "After checkout, a patient can find the order in order history and open the order detail view.",
+    "category": "Order History and Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /orders"
+      },
+      {
+        "type": "action",
+        "description": "Open an order from the history list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the order detail view is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to order history"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the order appears in history"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "View profile and account stats",
+    "description": "This verifies that an authenticated patient can open their profile and see account information and stats.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile information is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify account stats are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC017",
+    "title": "Send an attachment in patient chat",
+    "description": "An authenticated patient can attach a media item in chat and see the attachment delivered in the thread.",
+    "category": "Patient Realtime Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "action",
+        "description": "Open the attachment picker"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid image or file to attach"
+      },
+      {
+        "type": "action",
+        "description": "Send the attachment"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the attachment appears in the conversation thread"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC018",
+    "title": "Admin can move through the dashboard sections",
+    "description": "This test verifies that an authenticated admin can switch between the dashboard home, patients, appointments, and reports sections.",
+    "category": "Admin Dashboard Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the dashboard home section"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Open the appointments section"
+      },
+      {
+        "type": "action",
+        "description": "Open the reports section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the reports section is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC019",
+    "title": "Record and send a voice message in patient chat",
+    "description": "An authenticated patient can record a voice message in chat and see it appear as a sent message.",
+    "category": "Patient Realtime Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "action",
+        "description": "Start voice recording"
+      },
+      {
+        "type": "action",
+        "description": "Stop voice recording"
+      },
+      {
+        "type": "action",
+        "description": "Send the voice message"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the voice message appears in the conversation thread"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC020",
+    "title": "Adjust cart quantities and remove an item",
+    "description": "This verifies that an authenticated patient can change quantities and remove an item before checkout.",
+    "category": "Shopping Cart and Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Increase the quantity of one cart item"
+      },
+      {
+        "type": "action",
+        "description": "Decrease the quantity of the same cart item"
+      },
+      {
+        "type": "action",
+        "description": "Remove the cart item"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the item is no longer displayed in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart reflects the updated totals"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC021",
+    "title": "Navigate admin dashboard sections",
+    "description": "An admin can move between dashboard, patients, appointments, and reports sections from the admin workspace.",
+    "category": "Admin Dashboard and Patient Oversight",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Open the appointments section"
+      },
+      {
+        "type": "action",
+        "description": "Open the reports section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin reports section is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC022",
+    "title": "Review scheduled appointments from the admin workspace",
+    "description": "An admin can open the appointments section, inspect appointment entries, and return to the main workspace with the appointment list visible.",
+    "category": "Admin Appointment and Reports Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the appointments section in the admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scheduled appointments are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to the main admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin workspace is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC023",
+    "title": "Browse products and open a product detail page",
+    "description": "An authenticated patient can browse the shop, search for a product, and open its detail view.",
+    "category": "Product Shop and Product Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Search for a product by name"
+      },
+      {
+        "type": "action",
+        "description": "Apply a category or price preference"
+      },
+      {
+        "type": "action",
+        "description": "Sort the visible results"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the catalog"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product detail view is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC024",
+    "title": "Admin can browse the patient list and open a conversation",
+    "description": "This test verifies that an authenticated admin can review the patient list and open an individual patient conversation for follow-up.",
+    "category": "Admin Patient Management and Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Select a patient conversation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected patient conversation is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC025",
+    "title": "Review order history and open an order",
+    "description": "This verifies that an authenticated patient can view past purchases and open an order for details.",
+    "category": "Order History and Order Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /orders"
+      },
+      {
+        "type": "action",
+        "description": "Open an order from the history list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order details are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify ordered items and totals are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC026",
+    "title": "Review analytics and report summaries from the admin workspace",
+    "description": "An admin can open the reports section, compare the available analytics and summaries, and return to the main workspace with report data visible.",
+    "category": "Admin Appointment and Reports Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the reports section in the admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify analytics and report summaries are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to the main admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin workspace is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC027",
+    "title": "Open admin reports and review analytics",
+    "description": "An admin can open the reports section and view analytics content for oversight.",
+    "category": "Admin Dashboard and Patient Oversight",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the reports section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify analytics and report content is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC028",
+    "title": "Open profile and update personal details",
+    "description": "A patient can view their profile and save updated personal information from the edit screen.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /profile"
+      },
+      {
+        "type": "action",
+        "description": "Open the edit profile screen"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the name field with a new display name"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated profile information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC029",
+    "title": "Update profile details",
+    "description": "This verifies that an authenticated patient can edit and save personal profile details successfully.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /edit-profile"
+      },
+      {
+        "type": "action",
+        "description": "Update the profile name field with a new valid name"
+      },
+      {
+        "type": "action",
+        "description": "Update the handle field with a new valid handle"
+      },
+      {
+        "type": "action",
+        "description": "Save the profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated profile information is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a success confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC030",
+    "title": "Admin can review unread activity and continue to a patient conversation",
+    "description": "This test verifies that an authenticated admin can see unread conversation activity from the dashboard and open a patient conversation from the patient list.",
+    "category": "Admin Dashboard Navigation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Select a patient conversation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin chat is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC031",
+    "title": "Inspect a patient from the admin patient list",
+    "description": "An admin can open the patient list and view a patient’s chat access from the oversight workspace.",
+    "category": "Admin Dashboard and Patient Oversight",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Open a patient record"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the patient detail or chat access view is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC032",
+    "title": "Review appointment history and return to patient area",
+    "description": "This verifies a patient can open appointment history, review existing visits, and navigate back to the main patient experience.",
+    "category": "Appointment Booking and History",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /my-appointments"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify appointment history is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to the patient area"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the patient area is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC033",
+    "title": "Navigate from profile stats to appointment history",
+    "description": "A patient can use the profile page to view their account stats and open appointment history.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /profile"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify account stats are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Open appointment history"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the appointment history screen is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC034",
+    "title": "Inspect an order details view",
+    "description": "This verifies that an authenticated patient can review the selected order information from the order details screen.",
+    "category": "Order History and Order Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /order-details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order status is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify order item information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC035",
+    "title": "Block non-admin access to the admin workspace",
+    "description": "A signed-in non-admin account cannot enter the admin dashboard and sees an access-related validation outcome.",
+    "category": "Admin Dashboard and Patient Oversight",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an admin access validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC036",
+    "title": "Upload a new profile avatar",
+    "description": "This verifies that an authenticated patient can replace their profile avatar and return to the updated profile view.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /profile"
+      },
+      {
+        "type": "action",
+        "description": "Open the avatar upload flow"
+      },
+      {
+        "type": "action",
+        "description": "Select a valid image file for the avatar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated avatar is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify profile information remains visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC037",
+    "title": "Switch between admin sections from the dashboard",
+    "description": "An admin can navigate between the dashboard, patients, appointments, and reports sections without losing access to the admin workspace.",
+    "category": "Admin Appointment and Reports Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section from the admin workspace"
+      },
+      {
+        "type": "action",
+        "description": "Open the appointments section from the admin workspace"
+      },
+      {
+        "type": "action",
+        "description": "Open the reports section from the admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin workspace sections are accessible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the admin dashboard remains available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC038",
+    "title": "Add a product to wishlist from product details",
+    "description": "An authenticated patient can save a product from the detail view to the wishlist and remain on the shopping experience.",
+    "category": "Product Shop and Product Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /shop"
+      },
+      {
+        "type": "action",
+        "description": "Open a product from the catalog"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the wishlist"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product remains available in the shopping experience"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC039",
+    "title": "Navigate from profile to appointments",
+    "description": "This verifies that an authenticated patient can move from their profile to their appointment history.",
+    "category": "Patient Profile Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /profile"
+      },
+      {
+        "type": "action",
+        "description": "Open the appointment history from the profile area"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify appointment history is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify linked account activity is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC040",
+    "title": "Open a linked message from patient chat",
+    "description": "A patient can open a link shared in chat, view the linked content, and return to the conversation.",
+    "category": "Patient Realtime Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /chat"
+      },
+      {
+        "type": "action",
+        "description": "Open a link message in the conversation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the linked content preview is displayed"
+      },
+      {
+        "type": "action",
+        "description": "Return to the conversation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the conversation thread is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC041",
+    "title": "Open settings and change a supported preference",
+    "description": "This verifies a patient can access settings and update a supported app preference successfully.",
+    "category": "Patient App Settings and Legal Info",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify settings options are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Change a supported setting"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the setting update is reflected"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC042",
+    "title": "Admin can view patient conversation media in chat",
+    "description": "This test verifies that an authenticated admin can open a patient conversation and see media items already present in the thread.",
+    "category": "Admin Patient Management and Chat",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open the patients section"
+      },
+      {
+        "type": "action",
+        "description": "Select a patient conversation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify conversation media content is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC043",
+    "title": "Open settings and privacy policy",
+    "description": "A patient can access app settings and open the privacy policy page from within the app.",
+    "category": "Settings and Privacy Policy",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Open the privacy policy page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the privacy policy content is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC044",
+    "title": "Keep appointment data visible after revisiting the section",
+    "description": "An admin can leave the appointments section and come back to see appointment entries still available in the workspace.",
+    "category": "Admin Appointment and Reports Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the admin password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the admin login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the appointments section in the admin workspace"
+      },
+      {
+        "type": "action",
+        "description": "Return to the main admin workspace"
+      },
+      {
+        "type": "action",
+        "description": "Click the appointments section in the admin workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify scheduled appointments are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC045",
+    "title": "Reject an invalid OTP during patient sign-in",
+    "description": "A patient entering an incorrect verification code stays blocked from authentication and sees an OTP validation error.",
+    "category": "Patient Authentication and Onboarding",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with a valid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with an invalid 6-digit code"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification code"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an OTP validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC046",
+    "title": "Reject an invalid Moroccan phone number before requesting OTP",
+    "description": "A patient sees a validation error when entering an invalid Moroccan phone number and cannot proceed to OTP verification.",
+    "category": "Patient Authentication and Onboarding",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the Moroccan phone number field with an invalid phone number"
+      },
+      {
+        "type": "action",
+        "description": "Request the verification code"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a phone number validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC047",
+    "title": "Handle an empty cart",
+    "description": "This verifies that an authenticated patient sees an empty-state experience when no items are in the cart.",
+    "category": "Shopping Cart and Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the phone number field with a valid Moroccan phone number"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the OTP field with a valid OTP"
+      },
+      {
+        "type": "action",
+        "description": "Submit the OTP verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an empty state message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout is not available"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC048",
+    "title": "Block a call when not in an active chat session",
+    "description": "This verifies the call screen does not allow a patient to proceed without an active call context.",
+    "category": "Patient Voice and Video Calls",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /call"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the call interface does not start without an active call"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC049",
+    "title": "Prevent booking with incomplete required fields",
+    "description": "This verifies the booking screen requires the user to choose required appointment details before confirming.",
+    "category": "Appointment Booking and History",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in {{LOGIN_USER}} into the phone number field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid OTP into the verification field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the verification form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /booking"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the booking without selecting appointment details"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a booking validation error is visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC050",
+    "title": "Admin sees a login error with invalid credentials",
+    "description": "This test verifies that submitting incorrect admin credentials keeps the user on the login screen and shows a login error state.",
+    "category": "Admin Authentication and Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /admin-login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with invalid@example.com"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with invalid-password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a login error message is visible"
+      }
+    ],
+    "priority": "Low"
+  }
+]

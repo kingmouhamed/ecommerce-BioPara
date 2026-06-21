@@ -46,3 +46,5 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+testsprite_tests\tmp\config.json

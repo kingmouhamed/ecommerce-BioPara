@@ -17,6 +17,7 @@ const nextConfig = {
     remotePatterns: [
       { protocol: 'https', hostname: 'img.clerk.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
   },
   compiler: {
@@ -51,7 +52,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.clerk.accounts.dev https://clerk-telemetry.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://img.clerk.com https://*.clerk.com; font-src 'self' data:; connect-src 'self' https://api.clerk.dev https://*.clerk.accounts.dev https://*.supabase.co https://clerk-telemetry.com; worker-src 'self' blob:;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.clerk.accounts.dev https://clerk-telemetry.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://img.clerk.com https://*.clerk.com https://res.cloudinary.com; font-src 'self' data:; connect-src 'self' https://api.clerk.dev https://*.clerk.accounts.dev https://*.supabase.co https://clerk-telemetry.com; worker-src 'self' blob:;",
           },
         ],
       },

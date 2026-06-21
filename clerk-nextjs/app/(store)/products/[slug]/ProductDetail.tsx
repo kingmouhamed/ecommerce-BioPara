@@ -259,26 +259,27 @@ export default function ProductDetail({ product }: ProductDetailProps) {
 
               {/* Main Buttons */}
               <div className="fixed bottom-0 left-0 right-0 z-40 bg-white p-4 border-t border-gray-200 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] lg:relative lg:p-0 lg:border-0 lg:shadow-none lg:bg-transparent lg:z-auto flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={product.stock === 0}
-                  className={`flex-1 py-4 px-6 rounded-xl font-bold text-white transition-all shadow-md flex items-center justify-center gap-2 ${product.stock === 0
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gray-900 hover:bg-black hover:-translate-y-1 hover:shadow-lg'
-                    }`}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  {product.stock === 0 ? 'نفد المخزون' : 'أضف للسلة'}
-                </button>
                 <div className="flex-1 w-full">
                   <WhatsAppOrderButton
                     productName={product.name_ar || product.name}
                     productPrice={product.price}
                     productSlug={product.slug}
+                    quantity={quantity}
                     variant="primary"
                     customClass={product.stock === 0 ? "pointer-events-none opacity-50 grayscale" : ""}
                   />
                 </div>
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                  className={`py-4 px-6 rounded-xl font-bold transition-all shadow-sm border flex items-center justify-center gap-2 ${product.stock === 0
+                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                    : 'bg-white text-gray-950 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                    }`}
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>أضف للسلة</span>
+                </button>
               </div>
 
               {/* Trust/Secure Message */}

@@ -52,3 +52,9 @@ app.*.map.json
 testsprite_tests\tmp\config.json
 /releases/
 
+.gradle/
+**/build/
+**/intermediates/
+**/generated/
+*.bin
+*.lock

@@ -1,0 +1,562 @@
+[
+  {
+    "id": "TC001",
+    "title": "Add a product to the cart from details",
+    "description": "This verifies that a shopper can add an item from the product details page and see it in the cart.",
+    "category": "Shopping Cart Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Click a product in the list"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Open the cart page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the added item is displayed in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart contains items"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Complete checkout from cart as a signed-in shopper",
+    "description": "A signed-in shopper can move from the cart to checkout, review the order, and complete payment successfully.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Proceed to checkout"
+      },
+      {
+        "type": "action",
+        "description": "Complete the payment flow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the purchase confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "Open a product from the catalog",
+    "description": "This verifies that a shopper can open a product details page from the catalog and review item information before buying.",
+    "category": "Product Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Click a product in the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product details page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Continue checkout after signing in from a guest checkout page",
+    "description": "A guest arriving on checkout can sign in, return to checkout, and complete the purchase without losing the checkout flow.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Continue to checkout"
+      },
+      {
+        "type": "action",
+        "description": "Complete the payment flow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the purchase confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Keep cart items while moving between pages",
+    "description": "This verifies that a shopper's cart contents remain consistent after navigating away from the cart and back again.",
+    "category": "Shopping Cart Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Click a product in the list"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Open the cart page"
+      },
+      {
+        "type": "action",
+        "description": "Continue browsing to the product listing page"
+      },
+      {
+        "type": "action",
+        "description": "Return to the cart page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the previously added item is still displayed in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart contents are unchanged"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Search products from the product listing",
+    "description": "This verifies that a shopper can search the catalog on the product listing page and see filtered results.",
+    "category": "Product Browsing",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the search field with a product name keyword"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify filtered products are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product list still shows search results"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Review order details during checkout before payment",
+    "description": "A signed-in shopper can reach checkout from the cart and review the order details before completing payment.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Proceed to checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout details are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the order summary is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Remove an item from the cart",
+    "description": "This verifies that a shopper can remove an item from the cart and see the cart return to an empty or reduced state.",
+    "category": "Shopping Cart Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Click a product in the list"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Open the cart page"
+      },
+      {
+        "type": "action",
+        "description": "Remove the item from the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the item is no longer displayed in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart empty or reduced state is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Filter products by category",
+    "description": "This verifies that a shopper can narrow the product catalog by category and see matching items.",
+    "category": "Product Browsing",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Select a product category"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify products matching the selected category are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the filtered catalog remains visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Persist cart contents while moving into checkout",
+    "description": "Items already in the cart remain available when the shopper proceeds into checkout.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Open a product detail page"
+      },
+      {
+        "type": "action",
+        "description": "Add the item to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Proceed to checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify checkout details are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the added item is present in the order summary"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Update item quantity in the cart",
+    "description": "This verifies that a shopper can change an item's quantity in the cart and see the updated cart contents.",
+    "category": "Shopping Cart Management",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /products"
+      },
+      {
+        "type": "action",
+        "description": "Click a product in the list"
+      },
+      {
+        "type": "action",
+        "description": "Add the product to the cart"
+      },
+      {
+        "type": "action",
+        "description": "Open the cart page"
+      },
+      {
+        "type": "action",
+        "description": "Change the item quantity to a different valid value"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated quantity is reflected in the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the cart totals or item summary are updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Browse products from the home page",
+    "description": "This verifies that a guest shopper can discover products from the home page and reach the product listing page.",
+    "category": "Product Browsing",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to browse products"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product listing page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify products are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Complete payment from checkout after reviewing cart changes",
+    "description": "A signed-in shopper can update cart contents, proceed to checkout, and complete payment with the updated order.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /cart"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the item quantity"
+      },
+      {
+        "type": "action",
+        "description": "Proceed to checkout"
+      },
+      {
+        "type": "action",
+        "description": "Complete the payment flow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the purchase confirmation is visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Open a featured product from the home page",
+    "description": "This verifies that a shopper can reach a product details page from featured products on the home page.",
+    "category": "Product Details",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click a featured product link"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product details page is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product information is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC015",
+    "title": "Return to checkout after signing in from the checkout page",
+    "description": "A shopper who starts checkout while signed out can sign in and return to the same checkout flow to finish payment.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Return to checkout"
+      },
+      {
+        "type": "action",
+        "description": "Complete the payment flow"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the purchase confirmation is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Show checkout access restriction for a guest shopper",
+    "description": "A guest visiting checkout sees the sign-in requirement and can start the authentication step to continue the purchase flow.",
+    "category": "Checkout",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a sign-in requirement message is visible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /checkout"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the checkout page is displayed"
+      }
+    ],
+    "priority": "Low"
+  }
+]

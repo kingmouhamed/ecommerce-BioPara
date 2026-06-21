@@ -13,7 +13,9 @@ export async function POST() {
       )
     }
 
-    // TODO: Add admin role check here if needed
+    // Admin role check can be added here via Clerk's publicMetadata
+    // Example: const { publicMetadata } = await auth()
+    // if (publicMetadata?.role !== 'admin') { return 403 }
 
     // Ensure all products have slugs
     await ensureProductSlugs()

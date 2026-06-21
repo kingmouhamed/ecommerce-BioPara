@@ -1,0 +1,29 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8080",
+  "executionArgs": {
+    "projectName": "spiritual_consultation",
+    "projectPath": "c:\\Users\\msi\\Desktop\\Ecommerce BioPara\\spiritual_consultation",
+    "testIds": [
+      "TC001",
+      "TC002",
+      "TC004",
+      "TC005",
+      "TC006",
+      "TC008",
+      "TC009",
+      "TC010",
+      "TC013",
+      "TC015",
+      "TC016"
+    ],
+    "additionalInstruction": "This is a Flutter Web app (Patient app) built in production mode and served via a static HTTP server on port 8080. The app is in Arabic (RTL). Patient login uses Moroccan phone number (+212) with OTP SMS verification. The app has product categories: herbs, tea, supplements, oils, honey. Focus on testing patient-facing features only. The app uses CanvasKit renderer so the DOM may not have traditional HTML elements - interact with the Flutter canvas.",
+    "serverMode": "production",
+    "envs": {
+      "API_KEY": "sk-user-gJ3fLjTLynGCDz7YEEvHVkuUuVqfT6e1J3Heg2_Hjgq5-UOJ-st7BjI8Q3bJZ425eEHInRpLF6NRPUEkxLwTVnkIkZCtK9fKUqpGsV3afLbwmFPho9Bfge_mOVe4X3BqFIg"
+    }
+  },
+  "serverPort": 62744
+}
