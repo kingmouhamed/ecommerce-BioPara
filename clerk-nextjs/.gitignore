@@ -37,6 +37,10 @@ yarn-error.log*
 !.env.*.example
 .env.local
 
+# AI agent generated output (may contain product data / leaked secrets)
+latest_product.json
+latest_product.sql
+
 # vercel
 .vercel
 
