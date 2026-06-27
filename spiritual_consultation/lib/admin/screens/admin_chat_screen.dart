@@ -50,9 +50,18 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 import '../../patient/screens/call_overlay.dart';
 
+import 'package:swipe_to/swipe_to.dart';
+
+import '../../core/providers/presence_provider.dart';
+
+import '../../patient/widgets/chat/chat_widgets.dart' show VideoBubble, RichTextWithPreview, StatusPulse;
+
 
 
 const Color _kPrimary  = Color(0xFF2D4A2E);
+
+// إيموجي التفاعلات السريعة (نفس المستخدمة في شاشة المريض)
+const List<String> _kReactions = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 
 const Color _kTeal     = Color(0xFF3D5A3E);
 
@@ -130,6 +139,13 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
   final List<String> _processedCallIds = [];
 
+  // ── ميزات واتساب: رد / بحث / نجمة / زر النزول ──
+  MessageModel? _replyToMsg;
+  bool _isSearching = false;
+  String _searchQuery = '';
+  final Set<String> _starredMessages = {};
+  bool _showScrollToBottom = false;
+
 
 
   // ─── تهيئة ─────────────────────────────────────────────────
@@ -150,8 +166,19 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
         setState(() => _isTyping = typing);
 
+        // بثّ حالة "يكتب الآن..." للمريض عبر Realtime Presence
+        ref.read(presenceProvider(widget.conversationId).notifier).updateTyping(typing);
+
       }
 
+    });
+
+    // إظهار/إخفاء زر النزول لأسفل (القائمة معكوسة: الأسفل = offset 0)
+    _scrollCtrl.addListener(() {
+      final show = _scrollCtrl.hasClients && _scrollCtrl.offset > 300;
+      if (show != _showScrollToBottom) {
+        setState(() => _showScrollToBottom = show);
+      }
     });
 
 
@@ -310,6 +337,8 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
     String status = 'sent',
 
+    Map<String, dynamic>? metadata,
+
   }) async {
 
     final content = text ?? mediaUrl ?? '';
@@ -319,6 +348,21 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     if (content.isEmpty) return msgId;
 
     if (text != null) _controller.clear();
+
+
+
+    // ── دعم الرد (reply) على رسالة ──
+    final Map<String, dynamic> finalMetadata = {...?metadata};
+    String? replyToId;
+    if (_replyToMsg != null) {
+      replyToId = _replyToMsg!.id;
+      finalMetadata['replyToId'] = _replyToMsg!.id;
+      finalMetadata['replyToContent'] = _replyToMsg!.type == MessageType.text
+          ? _replyToMsg!.content
+          : _replyToMsg!.type.name;
+      finalMetadata['replyToSender'] = _replyToMsg!.senderId;
+      setState(() => _replyToMsg = null);
+    }
 
 
 
@@ -337,6 +381,10 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
       'status': status,
 
       'created_at': DateTime.now().toIso8601String(),
+
+      if (finalMetadata.isNotEmpty) 'metadata': finalMetadata,
+
+      if (replyToId != null) 'reply_to_id': replyToId,
 
     };
 
@@ -397,6 +445,8 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
         setState(() => _isRecording = true);
 
+        ref.read(presenceProvider(widget.conversationId).notifier).updateRecording(true);
+
       }
 
     } catch (e) {
@@ -416,6 +466,8 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     await _audioRecorder.stop();
 
     setState(() { _isRecording = false; _recSecs = 0; });
+
+    ref.read(presenceProvider(widget.conversationId).notifier).updateRecording(false);
 
   }
 
@@ -438,6 +490,8 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
     }
 
     setState(() { _isRecording = false; _recSecs = 0; });
+
+    ref.read(presenceProvider(widget.conversationId).notifier).updateRecording(false);
 
     if (path == null) return;
 
@@ -1023,9 +1077,27 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
       if (uuidRegex.hasMatch(m.content.trim())) return false;
 
+      // فلترة البحث في المحادثة
+      if (_searchQuery.trim().isNotEmpty &&
+          !m.content.toLowerCase().contains(_searchQuery.toLowerCase())) {
+        return false;
+      }
+
       return true;
 
     }).toList();
+
+
+
+    // ── حالة المريض (يكتب / يسجل / متصل) عبر Presence ──
+    final presence = ref.watch(presenceProvider(widget.conversationId));
+    String patientSubtitle = 'متصل الآن';
+    if (presence.isRecording) {
+      patientSubtitle = '🎙 يسجل مقطعاً صوتياً...';
+    } else if (presence.isTyping) {
+      patientSubtitle = '✍️ يكتب الآن...';
+    }
+    final bool patientOnline = patientSubtitle == 'متصل الآن';
 
 
 
@@ -1051,31 +1123,43 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
         ),
 
-        title: Row(
+        title: _isSearching ? _buildSearchField() : Row(
 
           children: [
 
-            CircleAvatar(
+            Stack(
 
-              radius: 18,
+              children: [
 
-              backgroundColor: Colors.white24,
+                CircleAvatar(
 
-              backgroundImage: widget.patientAvatar != null
+                  radius: 18,
 
-                  ? NetworkImage(widget.patientAvatar!)
+                  backgroundColor: Colors.white24,
 
-                  : null,
+                  backgroundImage: widget.patientAvatar != null
 
-              child: widget.patientAvatar == null
+                      ? NetworkImage(widget.patientAvatar!)
 
-                  ? Text(
+                      : null,
 
-                      widget.patientName.isNotEmpty ? widget.patientName[0] : 'م',
+                  child: widget.patientAvatar == null
 
-                      style: const TextStyle(color: Colors.white))
+                      ? Text(
 
-                  : null,
+                          widget.patientName.isNotEmpty ? widget.patientName[0] : 'م',
+
+                          style: const TextStyle(color: Colors.white))
+
+                      : null,
+
+                ),
+
+                if (patientOnline)
+
+                  const Positioned(right: 0, bottom: 0, child: StatusPulse()),
+
+              ],
 
             ),
 
@@ -1093,9 +1177,18 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
                         color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
 
-                Text('مريض BioPara',
-
-                    style: GoogleFonts.tajawal(color: Colors.white70, fontSize: 11)),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: Text(patientSubtitle,
+                      key: ValueKey(patientSubtitle),
+                      style: GoogleFonts.tajawal(
+                          color: presence.isTyping
+                              ? _kGold
+                              : (patientOnline
+                                  ? Colors.greenAccent.shade100
+                                  : Colors.white70),
+                          fontSize: 11)),
+                ),
 
               ],
 
@@ -1106,6 +1199,15 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
         ),
 
         actions: [
+
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
+            tooltip: _isSearching ? 'إغلاق البحث' : 'بحث في المحادثة',
+            onPressed: () => setState(() {
+              _isSearching = !_isSearching;
+              if (!_isSearching) _searchQuery = '';
+            }),
+          ),
 
           _generatingReport
 
@@ -1199,7 +1301,11 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
           Expanded(
 
-            child: messages.isEmpty
+            child: Stack(
+
+              children: [
+
+            messages.isEmpty
 
               ? Center(
 
@@ -1271,13 +1377,57 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
                         if (showDateHeader) _buildDateHeader(msg.createdAt),
 
-                        _MessageBubbleNew(
+                        GestureDetector(
 
-                          msg: msg,
+                          onLongPress: () {
 
-                          isAdmin: isAdmin,
+                            HapticFeedback.mediumImpact();
 
-                          isAi: isAi,
+                            _showMessageContextMenu(msg, isAdmin);
+
+                          },
+
+                          child: Stack(
+
+                            clipBehavior: Clip.none,
+
+                            children: [
+
+                              SwipeTo(
+
+                                onRightSwipe: (_) => setState(() => _replyToMsg = msg),
+
+                                child: _MessageBubbleNew(
+
+                                  msg: msg,
+
+                                  isAdmin: isAdmin,
+
+                                  isAi: isAi,
+
+                                  isStarred: _starredMessages.contains(msg.id),
+
+                                ),
+
+                              ),
+
+                              if (msg.reactions.isNotEmpty)
+
+                                Positioned(
+
+                                  bottom: -8,
+
+                                  right: isAdmin ? 20 : null,
+
+                                  left: isAdmin ? null : 20,
+
+                                  child: _buildReactionsDisplay(msg),
+
+                                ),
+
+                            ],
+
+                          ),
 
                         ),
 
@@ -1288,6 +1438,38 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
                   },
 
                 ),
+
+                if (_showScrollToBottom)
+
+                  Positioned(
+
+                    bottom: 12,
+
+                    left: 12,
+
+                    child: FloatingActionButton.small(
+
+                      backgroundColor: Colors.white,
+
+                      foregroundColor: _kPrimary,
+
+                      elevation: 3,
+
+                      onPressed: () => _scrollCtrl.animateTo(0,
+
+                          duration: const Duration(milliseconds: 300),
+
+                          curve: Curves.easeOut),
+
+                      child: const Icon(Icons.keyboard_arrow_down_rounded),
+
+                    ),
+
+                  ),
+
+              ],
+
+            ),
 
           ),
 
@@ -1304,6 +1486,10 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
               color: _kTeal,
 
             ),
+
+
+
+          if (_replyToMsg != null) _buildReplyPreview(),
 
 
 
@@ -1438,6 +1624,16 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
 
                       children: [
+
+                        IconButton(
+
+                          icon: const Icon(Icons.emoji_emotions_outlined,
+
+                              color: _kGold, size: 26),
+
+                          onPressed: _showEmojiPicker,
+
+                        ),
 
                         IconButton(
 
@@ -1683,6 +1879,275 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
   }
 
+  // ── حقل البحث في شريط العنوان ──
+  Widget _buildSearchField() {
+    return TextField(
+      autofocus: true,
+      textAlign: TextAlign.right,
+      style: GoogleFonts.tajawal(color: Colors.white),
+      decoration: const InputDecoration(
+        hintText: 'ابحث في المحادثة...',
+        hintStyle: TextStyle(color: Colors.white70),
+        border: InputBorder.none,
+      ),
+      onChanged: (val) => setState(() => _searchQuery = val),
+    );
+  }
+
+  // ── عرض التفاعلات أسفل الفقاعة ──
+  Widget _buildReactionsDisplay(MessageModel m) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 4)],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: m.reactions.entries.map((e) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Text('${e.key}${e.value.length > 1 ? ' ${e.value.length}' : ''}',
+                style: const TextStyle(fontSize: 13)),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ── معاينة الرد فوق شريط الإدخال ──
+  Widget _buildReplyPreview() => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: const BoxDecoration(
+      color: Colors.white,
+      border: Border(top: BorderSide(color: Color(0xFFD4C9B0))),
+    ),
+    child: Row(
+      children: [
+        Container(width: 3, height: 36, color: _kGold,
+            margin: const EdgeInsets.only(left: 8)),
+        const Icon(Icons.reply_rounded, color: _kPrimary, size: 18),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _replyToMsg!.senderId == (_supabase.auth.currentUser?.id ?? '')
+                    ? 'أنت' : widget.patientName,
+                style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 12, color: _kGold),
+              ),
+              Text(
+                _replyToMsg!.type == MessageType.text
+                    ? _replyToMsg!.content
+                    : _replyToMsg!.type.name,
+                maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.tajawal(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close_rounded, size: 18, color: Colors.grey),
+          onPressed: () => setState(() => _replyToMsg = null),
+        ),
+      ],
+    ),
+  );
+
+  // ── لوحة إيموجي سريعة لحقل الإدخال ──
+  void _showEmojiPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        height: 200,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('إيموجي سريع',
+                style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: _kPrimary)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: ['🌿','❤️','😊','🙏','👍','✨','😔','🌙','⭐','🌺','💚','🤲',
+                         '😢','🌟','💫','🕊','🌸','🍀'].map((e) =>
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _controller.text += e;
+                    setState(() => _isTyping = true);
+                  },
+                  child: Text(e, style: const TextStyle(fontSize: 28)),
+                ),
+              ).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── تبديل تنجيم الرسالة ──
+  Future<void> _toggleStar(String id) async {
+    final isStarred = _starredMessages.contains(id);
+    setState(() {
+      if (isStarred) {
+        _starredMessages.remove(id);
+      } else {
+        _starredMessages.add(id);
+      }
+    });
+    try {
+      await _supabase.from('messages').update({'is_starred': !isStarred}).eq('id', id);
+    } catch (e) {
+      debugPrint('toggleStar error: $e');
+    }
+  }
+
+  // ── تأكيد حذف الرسالة للجميع ──
+  void _confirmDelete(String id, String? audioUrl) => showDialog(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text('حذف الرسالة', textAlign: TextAlign.center),
+      content: const Text('سيتم حذف الرسالة للجميع.\nهل تريد المتابعة؟',
+          textAlign: TextAlign.center),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('إلغاء')),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+          onPressed: () async {
+            Navigator.pop(dialogContext);
+            try {
+              await ref.read(chatProvider(widget.conversationId).notifier)
+                  .deleteMessage(id, audioUrl: audioUrl);
+            } catch (e) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('فشل الحذف: $e'), backgroundColor: Colors.red),
+                );
+              }
+            }
+          },
+          child: const Text('حذف'),
+        ),
+      ],
+    ),
+  );
+
+  Widget _buildContextOption(IconData icon, String label, Color color, VoidCallback onTap) {
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: color, size: 20),
+      ),
+      title: Text(label, style: GoogleFonts.tajawal(fontSize: 14, fontWeight: FontWeight.w500)),
+      onTap: onTap,
+    );
+  }
+
+  // ── قائمة السياق عند الضغط المطوّل (رد/نسخ/تفاعل/نجمة/حذف) ──
+  void _showMessageContextMenu(MessageModel m, bool isMe) {
+    final adminId = _supabase.auth.currentUser?.id ?? '';
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40, height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _kBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _kGold.withValues(alpha: 0.3)),
+              ),
+              child: Text(
+                m.isDeleted
+                    ? 'تم حذف هذه الرسالة'
+                    : (m.content.length > 60 ? '${m.content.substring(0, 60)}...' : m.content),
+                style: GoogleFonts.tajawal(fontSize: 13, color: Colors.black87),
+                textAlign: TextAlign.right,
+              ),
+            ),
+            // تفاعلات
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _kReactions.map((emoji) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      ref.read(chatProvider(widget.conversationId).notifier)
+                          .addReaction(m.id, emoji, adminId);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: _kBg,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: _kGold.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(emoji, style: const TextStyle(fontSize: 22)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const Divider(height: 1),
+            _buildContextOption(Icons.reply_rounded, 'رد', _kPrimary, () {
+              Navigator.pop(ctx);
+              setState(() => _replyToMsg = m);
+            }),
+            if (m.type == MessageType.text)
+              _buildContextOption(Icons.copy_rounded, 'نسخ', Colors.blueGrey, () {
+                Navigator.pop(ctx);
+                Clipboard.setData(ClipboardData(text: m.content));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('تم نسخ الرسالة'), duration: Duration(seconds: 1)),
+                );
+              }),
+            _buildContextOption(
+              _starredMessages.contains(m.id) ? Icons.star_rounded : Icons.star_border_rounded,
+              _starredMessages.contains(m.id) ? 'إلغاء التنجيم' : 'تنجيم الرسالة',
+              _kGold,
+              () { Navigator.pop(ctx); _toggleStar(m.id); },
+            ),
+            if (isMe && !m.isDeleted)
+              _buildContextOption(Icons.delete_outline_rounded, 'حذف للجميع', Colors.redAccent, () {
+                Navigator.pop(ctx);
+                _confirmDelete(m.id, m.type == MessageType.audio ? m.content : null);
+              }),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
 }
 
 
@@ -1697,6 +2162,8 @@ class _MessageBubbleNew extends ConsumerWidget {
 
   final bool isAi;
 
+  final bool isStarred;
+
 
 
   const _MessageBubbleNew({
@@ -1706,6 +2173,8 @@ class _MessageBubbleNew extends ConsumerWidget {
     required this.isAdmin,
 
     this.isAi = false,
+
+    this.isStarred = false,
 
   });
 
@@ -1813,9 +2282,39 @@ class _MessageBubbleNew extends ConsumerWidget {
 
                   padding: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
 
-                  child: _buildContent(context, ref, type, content),
+                  child: Column(
+
+                    crossAxisAlignment: isAdmin ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+
+                    mainAxisSize: MainAxisSize.min,
+
+                    children: [
+
+                      if (msg.metadata['replyToContent'] != null)
+
+                        _buildReplyQuote(msg.metadata['replyToContent'].toString()),
+
+                      _buildContent(context, ref, type, content),
+
+                    ],
+
+                  ),
 
                 ),
+
+                if (isStarred)
+
+                  Positioned(
+
+                    top: -2,
+
+                    left: 0,
+
+                    child: Icon(Icons.star_rounded,
+
+                        size: 12, color: isAdmin ? Colors.amberAccent : _kGold),
+
+                  ),
 
                 Positioned(
 
@@ -1842,6 +2341,30 @@ class _MessageBubbleNew extends ConsumerWidget {
   }
 
 
+
+  Widget _buildReplyQuote(String replyContent) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: (isAdmin ? Colors.white : _kPrimary).withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border(
+          right: BorderSide(color: _kGold, width: 3),
+        ),
+      ),
+      child: Text(
+        replyContent,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: GoogleFonts.tajawal(
+          fontSize: 12,
+          color: isAdmin ? Colors.white70 : Colors.black54,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
+    );
+  }
 
   Widget _buildStatus(MessageModel msg, bool isAdmin) {
 
@@ -1894,6 +2417,16 @@ class _MessageBubbleNew extends ConsumerWidget {
     if (type == 'image') {
 
       return _SecureImage(url: content);
+
+    }
+
+
+
+    // ─── فيديو ────────────────────────────────────────────────
+
+    if (type == 'video') {
+
+      return VideoBubble(url: content);
 
     }
 
@@ -2054,6 +2587,13 @@ class _MessageBubbleNew extends ConsumerWidget {
     // المريض → فقاعة بيضاء → نص أسود | الأدمن → فقاعة خضراء → نص أبيض
 
     final isPatientText = !isAdmin;
+
+    // معاينة الروابط لرسائل المريض الواردة (الفقاعة البيضاء)
+    if (isPatientText && content.contains('http')) {
+
+      return RichTextWithPreview(content);
+
+    }
 
     return Text(
 
