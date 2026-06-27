@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '@/lib/security';
+import { EmailService } from '@/lib/services/email';
 
 // Newsletter subscription endpoint
 export async function POST(req: NextRequest) {
@@ -33,8 +34,12 @@ export async function POST(req: NextRequest) {
       details: { email: sanitizedEmail }
     });
 
-    // In production, save to database and send confirmation email
-    // For now, just return success
+    // Send newsletter subscription confirmation email
+    const emailResult = await EmailService.sendNewsletterConfirmation(sanitizedEmail, 'مشترك جديد');
+    if (!emailResult.success) {
+      console.error('Failed to send newsletter confirmation email:', emailResult.error);
+    }
+
     return NextResponse.json(
       { 
         success: true,

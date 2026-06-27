@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/providers/auth_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'chat_screen.dart';
 // Admin screen removed from patient app
 
@@ -90,6 +91,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen>
       await ref.read(authProvider).verifyOtp(widget.phoneNumber, otp);
       if (!mounted) return;
       final user = Supabase.instance.client.auth.currentUser;
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('otp_verified', true);
+      if (user != null) {
+        await prefs.setString('saved_patient_user_id', user.id);
+      }
+
+      if (!mounted) return;
+
       // Patient app: always route to ChatScreen — admin check handled by PatientAuthWrapper
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(

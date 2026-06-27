@@ -39,7 +39,6 @@ class CallOverlay extends StatefulWidget {
 class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStateMixin {
   late CallMode _mode;
   bool _isMuted = false;
-  bool _isSpeakerOn = false;
   bool _isVideoOff = false;
   bool _jitsiStarted = false;
 
@@ -49,6 +48,9 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
   // Polling timer — fallback in case realtime misses the event
   Timer? _pollTimer;
+
+  // Timeout for unanswered outgoing calls (60 seconds)
+  Timer? _ringTimeout;
 
   // Animation controller for pulsing calling avatar
   late AnimationController _pulseController;
@@ -72,6 +74,15 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     if (_mode == CallMode.active) {
       _startDurationTimer();
       _launchJitsi();
+    }
+
+    // ── Auto-cancel outgoing calls after 60s with no answer ──
+    if (_mode == CallMode.outgoing) {
+      _ringTimeout = Timer(const Duration(seconds: 60), () {
+        if (mounted && !_disposed && _mode == CallMode.outgoing) {
+          _cancelCall();
+        }
+      });
     }
 
     // ── Realtime: listen for call state changes ──
@@ -102,18 +113,25 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
   void _handleCallEvent(Map<String, dynamic> msg) {
     if (_disposed || !mounted) return;
     final type = msg['message_type'] as String? ?? '';
+
+    // Check call_id from metadata (primary) or content (fallback)
+    final rawMeta = msg['metadata'];
+    final metadata = rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{};
+    final callIdFromMeta = metadata['call_id'] as String? ?? '';
     final content = msg['content'] as String? ?? '';
 
     // Only process events for THIS call
-    if (content != widget.callId) return;
+    if (callIdFromMeta != widget.callId && content != widget.callId) return;
 
     if (type == 'call_accept' && _mode != CallMode.active) {
       _pollTimer?.cancel();
+      _ringTimeout?.cancel();
       setState(() => _mode = CallMode.active);
       _startDurationTimer();
       _launchJitsi();
     } else if (type == 'call_decline' || type == 'call_cancel' || type == 'call_end') {
       _pollTimer?.cancel();
+      _ringTimeout?.cancel();
       _endJitsi();
       _exit();
     }
@@ -127,16 +145,25 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     try {
       final rows = await _supabase
           .from('messages')
-          .select('message_type, content')
+          .select('message_type, content, metadata')
           .eq('conversation_id', widget.conversationId)
           .inFilter('message_type', ['call_accept', 'call_decline', 'call_cancel', 'call_end'])
-          .eq('content', widget.callId)
           .order('created_at', ascending: false)
-          .limit(1);
+          .limit(5);
 
       if (rows.isEmpty) return;
-      final latest = rows.first;
-      _handleCallEvent(latest);
+
+      // Find the event matching our callId (check metadata.call_id or content)
+      for (final row in rows) {
+        final meta = row['metadata'];
+        final metaMap = meta is Map<String, dynamic> ? meta : <String, dynamic>{};
+        final callIdFromMeta = metaMap['call_id'] as String? ?? '';
+        final content = row['content'] as String? ?? '';
+        if (callIdFromMeta == widget.callId || content == widget.callId) {
+          _handleCallEvent(row);
+          return;
+        }
+      }
     } catch (_) {}
   }
 
@@ -174,10 +201,11 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
   void _toggleJitsiMute() {
     if (!kIsWeb) return;
+    final newMuted = !_isMuted;
+    setState(() => _isMuted = newMuted);
     try {
-      call_bridge.muteJitsiAudio(_isMuted);
+      call_bridge.muteJitsiAudio(newMuted);
     } catch (_) {}
-    setState(() => _isMuted = !_isMuted);
   }
 
   void _toggleJitsiVideo() {
@@ -207,6 +235,7 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     _disposed = true;
     _durationTimer?.cancel();
     _pollTimer?.cancel();
+    _ringTimeout?.cancel();
     if (_pulseController.isAnimating) _pulseController.stop();
     _pulseController.dispose();
     _channel?.unsubscribe();
@@ -653,13 +682,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                 label: _isVideoOff ? 'تشغيل كاميرا' : 'إيقاف كاميرا',
                 isActive: _isVideoOff,
                 onTap: _toggleJitsiVideo,
-              )
-            else
-              _CircleBtn(
-                icon: _isSpeakerOn ? Icons.volume_up_rounded : Icons.volume_down_rounded,
-                label: 'مكبر الصوت',
-                isActive: _isSpeakerOn,
-                onTap: () => setState(() => _isSpeakerOn = !_isSpeakerOn),
               ),
           ],
         ),

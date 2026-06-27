@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, securityHeaders, validateEmail, sanitizeInput, logSecurityEvent } from '@/lib/security';
+import { EmailService } from '@/lib/services/email';
 
 // Contact form API endpoint
 export async function POST(req: NextRequest) {
@@ -57,8 +58,18 @@ export async function POST(req: NextRequest) {
       details: { email: sanitizedData.email, subject: sanitizedData.subject }
     });
 
-    // In production, send email or save to database
-    // For now, just return success
+    // Send contact notification email to admin
+    const emailResult = await EmailService.sendContactNotification({
+      name: sanitizedData.name,
+      email: sanitizedData.email,
+      subject: sanitizedData.subject,
+      message: sanitizedData.message,
+    });
+
+    if (!emailResult.success) {
+      console.error('Failed to send contact notification email:', emailResult.error);
+    }
+
     return NextResponse.json(
       { 
         success: true, 

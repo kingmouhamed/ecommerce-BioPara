@@ -1,0 +1,296 @@
+version: "2"
+type: frontend
+tech_stack:
+  - Flutter (Dart)
+  - Riverpod (State Management)
+  - Supabase (Backend as a Service - Auth, DB, Storage, Realtime)
+  - Firebase (Messaging/Push Notifications)
+  - Google Fonts (Tajawal, Cairo)
+  - Stripe (Payments)
+  - ZegoCloud (Video/Voice Calls)
+  - Google Generative AI
+  - EasyLocalization (Admin App)
+routes:
+  - path: /splash
+    file: lib/patient/screens/splash_screen.dart
+    auth_required: false
+    description: Patient app splash/loading screen
+  - path: /login
+    file: lib/patient/screens/login_screen.dart
+    auth_required: false
+    description: Patient login via phone number (Morocco +212) with OTP
+  - path: /otp
+    file: lib/patient/screens/otp_screen.dart
+    auth_required: false
+    description: OTP verification screen after phone login
+  - path: /onboarding
+    file: lib/patient/screens/onboarding_screen.dart
+    auth_required: false
+    description: First-time user onboarding flow
+  - path: /chat
+    file: lib/patient/screens/chat_screen.dart
+    auth_required: true
+    description: Main patient chat screen with the admin/doctor (realtime messaging, media, voice)
+  - path: /shop
+    file: lib/patient/screens/shop_screen.dart
+    auth_required: true
+    description: Product shop with categories (herbs, teas, supplements, oils, honey), search, filter, cart
+  - path: /product-detail
+    file: lib/patient/screens/product_detail_screen.dart
+    auth_required: true
+    description: Individual product page with details, add to cart, wishlist
+  - path: /cart
+    file: lib/patient/screens/cart_screen.dart
+    auth_required: true
+    description: Shopping cart with item management and checkout
+  - path: /orders
+    file: lib/patient/screens/orders_screen.dart
+    auth_required: true
+    description: Patient order history list
+  - path: /order-details
+    file: lib/patient/screens/order_details_screen.dart
+    auth_required: true
+    description: Single order detail view
+  - path: /profile
+    file: lib/patient/screens/profile_screen.dart
+    auth_required: true
+    description: Patient profile with avatar, stats (messages, orders, last appointment)
+  - path: /edit-profile
+    file: lib/patient/screens/edit_profile_screen.dart
+    auth_required: true
+    description: Edit patient name, phone, and handle
+  - path: /booking
+    file: lib/patient/screens/booking_screen.dart
+    auth_required: true
+    description: Book an appointment with the doctor
+  - path: /my-appointments
+    file: lib/patient/screens/my_appointments_screen.dart
+    auth_required: true
+    description: Patient appointment history
+  - path: /settings
+    file: lib/patient/screens/settings_screen.dart
+    auth_required: true
+    description: App settings
+  - path: /privacy-policy
+    file: lib/patient/screens/privacy_policy_screen.dart
+    auth_required: false
+    description: Privacy policy page
+  - path: /call
+    file: lib/patient/screens/call_screen.dart
+    auth_required: true
+    description: Voice/video call screen using ZegoCloud
+  - path: /admin-login
+    file: lib/admin/screens/admin_login_screen.dart
+    auth_required: false
+    description: Admin login via email and password with is_admin check from profiles table
+  - path: /admin-dashboard
+    file: lib/admin/screens/admin_dashboard_screen.dart
+    auth_required: true
+    description: Admin dashboard with side navigation rail (Home, Patients, Appointments, Reports)
+  - path: /admin-home
+    file: lib/admin/screens/admin_home_tab.dart
+    auth_required: true
+    description: Admin home tab with stats, recent activity, unread messages
+  - path: /admin-patients
+    file: lib/admin/screens/admin_patients_tab.dart
+    auth_required: true
+    description: Admin patient list with chat access
+  - path: /admin-appointments
+    file: lib/admin/screens/admin_appointments_tab.dart
+    auth_required: true
+    description: Admin appointment management
+  - path: /admin-reports
+    file: lib/admin/screens/admin_reports_tab.dart
+    auth_required: true
+    description: Admin analytics and reports
+  - path: /admin-chat
+    file: lib/admin/screens/admin_chat_screen.dart
+    auth_required: true
+    description: Admin chat with a specific patient (realtime, media, voice, AI)
+features:
+  - name: Patient Phone Login (OTP)
+    description: Patient signs in with Moroccan phone number (+212), receives SMS OTP, and verifies
+    files:
+      - lib/patient/screens/login_screen.dart
+      - lib/patient/screens/otp_screen.dart
+      - lib/core/providers/auth_provider.dart
+    entry_route: /login
+    user_interactions:
+      - Enter phone number in input field (digits only, +212 prefix auto-added)
+      - Tap "التالي — إرسال الرمز" button to send OTP
+      - Navigate to OTP screen
+      - Enter 6-digit OTP code
+      - Verify and authenticate
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth.signInWithOtp(phone)
+      - method: POST
+        endpoint: supabase.auth.verifyOTP(phone, token)
+    auth_required: false
+  - name: Admin Email/Password Login
+    description: Admin logs in via email and password, system checks is_admin flag in profiles table
+    files:
+      - lib/admin/screens/admin_login_screen.dart
+      - lib/core/providers/auth_provider.dart
+    entry_route: /admin-login
+    user_interactions:
+      - Enter email in text field
+      - Enter password in text field
+      - Toggle password visibility
+      - Tap "دخول" button to sign in
+      - See error snackbar on invalid credentials
+      - Tap "نسيت كلمة المرور؟" for password reset
+    api_calls:
+      - method: POST
+        endpoint: supabase.auth.signInWithPassword(email, password)
+      - method: GET
+        endpoint: supabase.from('profiles').select('is_admin').eq('id', uid)
+    auth_required: false
+  - name: Product Shop
+    description: Browse and search herbal/natural products by categories with filtering and sorting
+    files:
+      - lib/patient/screens/shop_screen.dart
+      - lib/patient/screens/product_detail_screen.dart
+      - lib/core/providers/shop_provider.dart
+      - lib/core/models/product_model.dart
+    entry_route: /shop
+    user_interactions:
+      - Search for products by name
+      - Filter by category (herbs, tea, supplements, oils, honey)
+      - Sort by popularity, price, or newest
+      - Set max price range slider
+      - View product grid with images, prices, ratings
+      - Tap product card to view details
+      - Toggle wishlist (favorite) on products
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('products').select()
+    auth_required: true
+  - name: Shopping Cart & Checkout
+    description: Add products to cart, manage quantities, and proceed to checkout
+    files:
+      - lib/patient/screens/cart_screen.dart
+      - lib/core/providers/cart_provider.dart
+      - lib/core/models/cart_item.dart
+    entry_route: /cart
+    user_interactions:
+      - Add product to cart from shop or product detail
+      - View floating cart bar with count and total price
+      - Open cart screen to see all items
+      - Increase/decrease item quantity
+      - Remove items from cart
+      - See total price calculation
+      - Proceed to checkout
+    api_calls:
+      - method: POST
+        endpoint: supabase.from('orders').insert()
+    auth_required: true
+  - name: Realtime Chat (Patient)
+    description: Patient chats with admin/doctor via realtime messaging with media, voice, links
+    files:
+      - lib/patient/screens/chat_screen.dart
+      - lib/core/providers/chat_provider.dart
+      - lib/core/providers/chat_upload_provider.dart
+      - lib/core/models/message_model.dart
+    entry_route: /chat
+    user_interactions:
+      - Type and send text messages
+      - Record and send voice messages
+      - Attach images and files
+      - See message read receipts
+      - Swipe to reply to messages
+      - Preview link metadata
+      - Play audio messages
+    api_calls:
+      - method: INSERT
+        endpoint: supabase.from('messages').insert()
+      - method: SUBSCRIBE
+        endpoint: supabase.from('messages').stream()
+    auth_required: true
+  - name: Admin Dashboard
+    description: Admin views stats, manages patients, appointments, reports via side navigation
+    files:
+      - lib/admin/screens/admin_dashboard_screen.dart
+      - lib/admin/screens/admin_home_tab.dart
+      - lib/admin/screens/admin_patients_tab.dart
+      - lib/admin/screens/admin_appointments_tab.dart
+      - lib/admin/screens/admin_reports_tab.dart
+    entry_route: /admin-dashboard
+    user_interactions:
+      - View dashboard home with stats cards
+      - Navigate between tabs (Home, Patients, Appointments, Reports)
+      - See unread message badge on patients tab
+      - View patient list and open chat
+      - Manage appointments
+      - View analytics and reports
+      - Sign out via logout button
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('profiles').select()
+      - method: GET
+        endpoint: supabase.from('appointments').select()
+      - method: GET
+        endpoint: supabase.from('orders').select()
+    auth_required: true
+  - name: Profile Management
+    description: Patient views/edits profile, uploads avatar, sees stats
+    files:
+      - lib/patient/screens/profile_screen.dart
+      - lib/patient/screens/edit_profile_screen.dart
+      - lib/core/providers/profile_provider.dart
+      - lib/core/models/profile_model.dart
+    entry_route: /profile
+    user_interactions:
+      - View profile header with avatar, name, membership badge
+      - Tap avatar to upload new photo
+      - View stats (messages count, orders count, last appointment)
+      - Navigate to order history
+      - Navigate to appointments
+      - Edit profile (name, phone, handle)
+      - Sign out
+    api_calls:
+      - method: GET
+        endpoint: supabase.from('profiles').select().eq('id', userId)
+      - method: PUT
+        endpoint: supabase.from('profiles').update()
+      - method: UPLOAD
+        endpoint: supabase.storage.from('avatars').upload()
+    auth_required: true
+  - name: Appointment Booking
+    description: Patient books appointments with the doctor
+    files:
+      - lib/patient/screens/booking_screen.dart
+      - lib/patient/screens/my_appointments_screen.dart
+      - lib/core/providers/consultation_provider.dart
+    entry_route: /booking
+    user_interactions:
+      - Select appointment date and time
+      - Confirm booking
+      - View list of past and upcoming appointments
+    api_calls:
+      - method: POST
+        endpoint: supabase.from('appointments').insert()
+      - method: GET
+        endpoint: supabase.from('appointments').select()
+    auth_required: true
+  - name: Voice/Video Calls
+    description: Patient initiates voice or video calls with admin using ZegoCloud
+    files:
+      - lib/patient/screens/call_screen.dart
+      - lib/patient/screens/call_overlay.dart
+      - lib/patient/screens/call_bridge.dart
+    entry_route: /call
+    user_interactions:
+      - Initiate call from chat
+      - Accept/reject incoming call
+      - Toggle mute/camera
+      - End call
+    api_calls: []
+    auth_required: true
+known_limitations:
+  - issue: TestSprite is designed for web frontend testing but this is a Flutter mobile app
+    location: pubspec.yaml
+    impact: Browser-based E2E testing cannot directly test native Flutter UI, only Flutter Web builds
+  - issue: Filter/sort in shop screen is UI-only, does not persist or query backend with filters
+    location: lib/patient/screens/shop_screen.dart
+    impact: Sorting and price range filter only modify local state display, not queried from server

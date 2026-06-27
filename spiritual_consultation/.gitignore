@@ -48,3 +48,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+testsprite_tests\tmp\config.json
+/releases/
+
+.gradle/
+**/build/
+**/intermediates/
+**/generated/
+*.bin
+*.lock

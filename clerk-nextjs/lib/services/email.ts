@@ -1,13 +1,12 @@
 // =================================
-// EMAIL SERVICE
+// EMAIL SERVICE (Nodemailer + Brevo SMTP)
 // =================================
 
-import sgMail, { MailDataRequired } from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
+import { emailTemplates, OrderData, OrderItem, CartItem } from './emailTemplates';
 
-// Configure SendGrid
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
+// Export interfaces for external usage
+export type { OrderData, OrderItem, CartItem };
 
 export interface EmailContent {
   type: 'text/plain' | 'text/html';
@@ -25,74 +24,54 @@ export interface EmailData {
   dynamicTemplateData?: Record<string, unknown>;
 }
 
-export interface OrderItem {
-  product_name: string;
-  quantity: number;
-  unit_price: number;
-  total_price: number;
-}
-
-export interface OrderData {
-  order_number: string;
-  created_at: string | Date;
-  items?: OrderItem[];
-  subtotal: number;
-  tax_amount: number;
-  shipping_amount: number;
-  total_amount: number;
-  shipping_address: string;
-  tracking_url?: string;
-  id?: string;
-  tracking_number?: string;
-}
-
-export interface CartItem {
-  name: string;
-  price: number;
-  image_url: string;
-}
-
 export interface EmailResponse {
   success: boolean;
   messageId?: string;
   error?: string;
 }
 
+// Configure Nodemailer Transporter with Brevo SMTP
+const transporter = nodemailer.createTransport({
+  host: process.env.BREVO_SMTP_SERVER || 'smtp-relay.brevo.com',
+  port: parseInt(process.env.BREVO_SMTP_PORT || '587', 10),
+  secure: false, // Port 587 is TLS (secure: false, upgrade via STARTTLS automatically)
+  auth: {
+    user: process.env.BREVO_SMTP_LOGIN || '',
+    pass: process.env.BREVO_SMTP_KEY || '',
+  },
+});
+
 export class EmailService {
   /**
-   * Send basic email
+   * Send basic email using Nodemailer
    */
   static async sendEmail(data: EmailData): Promise<EmailResponse> {
     try {
-      let content: EmailContent[] = data.content || [];
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      let htmlContent = data.html || '';
+      let textContent = data.text || '';
 
-      if (content.length === 0) {
-        if (data.text && data.html) {
-          content = [
-            { type: 'text/plain', value: data.text },
-            { type: 'text/html', value: data.html },
-          ];
-        } else if (data.text) {
-          content = [{ type: 'text/plain', value: data.text }];
-        } else if (data.html) {
-          content = [{ type: 'text/html', value: data.html }];
-        } else {
-          content = [{ type: 'text/plain', value: '' }];
+      if (data.content && data.content.length > 0) {
+        for (const item of data.content) {
+          if (item.type === 'text/html') {
+            htmlContent = item.value;
+          } else {
+            textContent = item.value;
+          }
         }
       }
 
-      const msg: MailDataRequired = {
-        to: data.to,
-        from: data.from || process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
+      const info = await transporter.sendMail({
+        from: data.from || `"BioPara" <${defaultFrom}>`,
+        to: Array.isArray(data.to) ? data.to.join(', ') : data.to,
         subject: data.subject,
-        content: content as any, // Type assertion for SendGrid compatibility
-      };
-
-      const response = await sgMail.send(msg);
+        text: textContent,
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Email Error:', error);
@@ -104,34 +83,15 @@ export class EmailService {
   }
 
   /**
-   * Send template email
+   * Send template email (Compatibility stub for SMTP)
    */
   static async sendTemplateEmail(data: EmailData): Promise<EmailResponse> {
-    try {
-      const msg: MailDataRequired = {
-        to: data.to,
-        from: data.from || process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: data.templateId!,
-        dynamicTemplateData: data.dynamicTemplateData as any,
-      };
-
-      const response = await sgMail.send(msg);
-
-      return {
-        success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
-      };
-    } catch (error) {
-      console.error('Send Template Email Error:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to send template email',
-      };
-    }
+    console.warn('sendTemplateEmail is called but SendGrid templates are disabled. Falling back to basic email.');
+    return this.sendEmail(data);
   }
 
   /**
-   * Send order confirmation email
+   * Send order confirmation email (Arabic RTL HTML Template)
    */
   static async sendOrderConfirmation(
     email: string,
@@ -139,34 +99,19 @@ export class EmailService {
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-order-confirmation-template-id',
-        dynamicTemplateData: {
-          customer_name: customerName,
-          order_number: orderData.order_number,
-          order_date: new Date(orderData.created_at).toLocaleDateString(),
-          items: orderData.items?.map((item: OrderItem) => ({
-            name: item.product_name,
-            quantity: item.quantity,
-            price: `$${item.unit_price.toFixed(2)}`,
-            total: `$${item.total_price.toFixed(2)}`,
-          })) || [],
-          subtotal: `$${orderData.subtotal.toFixed(2)}`,
-          tax: `$${orderData.tax_amount.toFixed(2)}`,
-          shipping: `$${orderData.shipping_amount.toFixed(2)}`,
-          total: `$${orderData.total_amount.toFixed(2)}`,
-          shipping_address: orderData.shipping_address,
-          tracking_url: orderData.tracking_url || '#',
-        },
-      } as any;
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const htmlContent = emailTemplates.orderConfirmation(orderData, customerName);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
+        to: email,
+        subject: `تأكيد الطلب رقم #${orderData.order_number} - متجر بيوبارا`,
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Order Confirmation Error:', error);
@@ -178,7 +123,7 @@ export class EmailService {
   }
 
   /**
-   * Send shipping confirmation email
+   * Send shipping confirmation email (Arabic RTL HTML Template)
    */
   static async sendShippingConfirmation(
     email: string,
@@ -186,25 +131,19 @@ export class EmailService {
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-shipping-confirmation-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          order_number: orderData.order_number,
-          tracking_number: orderData.tracking_number,
-          tracking_url: orderData.tracking_url,
-          estimated_delivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-          shipping_address: orderData.shipping_address,
-        },
-      };
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const htmlContent = emailTemplates.shippingConfirmation(orderData, customerName);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
+        to: email,
+        subject: `تم شحن طلبك رقم #${orderData.order_number} بنجاح!`,
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Shipping Confirmation Error:', error);
@@ -216,7 +155,7 @@ export class EmailService {
   }
 
   /**
-   * Send password reset email
+   * Send password reset email (Arabic RTL HTML Template)
    */
   static async sendPasswordReset(
     email: string,
@@ -224,24 +163,20 @@ export class EmailService {
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+      const htmlContent = emailTemplates.passwordReset(resetUrl, customerName);
 
-      const msg = {
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
         to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-password-reset-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          reset_url: resetUrl,
-          expiry_hours: '24',
-        },
-      };
-
-      const response = await sgMail.send(msg);
+        subject: 'إعادة تعيين كلمة المرور لحسابك في بيوبارا',
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Password Reset Error:', error);
@@ -253,7 +188,7 @@ export class EmailService {
   }
 
   /**
-   * Send welcome email
+   * Send welcome email (Arabic RTL HTML Template)
    */
   static async sendWelcomeEmail(
     email: string,
@@ -261,22 +196,19 @@ export class EmailService {
     verificationUrl?: string
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-welcome-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          verification_url: verificationUrl,
-          shop_url: process.env.NEXT_PUBLIC_APP_URL,
-        },
-      };
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const htmlContent = emailTemplates.welcomeEmail(customerName, verificationUrl);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
+        to: email,
+        subject: 'مرحباً بك في بيوبارا - متجر الأعشاب والزيوت الطبيعية',
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Welcome Email Error:', error);
@@ -288,28 +220,27 @@ export class EmailService {
   }
 
   /**
-   * Send newsletter subscription confirmation
+   * Send newsletter subscription confirmation (Arabic RTL HTML Template)
    */
   static async sendNewsletterConfirmation(
     email: string,
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-newsletter-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          unsubscribe_url: `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${email}`,
-        },
-      };
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/unsubscribe?email=${email}`;
+      const htmlContent = emailTemplates.newsletterConfirmation(customerName, unsubscribeUrl);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
+        to: email,
+        subject: 'تأكيد اشتراكك في نشرة بيوبارا البريدية + خصم 10%',
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Newsletter Confirmation Error:', error);
@@ -321,7 +252,7 @@ export class EmailService {
   }
 
   /**
-   * Send refund confirmation email
+   * Send refund confirmation email (Arabic RTL HTML Template)
    */
   static async sendRefundConfirmation(
     email: string,
@@ -330,24 +261,19 @@ export class EmailService {
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-refund-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          order_number: orderData.order_number,
-          refund_amount: `$${refundAmount.toFixed(2)}`,
-          refund_date: new Date().toLocaleDateString(),
-          processing_days: '5-7',
-        },
-      };
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const htmlContent = emailTemplates.refundConfirmation(orderData, refundAmount, customerName);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
+        to: email,
+        subject: `تأكيد استرداد مالي للطلب #${orderData.order_number}`,
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Refund Confirmation Error:', error);
@@ -359,7 +285,7 @@ export class EmailService {
   }
 
   /**
-   * Send review request email
+   * Send review request email (Arabic RTL HTML Template)
    */
   static async sendReviewRequest(
     email: string,
@@ -367,25 +293,20 @@ export class EmailService {
     customerName: string
   ): Promise<EmailResponse> {
     try {
-      const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/review?order=${orderData.id}`;
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const reviewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/review?order=${orderData.id}`;
+      const htmlContent = emailTemplates.reviewRequest(orderData, reviewUrl, customerName);
 
-      const msg = {
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
         to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-review-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          order_number: orderData.order_number,
-          review_url: reviewUrl,
-          items: orderData.items?.slice(0, 3).map((item: OrderItem) => item.product_name) || [],
-        },
-      };
-
-      const response = await sgMail.send(msg);
+        subject: 'رأيك يهمنا! كيف كانت تجربتك مع منتجات بيوبارا؟',
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Review Request Error:', error);
@@ -397,7 +318,7 @@ export class EmailService {
   }
 
   /**
-   * Send abandoned cart reminder
+   * Send abandoned cart reminder (Arabic RTL HTML Template)
    */
   static async sendAbandonedCartReminder(
     email: string,
@@ -406,30 +327,19 @@ export class EmailService {
     cartTotal: number
   ): Promise<EmailResponse> {
     try {
-      const cartUrl = `${process.env.NEXT_PUBLIC_APP_URL}/cart`;
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const htmlContent = emailTemplates.abandonedCartReminder(cartItems, customerName, cartTotal);
 
-      const msg = {
+      const info = await transporter.sendMail({
+        from: `"BioPara | بيوبارا" <${defaultFrom}>`,
         to: email,
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-abandoned-cart-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: customerName,
-          cart_url: cartUrl,
-          cart_total: `$${cartTotal.toFixed(2)}`,
-          items: cartItems.slice(0, 3).map((item: CartItem) => ({
-            name: item.name,
-            price: `$${item.price.toFixed(2)}`,
-            image: item.image_url,
-          })),
-          item_count: cartItems.length,
-        },
-      };
-
-      const response = await sgMail.send(msg);
+        subject: 'منتجاتك الرائعة بانتظارك في سلة التسوق - بيوبارا',
+        html: htmlContent,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Abandoned Cart Reminder Error:', error);
@@ -441,7 +351,7 @@ export class EmailService {
   }
 
   /**
-   * Send contact form notification
+   * Send contact form notification to Admin
    */
   static async sendContactNotification(
     contactData: {
@@ -452,24 +362,21 @@ export class EmailService {
     }
   ): Promise<EmailResponse> {
     try {
-      const msg = {
-        to: process.env.SENDGRID_FROM_EMAIL || 'admin@biopara.com',
-        from: process.env.SENDGRID_FROM_EMAIL || 'noreply@biopara.com',
-        templateId: 'd-your-contact-template-id', // Replace with actual template ID
-        dynamicTemplateData: {
-          customer_name: contactData.name,
-          customer_email: contactData.email,
-          subject: contactData.subject,
-          message: contactData.message,
-          timestamp: new Date().toLocaleString(),
-        },
-      };
+      const defaultFrom = process.env.BREVO_FROM_EMAIL || 'noreply@biopara.com';
+      const adminEmail = process.env.BREVO_FROM_EMAIL || 'admin@biopara.com';
+      const htmlContent = emailTemplates.contactNotification(contactData);
 
-      const response = await sgMail.send(msg);
+      const info = await transporter.sendMail({
+        from: `"BioPara Contact" <${defaultFrom}>`,
+        to: adminEmail,
+        subject: `[Contact Form] ${contactData.subject}`,
+        html: htmlContent,
+        replyTo: contactData.email,
+      });
 
       return {
         success: true,
-        messageId: response[0]?.headers?.['x-message-id'],
+        messageId: info.messageId,
       };
     } catch (error) {
       console.error('Send Contact Notification Error:', error);

@@ -1,14 +1,49 @@
-gradle-wrapper.jar
-/.gradle
-/captures/
-/gradlew
-/gradlew.bat
-/local.properties
-GeneratedPluginRegistrant.java
-.cxx/
+# ─── Environment & Secrets ─────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
+*.pem
+*.key
+secrets/
 
-# Remember to never publicly share your keystore.
-# See https://flutter.dev/to/reference-keystore
-key.properties
-**/*.keystore
-**/*.jks
+# ─── Next.js ───────────────────────────────────────────────────────────────────
+.next/
+out/
+build/
+.vercel/
+
+# ─── Node ──────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# ─── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+next-env.d.ts
+
+# ─── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# ─── Supabase ──────────────────────────────────────────────────────────────────
+supabase/.branches/
+supabase/.temp/
+
+# ─── Misc ──────────────────────────────────────────────────────────────────────
+*.log
+.cache/
+.turbo/

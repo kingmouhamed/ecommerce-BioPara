@@ -1,2 +1,96 @@
-‣敄数摮湥楣獥਍潮敤浟摯汵獥യ渊浰搭扥杵氮杯പ礊牡⵮敤畢⹧潬⩧਍慹湲攭牲牯氮杯പഊ⌊丠硥⹴獪਍渮硥⽴਍畯⽴਍畢汩⽤਍਍‣湅楶潲浮湥⁴慶楲扡敬ੳ攮癮⸊湥⹶ਪ⸡湥⹶硥浡汰੥⸡湥⹶⸪硥浡汰੥攮癮氮捯污⸊湥⹶敤敶潬浰湥⹴潬慣੬攮癮琮獥⹴潬慣੬攮癮瀮潲畤瑣潩⹮潬慣੬਍‣敖捲汥਍瘮牥散൬ഊ⌊䤠䕄਍瘮捳摯⽥਍椮敤⽡਍਍‣协਍䐮当瑓牯൥吊畨扭⹳扤਍਍‣潌獧਍潬獧਍⸪潬൧ഊ⌊删湵楴敭搠瑡ൡ瀊摩൳⨊瀮摩਍⸪敳摥਍⸪楰⹤潬正਍਍‣潃敶慲敧搠物捥潴祲甠敳⁤祢琠潯獬氠歩⁥獩慴扮汵਍潣敶慲敧യഊ⌊渠捹琠獥⁴潣敶慲敧਍渮捹潟瑵異൴ഊ⌊䐠灥湥敤据⁹楤敲瑣牯敩൳樊灳彭慰正条獥യഊ⌊传瑰潩慮⁬灮⁭慣档⁥楤敲瑣牯൹⸊灮൭ഊ⌊传瑰潩慮⁬䕒䱐栠獩潴祲਍渮摯彥敲汰桟獩潴祲਍਍‣畏灴瑵漠⁦渧浰瀠捡❫਍⸪杴ൺഊ⌊夠牡⁮湉整牧瑩⁹楦敬਍礮牡⵮湩整牧瑩൹ഊ⌊搠瑯湥⁶湥楶潲浮湥⁴慶楲扡敬⁳楦敬ഊ⌊瀠牡散⵬畢摮敬⁲慣档⁥栨瑴獰⼺瀯牡散橬⹳牯⽧ഩ⸊慣档൥⸊慰捲汥挭捡敨਍਍‣敮瑸樮⁳畢汩⁤畯灴瑵਍渮硥൴ഊ⌊渠硵⹴獪戠極摬漠瑵異൴⸊畮瑸਍਍‣當灥敲獳戠極摬漠瑵異൴⸊當灥敲獳搯獩൴ഊ⌊匠牥敶汲獥⁳楤敲瑣牯敩൳⸊敳癲牥敬獳਍਍‣畆敳潂⁸慣档൥⸊畦敳潢⽸਍਍‣祄慮潭䉄䰠捯污映汩獥਍搮湹浡摯⽢਍਍攮癮പ猊瀀椀爀椀琀甀愀氀开挀漀渀猀甀氀琀愀琀椀漀渀⼀爀攀氀攀愀猀攀猀⼀ഀ਀⸀汣畡敤ਯ
-.claude/
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.*.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+.env*
+spiritual_consultation/releases/
+
+.gradle/
+**/build/
+**/intermediates/
+**/generated/
+*.bin
+*.lock

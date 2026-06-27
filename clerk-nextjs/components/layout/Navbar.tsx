@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/nextjs';
 import { useCart } from '@/contexts/CartContext';
 import LiveSearch from '@/components/search/LiveSearch';
@@ -48,6 +48,7 @@ export default function Navbar() {
     const { cartItemCount, setIsCartOpen } = useCart();
     const openCart = () => setIsCartOpen(true);
     const router = useRouter();
+    const pathname = usePathname();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -206,7 +207,7 @@ export default function Navbar() {
                                     <UserButton appearance={{ elements: { avatarBox: "w-9 h-9 border-2 border-emerald-100" } }} />
                                 </SignedIn>
                                 <SignedOut>
-                                    <SignInButton mode="modal">
+                                    <SignInButton mode="modal" fallbackRedirectUrl={pathname}>
                                         <button className="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl hover:bg-emerald-700 transition-all font-medium shadow-md shadow-emerald-200">
                                             <UserSquare2 className="w-5 h-5" />
                                             <span>تسجيل الدخول</span>
@@ -300,7 +301,7 @@ export default function Navbar() {
                                     </div>
                                 </SignedIn>
                                 <SignedOut>
-                                    <SignInButton mode="modal">
+                                    <SignInButton mode="modal" fallbackRedirectUrl={pathname}>
                                         <button className="w-full flex justify-center items-center gap-2 bg-emerald-600 text-white px-5 py-3 rounded-xl hover:bg-emerald-700 font-bold">
                                             <UserSquare2 className="w-5 h-5" />
                                             تسجيل الدخول

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import '../../core/services/zego_call_service.dart';
 import 'admin_shared_constants.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -141,6 +143,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       if (!isAdmin) {
         await Supabase.instance.client.auth.signOut();
         throw Exception('not admin');
+      }
+
+      // ✅ حاسم: الأدمن يسجّل فـ Zego بالـ adminUserId الثابت — موبايل فقط
+      // يجب أن يتطابق مع targetId الذي يستهدفه المريض في chat_screen
+      if (!kIsWeb) {
+        await ZegoCallService.instance.onUserLogin(
+          ZegoCallService.adminUserId,    // 'biopara_admin'
+          ZegoCallService.adminUserName,  // 'المستشار الروحاني'
+        );
       }
       // is_admin = true -> AdminAuthWrapper handles routing automatically
     } catch (e) {
