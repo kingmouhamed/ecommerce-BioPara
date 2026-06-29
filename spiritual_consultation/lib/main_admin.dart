@@ -12,6 +12,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'core/services/zego_call_service.dart';
 import 'admin/screens/admin_login_screen.dart';
 import 'admin/screens/admin_dashboard_screen.dart';
+import 'admin/widgets/admin_call_listener.dart';
 import 'admin/debug_helper.dart'; // ✅ Debug helper
 import 'core/providers/auth_provider.dart';
 import 'core/utils/custom_error_screen.dart';
@@ -184,7 +185,9 @@ class AdminAuthWrapper extends ConsumerWidget {
           data: (isAdmin) {
             if (isAdmin) {
               debugPrint('✅ AdminAuthWrapper: Admin confirmed');
-              return const AdminDashboardScreen();
+              // مستمع المكالمات العام (Windows/سطح المكتب) — يلتقط مكالمات
+              // المرضى مهما كانت الشاشة الحالية ويعرض CallOverlay فوق الكل.
+              return const AdminCallListener(child: AdminDashboardScreen());
             }
             debugPrint('🚫 AdminAuthWrapper: User is not an admin');
             return const AdminLoginScreen();

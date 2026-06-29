@@ -48,6 +48,7 @@ import '../../patient/screens/call_overlay.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 import '../../core/providers/presence_provider.dart';
+import '../../core/services/zego_call_service.dart';
 
 import '../../patient/widgets/chat/chat_widgets.dart' show VideoBubble, RichTextWithPreview, StatusPulse;
 
@@ -200,9 +201,11 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
 
 
-    // Listen for incoming call invitations in real-time
+    // Listen for incoming call invitations in real-time.
+    // على سطح المكتب/Windows يتكفّل المستمع العام (AdminCallListener) بذلك،
+    // فنُفعّل هذا المستمع المحلي على الموبايل فقط لتفادي ازدواج CallOverlay.
 
-    if (widget.conversationId.isNotEmpty) {
+    if (widget.conversationId.isNotEmpty && ZegoCallService.isSupportedPlatform) {
 
       _incomingCallSub = _supabase
 
