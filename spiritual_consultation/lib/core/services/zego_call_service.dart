@@ -57,6 +57,11 @@ class ZegoCallService {
         userName: userName.isEmpty ? 'مستخدم BioPara' : userName,
         plugins: [ZegoUIKitSignalingPlugin()],
 
+        // حاسم: يضمن وصول الدعوة وإظهار شاشة "مكالمة واردة" (قبول/رفض)
+        // عند الطرف الآخر حتى لو كان التطبيق في الخلفية أو مُغلقاً.
+        // بدون هذا السطر تتصل المكالمة بلا أن تظهر شاشة القبول/الرفض.
+        notifyWhenAppRunningInBackgroundOrQuit: true,
+
         // ── إعداد الإشعارات ──
         notificationConfig: ZegoCallInvitationNotificationConfig(
           androidNotificationConfig: ZegoCallAndroidNotificationConfig(
