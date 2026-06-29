@@ -17,6 +17,7 @@ import 'core/providers/auth_provider.dart';
 import 'core/utils/custom_error_screen.dart';
 import 'core/utils/app_logger.dart';
 import 'core/services/cache_service.dart';
+import 'core/services/admin_presence_service.dart';
 import 'core/config/app_config.dart';
 
 // ── Load Arabic fonts locally (fixes Web CanvasKit garbled text) ──────────
@@ -125,6 +126,10 @@ void main() async {
       }
     });
   }
+
+  // تتبّع منصة الأدمن (mobile/windows) لتوجيه المكالمات الهجين —
+  // يعمل على جميع المنصات بما فيها Windows.
+  AdminPresenceService.instance.startTracking();
 
   runApp(
     EasyLocalization(
