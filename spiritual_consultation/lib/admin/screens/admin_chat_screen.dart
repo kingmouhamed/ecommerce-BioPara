@@ -42,11 +42,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../../core/services/offline_queue_service.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
-
-import 'package:zego_uikit/zego_uikit.dart';
-
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 import '../../patient/screens/call_overlay.dart';
 
@@ -719,19 +714,6 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
 
 
-  void _showCallsUnsupportedOnDesktop() {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        'المكالمات متاحة على تطبيق الهاتف أو على المتصفح فقط — وليست مدعومة على الكمبيوتر.',
-        style: GoogleFonts.tajawal(),
-        textAlign: TextAlign.right,
-      ),
-      backgroundColor: _kPrimary,
-      duration: const Duration(seconds: 4),
-    ));
-  }
-
   void _startCall(bool isVideo) async {
 
     final callId = const Uuid().v4();
@@ -1240,77 +1222,17 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
                   onPressed: _generateSessionReport),
 
-          // ── أزرار المكالمة ──
-          // الموبايل (Android/iOS) → Zego | المتصفح → Jitsi | الكمبيوتر → غير مدعوم
-          if (kIsWeb) ...[
-            // على الويب: مكالمة عبر Jitsi (CallOverlay)
-            IconButton(
-              icon: const Icon(Icons.call_rounded),
-              tooltip: 'مكالمة صوتية',
-              onPressed: () => _startCall(false)),
-            IconButton(
-              icon: const Icon(Icons.videocam_rounded),
-              tooltip: 'مكالمة فيديو',
-              onPressed: () => _startCall(true)),
-          ] else if (defaultTargetPlatform != TargetPlatform.android &&
-                     defaultTargetPlatform != TargetPlatform.iOS) ...[
-            // على الكمبيوتر (Windows/macOS/Linux): المكالمات غير مدعومة —
-            // Zego يعمل على الهاتف فقط، Jitsi على المتصفح فقط.
-            IconButton(
-              icon: const Icon(Icons.call_rounded),
-              tooltip: 'المكالمات تعمل على الهاتف أو المتصفح فقط',
-              onPressed: () => _showCallsUnsupportedOnDesktop()),
-            IconButton(
-              icon: const Icon(Icons.videocam_rounded),
-              tooltip: 'المكالمات تعمل على الهاتف أو المتصفح فقط',
-              onPressed: () => _showCallsUnsupportedOnDesktop()),
-          ] else ...[
-            // على الموبايل: Zego Invitation — يتصل بمريض بالـ patient uid
-            ZegoSendCallInvitationButton(
-              isVideoCall: false,
-              invitees: [ZegoUIKitUser(
-                id: widget.patientId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'),
-                name: widget.patientName,
-              )],
-              resourceID: 'biopara_calls',
-              timeoutSeconds: 30,
-              iconSize: const Size(40, 40),
-              buttonSize: const Size(40, 40),
-              onPressed: (code, message, errorInvitees) {
-                if (errorInvitees.isNotEmpty && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('تعذر الاتصال — المريض غير متصل',
-                        style: GoogleFonts.tajawal()),
-                    backgroundColor: Colors.red,
-                  ));
-                }
-              },
-              icon: ButtonIcon(icon: const Icon(Icons.call_rounded,
-                  color: Colors.white, size: 22)),
-            ),
-            ZegoSendCallInvitationButton(
-              isVideoCall: true,
-              invitees: [ZegoUIKitUser(
-                id: widget.patientId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_'),
-                name: widget.patientName,
-              )],
-              resourceID: 'biopara_calls',
-              timeoutSeconds: 30,
-              iconSize: const Size(40, 40),
-              buttonSize: const Size(40, 40),
-              onPressed: (code, message, errorInvitees) {
-                if (errorInvitees.isNotEmpty && mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('تعذر الاتصال — المريض غير متصل',
-                        style: GoogleFonts.tajawal()),
-                    backgroundColor: Colors.red,
-                  ));
-                }
-              },
-              icon: ButtonIcon(icon: const Icon(Icons.videocam_rounded,
-                  color: Colors.white, size: 22)),
-            ),
-          ],
+          // ── أزرار المكالمة (موحّدة عبر Jitsi + Supabase) ──
+          // تعمل على Windows / Desktop / الموبايل / المتصفح بنفس الطريقة:
+          // إدراج call_invite في Supabase ثم فتح CallOverlay → غرفة Jitsi.
+          IconButton(
+            icon: const Icon(Icons.call_rounded),
+            tooltip: 'مكالمة صوتية',
+            onPressed: () => _startCall(false)),
+          IconButton(
+            icon: const Icon(Icons.videocam_rounded),
+            tooltip: 'مكالمة فيديو',
+            onPressed: () => _startCall(true)),
           const SizedBox(width: 4),
 
         ],

@@ -68,6 +68,8 @@ dependencies:
   flutter_stripe: ^11.2.0
   url_launcher: ^6.2.5
   file_picker: ^10.3.8
+  # WebView موحّد للمكالمات (Jitsi) على Windows/Desktop + الموبايل
+  flutter_inappwebview: ^6.1.5
   swipe_to: ^1.0.6
   shared_preferences: ^2.5.5
   audio_waveforms: ^1.2.0

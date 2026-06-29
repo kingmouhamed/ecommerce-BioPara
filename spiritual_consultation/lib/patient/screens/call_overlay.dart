@@ -11,6 +11,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:async';
 
 import 'call_bridge.dart' as call_bridge;
+import 'jitsi_call_screen.dart';
 
 enum CallMode { outgoing, incoming, active }
 
@@ -170,7 +171,12 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
   // ────────────────────────────────────────────────────────────
   // Jitsi Meet — real audio/video via JS bridge
   // ────────────────────────────────────────────────────────────
+  // اسم غرفة Jitsi — مشتق من callId، متطابق عند الطرفين (مريض/مسؤول)
+  String get _roomName => 'biopara-${widget.callId.replaceAll('-', '')}';
+
   void _launchJitsi() {
+    // على غير المتصفح (Windows/موبايل) الوسائط تُعرض عبر JitsiCallScreen
+    // المضمّنة في build()، فلا حاجة لجسر الـ JS هنا.
     if (!kIsWeb || _jitsiStarted) return;
     _jitsiStarted = true;
 
@@ -179,13 +185,11 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
       if (mounted && !_disposed) _endCall();
     });
 
-    // Build a short, alphanumeric room name from callId
-    final roomName = 'biopara-${widget.callId.replaceAll('-', '').substring(0, 16)}';
     final displayName = widget.name;
     final isVideo = widget.isVideo;
 
     try {
-      call_bridge.startJitsiCall(roomName, displayName, isVideo);
+      call_bridge.startJitsiCall(_roomName, displayName, isVideo);
     } catch (e) {
       debugPrint('⚠️ Jitsi launch error: $e');
     }
@@ -359,6 +363,18 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     const primary = Color(0xFF1E2D20);
     const primaryMid = Color(0xFF2D4A2E);
     const accent = Color(0xFF4CAF78);
+
+    // ── المكالمة النشطة على غير المتصفح (Windows/Desktop + الموبايل) ──
+    // نعرض غرفة Jitsi الحقيقية داخل WebView. الإنهاء يمر عبر _endCall
+    // الذي يكتب call_end في Supabase ثم يغلق هذه الشاشة.
+    if (!kIsWeb && _mode == CallMode.active) {
+      return JitsiCallScreen(
+        room: _roomName,
+        displayName: widget.name,
+        isVideo: widget.isVideo,
+        onHangup: _endCall,
+      );
+    }
 
     return Scaffold(
       backgroundColor: primary,
