@@ -109,9 +109,10 @@ void main() async {
     debugPrint('❌ Supabase init error: $e');
   }
 
-  // ✅ ZegoCallService: الأدمن يسجّل بالـ adminUserId الثابت (موبايل فقط)
+  // ✅ ZegoCallService: الأدمن يسجّل بالـ adminUserId الثابت (Android/iOS فقط)
+  // على Windows/Desktop لا نهيّئ Zego (غير مدعوم ويسبب كراش) — تُستعمل Jitsi.
   // حاسم: يجب أن يتطابق مع targetId الذي يستهدفه المريض في chat_screen
-  if (!kIsWeb) {
+  if (ZegoCallService.isSupportedPlatform) {
     await ZegoCallService.instance.onUserLogin(
       ZegoCallService.adminUserId,    // 'biopara_admin' — ثابت ومتطابق مع جهة المريض
       ZegoCallService.adminUserName,  // 'المستشار الروحاني'

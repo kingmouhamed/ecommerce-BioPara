@@ -23,6 +23,14 @@ class ZegoCallService {
   static const String adminUserId = 'biopara_admin';
   static const String adminUserName = 'المستشار الروحاني';
 
+  /// Zego (المكالمات الأصلية) مدعوم فقط على Android/iOS.
+  /// على Windows/Desktop/Web يجب عدم تهيئته (يسبب أعطالاً عند الإقلاع)،
+  /// وتُستعمل مكالمات Jitsi عبر WebView بدلاً منه (انظر CallOverlay).
+  static bool get isSupportedPlatform =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
+
   bool _initialized = false;
 
   /// تُستدعى **مرة وحدة** بعد تسجيل دخول المستخدم بنجاح.

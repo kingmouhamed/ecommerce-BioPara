@@ -89,9 +89,10 @@ void main() async {
     debugPrint('Supabase init error: $e');
   }
 
-  // ✅ ZegoCallService: تسجيل دخول المريض (موبايل فقط)
+  // ✅ ZegoCallService: تسجيل دخول المريض (Android/iOS فقط)
+  // على Windows/Desktop لا نهيّئ Zego (غير مدعوم) — تُستعمل Jitsi.
   // يُستدعى بعد Supabase.initialize() مباشرةً
-  if (!kIsWeb) {
+  if (ZegoCallService.isSupportedPlatform) {
     final user = Supabase.instance.client.auth.currentUser;
     if (user != null) {
       await ZegoCallService.instance.onUserLogin(
