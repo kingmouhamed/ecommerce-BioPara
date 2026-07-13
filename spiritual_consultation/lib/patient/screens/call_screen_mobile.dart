@@ -33,8 +33,11 @@ Widget buildMobileCallScreen(
       ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
       : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
-  // ✅ توجيه الصوت لمكبّر الصوت عند الانضمام (يتجنّب سمّاعة الأذن الصامتة
-  //    بعد نزع البلوتوث). UIKit يبدّل تلقائياً للبلوتوث عند توصيله.
+  // ✅ إعداد الوسائط الصريح (يحل: لا صوت في الفيديو / كاميرا سوداء).
+  //    UIKit ينشر/يشغّل الـ streams داخلياً؛ نضبط الحالة الابتدائية فقط.
+  config.turnOnMicrophoneWhenJoining = true;   // صوت في كل الأنواع
+  config.turnOnCameraWhenJoining = isVideoCall; // كاميرا في الفيديو فقط
+  // مكبّر الصوت عند الانضمام (يشمل الفيديو حتى لا يبدو الصوت منعدماً).
   config.useSpeakerWhenJoining = true;
 
   // ✅ Custom avatar — green circle with initial letter

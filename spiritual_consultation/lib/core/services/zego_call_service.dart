@@ -90,10 +90,13 @@ class ZegoCallService {
               ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
               : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
-          // ── توجيه الصوت لمكبّر الصوت (loudspeaker) عند الانضمام ──
-          // بدون هذا، مكالمة الصوت الافتراضية تخرج من سمّاعة الأذن فقط،
-          // فلا يُسمع صوت عند نزع سمّاعة البلوتوث. UIKit يتكفّل تلقائياً
-          // بالتبديل إلى البلوتوث عند توصيله والعودة للمكبّر عند نزعه.
+          // ── إعداد الوسائط (يحل: لا صوت في الفيديو / كاميرا سوداء) ──
+          // UIKit هو من ينشر ويشغّل الـ streams داخلياً؛ نحن فقط نضبط الحالة
+          // الابتدائية بشكل صريح لضمان تشغيل المايك دائماً والكاميرا في الفيديو.
+          config.turnOnMicrophoneWhenJoining = true;      // صوت في كل الأنواع
+          config.turnOnCameraWhenJoining = isVideo;        // كاميرا في الفيديو فقط
+          // توجيه الصوت لمكبّر الصوت (loudspeaker) عند الانضمام — يشمل الفيديو
+          // (بدونه قد يخرج الصوت من سمّاعة الأذن فيبدو منعدماً في مكالمة الفيديو).
           config.useSpeakerWhenJoining = true;
 
           // أفاتار مخصص
