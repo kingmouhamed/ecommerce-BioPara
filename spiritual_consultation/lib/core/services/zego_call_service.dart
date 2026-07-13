@@ -90,6 +90,12 @@ class ZegoCallService {
               ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
               : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
+          // ── توجيه الصوت لمكبّر الصوت (loudspeaker) عند الانضمام ──
+          // بدون هذا، مكالمة الصوت الافتراضية تخرج من سمّاعة الأذن فقط،
+          // فلا يُسمع صوت عند نزع سمّاعة البلوتوث. UIKit يتكفّل تلقائياً
+          // بالتبديل إلى البلوتوث عند توصيله والعودة للمكبّر عند نزعه.
+          config.useSpeakerWhenJoining = true;
+
           // أفاتار مخصص
           config.avatarBuilder = (ctx, size, user, extraInfo) =>
               _buildCallAvatar(user?.name ?? '?', size);

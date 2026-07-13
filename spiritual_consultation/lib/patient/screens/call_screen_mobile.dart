@@ -33,6 +33,10 @@ Widget buildMobileCallScreen(
       ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
       : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
+  // ✅ توجيه الصوت لمكبّر الصوت عند الانضمام (يتجنّب سمّاعة الأذن الصامتة
+  //    بعد نزع البلوتوث). UIKit يبدّل تلقائياً للبلوتوث عند توصيله.
+  config.useSpeakerWhenJoining = true;
+
   // ✅ Custom avatar — green circle with initial letter
   config.avatarBuilder = (ctx, size, user, _) => Container(
     width: size.width,
