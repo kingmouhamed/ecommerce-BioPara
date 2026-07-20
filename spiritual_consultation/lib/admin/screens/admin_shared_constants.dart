@@ -60,7 +60,7 @@ String getLastMessagePreview(Map<String, dynamic> row) {
   return switch (type) {
     'image'         => '📷 صورة',
     'audio'         => '🎵 رسالة صوتية',
-    'call_invite'   => '📞 مكالمة',
+    'call_invite' || 'callInvite'   => '📞 مكالمة',
     'video'         => '🎬 فيديو',
     'product_share' => '🛍 منتج',
     _               => content.length > 45

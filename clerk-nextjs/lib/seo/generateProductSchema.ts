@@ -38,7 +38,7 @@ export function generateProductSchema(product: Product, storeUrl: string = "http
         schema.aggregateRating = {
             "@type": "AggregateRating",
             "ratingValue": (product as any).rating.toString(),
-            "reviewCount": "24" 
+            "reviewCount": "24"
         };
     }
 

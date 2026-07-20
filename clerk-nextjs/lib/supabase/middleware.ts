@@ -27,24 +27,24 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Safe user session verification
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/consultations') || 
+                           request.nextUrl.pathname.startsWith('/profile') ||
+                           request.nextUrl.pathname.startsWith('/dashboard');
+  const isLoginRoute = request.nextUrl.pathname === '/login';
+
+  // Skip fetching the user for public routes to save network latency
+  if (!isProtectedRoute) {
+    return supabaseResponse;
+  }
+
+  // Safe user session verification only when needed
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/consultations') || 
-                           request.nextUrl.pathname.startsWith('/profile') ||
-                           request.nextUrl.pathname.startsWith('/dashboard');
-
   if (isProtectedRoute && !user) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    return NextResponse.redirect(url);
-  }
-
-  if (request.nextUrl.pathname === '/login' && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/consultations';
     return NextResponse.redirect(url);
   }
 

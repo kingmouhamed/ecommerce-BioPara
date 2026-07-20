@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/theme/app_theme.dart';
-import 'login_screen.dart';
+import 'patient_auth_wrapper.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -63,7 +63,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
     // انتقال بسيط بدون PageRouteBuilder مخصص
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const PatientAuthWrapper()),
     );
   }
 

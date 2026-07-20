@@ -23,6 +23,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/shop_provider.dart';
+import '../../core/services/zego_call_service.dart';
+import '../../core/services/admin_presence_service.dart';
 
 import 'call_overlay.dart';
 import 'booking_screen.dart';
@@ -88,6 +90,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   RealtimeChannel? _incomingCallSub;
   final List<String> _processedCallIds = [];
 
+  // منصة الأدمن النشطة (للتوجيه الهجين): 'mobile' → Zego | غير ذلك → Jitsi
+  String _adminPlatform = 'mobile';
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +101,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _recorderCtrl = RecorderController();
     }
     _loadStarredMessages();
+    _loadAdminPlatform();
     OfflineQueueService.syncQueue();
 
     _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
@@ -123,7 +129,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             final senderId = msg['sender_id'] as String? ?? '';
             final msgId  = msg['id'] as String? ?? '';
 
-            if (type == 'call_invite' &&
+            if ((type == 'call_invite' || type == 'callInvite') &&
                 status == 'ringing' &&
                 senderId != (_supabase.auth.currentUser?.id ?? _userId) &&
                 !_processedCallIds.contains(msgId)) {
@@ -166,6 +172,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   bool _isAdmin() => ref.read(profileProvider).value?.isAdmin ?? false;
+
+  // تحميل منصة الأدمن النشطة لتوجيه نوع المكالمة (Zego / Jitsi)
+  Future<void> _loadAdminPlatform() async {
+    final p = await AdminPresenceService.getActiveAdminPlatform();
+    if (mounted) setState(() => _adminPlatform = p);
+  }
 
   @override
   void dispose() {
@@ -433,6 +445,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         type: MessageType.callInvite,
         content: isVideo ? 'مكالمة فيديو صادرة' : 'مكالمة صوتية صادرة',
         status: 'ringing',
+        metadata: {
+          'call_id': activeCallId,
+          'call_type': isVideo ? 'video' : 'voice',
+          'call_status': 'active',
+          'call_started_at': DateTime.now().toIso8601String(),
+        },
       );
     }
     if (mounted) {
@@ -589,24 +607,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildCallButton({required bool isVideo}) {
-    if (kIsWeb) {
+    // ── التوجيه الهجين حسب منصة الأدمن النشطة ──
+    // الأدمن على Windows/سطح المكتب → Jitsi (CallOverlay) عبر Supabase.
+    // الأدمن على الموبايل + المريض على الموبايل → ZegoCloud الأصلي.
+    final adminOnMobile = _adminPlatform == 'mobile';
+    final patientCanZego = ZegoCallService.isSupportedPlatform;
+
+    if (!adminOnMobile || !patientCanZego) {
+      // Jitsi fallback (الأدمن على Windows، أو المريض على ويب/سطح مكتب)
       return IconButton(
         icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
             color: Colors.white, size: 20),
+        tooltip: isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
         onPressed: () => _startCall(isVideo),
       );
     }
-    final targetId   = _isAdmin() ? widget.conversationId : "admin_consultant_1";
-    final targetName = _isAdmin() ? "المريض" : "المستشار بيوبارا";
+
+    // الأدمن على الموبايل → دعوة ZegoCloud الأصلية للأدمن الثابت
     return ZegoSendCallInvitationButton(
       isVideoCall: isVideo,
-      invitees: [ZegoUIKitUser(id: targetId, name: targetName)],
-      resourceID: "biopara_calls",
+      invitees: [ZegoUIKitUser(
+        id: ZegoCallService.adminUserId,     // 'biopara_admin' — متطابق مع main_admin
+        name: ZegoCallService.adminUserName,
+      )],
+      resourceID: 'biopara_calls',
+      timeoutSeconds: 30,
       iconSize: const Size(40, 40),
       buttonSize: const Size(40, 40),
-      onPressed: (code, message, errorInvitees) => _startCall(isVideo),
-      icon: ButtonIcon(icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-          color: Colors.white, size: 20)),
+      onPressed: (code, message, errorInvitees) {
+        if (errorInvitees.isNotEmpty && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('تعذر الاتصال — المستشار غير متصل عبر الهاتف',
+                style: GoogleFonts.tajawal()),
+            backgroundColor: Colors.red,
+          ));
+        }
+      },
+      icon: ButtonIcon(
+        icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
+            color: Colors.white, size: 20),
+      ),
     );
   }
 

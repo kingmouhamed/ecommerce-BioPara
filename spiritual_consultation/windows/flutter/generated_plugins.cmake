@@ -8,13 +8,11 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   file_selector_windows
   firebase_core
-  flutter_secure_storage_windows
   flutter_volume_controller
   permission_handler_windows
   record_windows
   screen_brightness_windows
   share_plus
-  speech_to_text_windows
   url_launcher_windows
   zego_express_engine
   zego_zim

@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'login_screen.dart';
 import 'chat_screen.dart';
+import '../../core/services/zego_call_service.dart';
 
 class PatientAuthWrapper extends StatefulWidget {
   const PatientAuthWrapper({super.key});
@@ -43,8 +44,10 @@ class _PatientAuthWrapperState extends State<PatientAuthWrapper> {
       // محاولة استخدام الجلسة الحالية
       final session = _supabase.auth.currentSession;
       if (session != null) {
+        final uid = session.user.id;
+        await ZegoCallService.instance.onUserLogin(uid, 'مريض BioPara');
         setState(() {
-          _conversationId = session.user.id;
+          _conversationId = uid;
           _loading = false;
         });
         return;
@@ -56,6 +59,7 @@ class _PatientAuthWrapperState extends State<PatientAuthWrapper> {
         final uid = resp.user?.id;
         if (uid != null && mounted) {
           await prefs.setString('saved_patient_user_id', uid);
+          await ZegoCallService.instance.onUserLogin(uid, 'مريض BioPara');
           setState(() {
             _conversationId = uid;
             _loading = false;
@@ -87,6 +91,7 @@ class _PatientAuthWrapperState extends State<PatientAuthWrapper> {
         if (!mounted) return;
         setState(() { _conversationId = null; _loading = false; });
       } else {
+        await ZegoCallService.instance.onUserLogin(uid, 'مريض BioPara');
         setState(() { _conversationId = uid; _loading = false; });
       }
       return;
@@ -111,6 +116,7 @@ class _PatientAuthWrapperState extends State<PatientAuthWrapper> {
         await _supabase.auth.signOut();
         if (mounted) setState(() { _conversationId = null; });
       } else {
+        await ZegoCallService.instance.onUserLogin(uid, 'مريض BioPara');
         if (mounted) setState(() { _conversationId = uid; });
       }
     });

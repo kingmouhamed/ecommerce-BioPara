@@ -21,54 +21,38 @@ interface SidebarFiltersProps {
   ) => void
 }
 
-export default function SidebarFilters({
+interface FilterContentProps {
+  query: string
+  setQuery: (value: string) => void
+  category: string
+  setCategory: (value: string) => void
+  minPrice: number | ''
+  setMinPrice: (value: number | '') => void
+  maxPrice: number | ''
+  setMaxPrice: (value: number | '') => void
+  inStock: boolean
+  setInStock: (value: boolean) => void
+  categories: Category[]
+  handleSubmit: () => void
+  handleClear: () => void
+}
+
+function FilterContent({
+  query,
+  setQuery,
+  category,
+  setCategory,
+  minPrice,
+  setMinPrice,
+  maxPrice,
+  setMaxPrice,
+  inStock,
+  setInStock,
   categories,
-  initialQuery,
-  initialCategory,
-  initialMinPrice,
-  initialMaxPrice,
-  initialInStock,
-  onSearch
-}: SidebarFiltersProps) {
-  const [query, setQuery] = useState(initialQuery)
-  const [category, setCategory] = useState(initialCategory)
-  const [minPrice, setMinPrice] = useState<number | ''>(initialMinPrice ?? '')
-  const [maxPrice, setMaxPrice] = useState<number | ''>(initialMaxPrice ?? '')
-  const [inStock, setInStock] = useState<boolean>(initialInStock ?? false)
-
-  const [isOpen, setIsOpen] = useState(false) // For mobile bottom sheet
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    onSearch(
-      query,
-      category,
-      minPrice === '' ? undefined : minPrice,
-      maxPrice === '' ? undefined : maxPrice,
-      inStock,
-      1
-    )
-    setIsOpen(false)
-  }
-
-  const handleClear = () => {
-    setQuery('')
-    setCategory('')
-    setMinPrice('')
-    setMaxPrice('')
-    setInStock(false)
-    onSearch('', '', undefined, undefined, false, 1)
-    setIsOpen(false)
-  }
-
-  if (!mounted) return <div className="animate-pulse bg-white p-6 rounded-2xl h-96"></div>
-
-  const filterContent = (
+  handleSubmit,
+  handleClear
+}: FilterContentProps) {
+  return (
     <div className="space-y-6">
       {/* Search Input */}
       <div>
@@ -177,6 +161,54 @@ export default function SidebarFilters({
       </div>
     </div>
   )
+}
+
+export default function SidebarFilters({
+  categories,
+  initialQuery,
+  initialCategory,
+  initialMinPrice,
+  initialMaxPrice,
+  initialInStock,
+  onSearch
+}: SidebarFiltersProps) {
+  const [query, setQuery] = useState(initialQuery)
+  const [category, setCategory] = useState(initialCategory)
+  const [minPrice, setMinPrice] = useState<number | ''>(initialMinPrice ?? '')
+  const [maxPrice, setMaxPrice] = useState<number | ''>(initialMaxPrice ?? '')
+  const [inStock, setInStock] = useState<boolean>(initialInStock ?? false)
+
+  const [isOpen, setIsOpen] = useState(false) // For mobile bottom sheet
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    onSearch(
+      query,
+      category,
+      minPrice === '' ? undefined : minPrice,
+      maxPrice === '' ? undefined : maxPrice,
+      inStock,
+      1
+    )
+    setIsOpen(false)
+  }
+
+  const handleClear = () => {
+    setQuery('')
+    setCategory('')
+    setMinPrice('')
+    setMaxPrice('')
+    setInStock(false)
+    onSearch('', '', undefined, undefined, false, 1)
+    setIsOpen(false)
+  }
+
+  if (!mounted) return <div className="animate-pulse bg-white p-6 rounded-2xl h-96"></div>
 
   return (
     <>
@@ -197,7 +229,21 @@ export default function SidebarFilters({
           <Filter className="w-5 h-5 text-emerald-600" />
           الفلاتر
         </h2>
-        {filterContent}
+        <FilterContent
+          query={query}
+          setQuery={setQuery}
+          category={category}
+          setCategory={setCategory}
+          minPrice={minPrice}
+          setMinPrice={setMinPrice}
+          maxPrice={maxPrice}
+          setMaxPrice={setMaxPrice}
+          inStock={inStock}
+          setInStock={setInStock}
+          categories={categories}
+          handleSubmit={handleSubmit}
+          handleClear={handleClear}
+        />
       </div>
 
       {/* Mobile Bottom Sheet */}
@@ -225,7 +271,21 @@ export default function SidebarFilters({
               <X className="w-5 h-5" />
             </button>
           </div>
-          {filterContent}
+          <FilterContent
+            query={query}
+            setQuery={setQuery}
+            category={category}
+            setCategory={setCategory}
+            minPrice={minPrice}
+            setMinPrice={setMinPrice}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
+            inStock={inStock}
+            setInStock={setInStock}
+            categories={categories}
+            handleSubmit={handleSubmit}
+            handleClear={handleClear}
+          />
         </div>
       </div>
     </>

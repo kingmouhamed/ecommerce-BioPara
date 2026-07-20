@@ -1,0 +1,11 @@
+# Exclude large dependencies and build artifacts from Vercel uploads
+node_modules/
+.venv/
+.git/
+.vscode/
+.idea/
+spiritual_consultation/
+clerk-nextjs/node_modules/
+clerk-nextjs/.next/
+clerk-nextjs/out/
+clerk-nextjs/build/

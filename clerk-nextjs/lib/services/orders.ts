@@ -3,7 +3,6 @@
 // =================================
 
 import { getSupabaseAdmin } from '@/lib/supabase-server';
-import { StripeService } from '@/lib/payments/stripe';
 import { generateOrderNumber } from '@/lib/utils/orders';
 
 // Get supabase client
@@ -90,37 +89,22 @@ export class OrdersService {
 
       if (updateError) throw updateError;
 
-      // Create payment intent
-      const paymentResponse = await StripeService.createPaymentIntent({
-        amount: totalAmount,
-        currency: data.currency || 'USD',
-        metadata: {
-          order_id: orderData.id,
-          order_number: orderData.order_number,
-        },
-      });
-
-      if (!paymentResponse.success) {
-        throw new Error(paymentResponse.error);
-      }
-
-      // Save payment record
+      // Save payment record for WhatsApp order
       await supabase
         .from('payments')
         .insert({
           order_id: orderData.id,
-          payment_method: 'stripe',
-          payment_intent_id: paymentResponse.paymentIntent!.id,
+          payment_method: 'whatsapp',
+          payment_intent_id: 'wa_' + orderData.order_number,
           amount: totalAmount,
-          currency: data.currency || 'USD',
+          currency: data.currency || 'MAD',
           status: 'pending',
-          gateway_response: paymentResponse.paymentIntent,
+          gateway_response: { method: 'whatsapp' },
         });
 
       return {
         success: true,
         order: orderData,
-        payment_intent: paymentResponse.paymentIntent,
       };
     } catch (error) {
       console.error('Create Order Error:', error);
@@ -296,29 +280,14 @@ export class OrdersService {
 
       // Refund payment if payment was made
       if (order.payment_status === 'succeeded') {
-        const { data: payment } = await supabase
+        await supabase
           .from('payments')
-          .select('payment_intent_id')
-          .eq('order_id', orderId)
-          .single();
-
-        if (payment?.payment_intent_id) {
-          const refundResponse = await StripeService.createRefund(
-            payment.payment_intent_id,
-            order.total_amount
-          );
-
-          if (refundResponse.success) {
-            await supabase
-              .from('payments')
-              .update({
-                status: 'refunded',
-                refunded_at: new Date().toISOString(),
-                refund_amount: order.total_amount,
-              })
-              .eq('order_id', orderId);
-          }
-        }
+          .update({
+            status: 'refunded',
+            refunded_at: new Date().toISOString(),
+            refund_amount: order.total_amount,
+          })
+          .eq('order_id', orderId);
       }
 
       return {

@@ -15,8 +15,11 @@ class Auth {
     await _client.signUp(email: email, password: password);
   }
 
-  Future<void> signInWithPhone(String phone) async {
-    await _client.signInWithOtp(phone: phone);
+  Future<void> signInWithPhone(String phone, {bool isWhatsApp = false}) async {
+    await _client.signInWithOtp(
+      phone: phone,
+      channel: isWhatsApp ? OtpChannel.whatsapp : OtpChannel.sms,
+    );
   }
 
   Future<void> verifyOtp(String phone, String token) async {

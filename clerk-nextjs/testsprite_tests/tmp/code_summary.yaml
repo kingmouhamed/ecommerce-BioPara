@@ -1,0 +1,68 @@
+version: "2"
+type: frontend
+tech_stack:
+  - react
+  - next.js
+  - tailwindcss
+  - typescript
+  - clerk
+  - supabase
+  - stripe
+routes:
+  - path: /
+    file: app/page.tsx
+    auth_required: false
+    description: Home page with best sellers and categories
+  - path: /products
+    file: app/(store)/products/page.tsx
+    auth_required: false
+    description: Product listing and search/filter
+  - path: /products/[slug]
+    file: app/(store)/products/[slug]/page.tsx
+    auth_required: false
+    description: Product details
+  - path: /cart
+    file: app/cart/page.tsx
+    auth_required: false
+    description: Shopping cart
+  - path: /checkout
+    file: app/checkout/page.tsx
+    auth_required: true
+    description: Checkout with Stripe
+features:
+  - name: Authentication
+    description: User authentication using Clerk
+    files:
+      - app/layout.tsx
+      - components/layout/Navbar.tsx
+    entry_route: /
+    user_interactions:
+      - Click Sign In button
+      - Complete Clerk sign in flow
+    api_calls: []
+    auth_required: false
+  - name: Browse Products
+    description: View and search products
+    files:
+      - app/(store)/products/page.tsx
+      - components/products/SidebarFilters.tsx
+    entry_route: /products
+    user_interactions:
+      - Type in search box
+      - Click on product category
+      - View product list
+    api_calls: []
+    auth_required: false
+  - name: Shopping Cart
+    description: Add products to cart and manage cart items
+    files:
+      - store/cartStore.ts
+      - components/layout/Navbar.tsx
+    entry_route: /products
+    user_interactions:
+      - Click "Add to Cart" button on product
+      - Open cart dropdown/page
+      - Change item quantities
+    api_calls: []
+    auth_required: false
+known_limitations: []
