@@ -7,6 +7,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:zego_express_engine/zego_express_engine.dart';
 import 'core/services/zego_call_service.dart';
 
 import 'patient/screens/splash_screen.dart';
@@ -77,42 +79,44 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
   await _loadArabicFonts();
   await AppConfig.tryLoadDotEnvForLocalDev();
-  await _initializeFirebase();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
+  // ── Backend Initializations with Timeout ──
+  debugPrint('🚀 Starting Patient backend initialization...');
   try {
-    await Supabase.initialize(
-      url: AppConfig.supabaseUrl,
-      anonKey: AppConfig.supabaseAnonKey,
-    );
-  } catch (e) {
-    debugPrint('Supabase init error: $e');
-  }
+    final List<Future<dynamic>> initFutures = [
+      _initializeFirebase().then((_) {
+        try {
+          FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+        } catch (e) {
+          debugPrint('⚠️ Error registering Firebase background message handler: $e');
+        }
+      }),
+      initializeDateFormatting('ar', null),
+      Supabase.initialize(
+        url: AppConfig.supabaseUrl,
+        anonKey: AppConfig.supabaseAnonKey,
+      ).then((_) => debugPrint('✅ Supabase initialized (Patient App)')),
+    ];
 
-  // ✅ ZegoCallService: تسجيل دخول المريض (Android/iOS فقط)
-  // على Windows/Desktop لا نهيّئ Zego (غير مدعوم) — تُستعمل Jitsi.
-  // يُستدعى بعد Supabase.initialize() مباشرةً
-  if (ZegoCallService.isSupportedPlatform) {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user != null) {
-      await ZegoCallService.instance.onUserLogin(
-        user.id,
-        'مريض BioPara',
-      );
+    if (ZegoCallService.isSupportedPlatform) {
+      final appID = int.tryParse(AppConfig.zegoAppId) ?? 0;
+      final appSign = AppConfig.zegoAppSign;
+      if (appID != 0 && appSign.isNotEmpty) {
+        initFutures.add(
+          ZegoExpressEngine.createEngineWithProfile(
+            ZegoEngineProfile(appID, ZegoScenario.StandardVideoCall,
+                appSign: appSign),
+          ).then((_) => debugPrint('✅ [Patient] ZegoExpressEngine initialized')),
+        );
+      } else {
+        debugPrint('⚠️ [Patient] Zego AppID/AppSign missing — check .env');
+      }
     }
 
-    // الاستماع لتغييرات المصادقة مستقبلاً
-    Supabase.instance.client.auth.onAuthStateChange.listen((event) async {
-      if (event.event == AuthChangeEvent.signedIn &&
-          event.session?.user != null) {
-        await ZegoCallService.instance.onUserLogin(
-          event.session!.user.id,
-          'مريض BioPara',
-        );
-      } else if (event.event == AuthChangeEvent.signedOut) {
-        await ZegoCallService.instance.onUserLogout();
-      }
-    });
+    await Future.wait(initFutures).timeout(const Duration(seconds: 3));
+    debugPrint('✅ All Patient backend services initialized successfully or timed out.');
+  } catch (e) {
+    debugPrint('⚠️ Patient backend initialization timed out or encountered an error: $e');
   }
 
   // ProviderScope مباشرةً — بدون EasyLocalization (التطبيق عربي ثابت)

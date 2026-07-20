@@ -151,6 +151,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         await ZegoCallService.instance.onUserLogin(
           ZegoCallService.adminUserId,    // 'biopara_admin'
           ZegoCallService.adminUserName,  // 'المستشار الروحاني'
+          isAdminMode: true,
         );
       }
       // is_admin = true -> AdminAuthWrapper handles routing automatically

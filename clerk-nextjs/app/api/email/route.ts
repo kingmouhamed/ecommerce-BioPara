@@ -39,20 +39,26 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const body = await request.json();
+    // `type` selects the email template; remaining fields are forwarded to the handler
     const { type, ...data } = body;
 
     let result;
 
+    // Each case delegates to a dedicated helper that fetches any needed order data
+    // from Supabase and calls the correct EmailService method
     switch (type) {
       case 'order_confirmation':
+        // Fetches full order + user from `order_summary` view, then emails the customer
         result = await sendOrderConfirmation(data);
         break;
 
       case 'shipping_confirmation':
+        // Same as order_confirmation but uses the shipping template + tracking info
         result = await sendShippingConfirmation(data);
         break;
 
       case 'password_reset':
+        // Direct call — no DB lookup needed, all data comes from the request body
         result = await sendPasswordReset(data);
         break;
 
@@ -65,6 +71,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'refund_confirmation':
+        // Fetches order to get customer email; refundAmount comes from the request body
         result = await sendRefundConfirmation(data);
         break;
 
@@ -73,10 +80,12 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'abandoned_cart':
+        // cartItems and cartTotal are passed in the request — not fetched from DB
         result = await sendAbandonedCartReminder(data);
         break;
 
       case 'contact_notification':
+        // Sends a notification to the admin (not the customer)
         result = await sendContactNotification(data);
         break;
 
@@ -111,7 +120,7 @@ export async function POST(request: NextRequest) {
 async function sendOrderConfirmation(data: { orderId: string }) {
   const { orderId } = data;
 
-  // Get order details
+  // `order_summary` is a Supabase view that joins orders + shipping + user data
   const { data: order } = await supabaseAdmin
     .from('order_summary')
     .select(`

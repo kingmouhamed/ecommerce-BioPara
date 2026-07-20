@@ -1,17 +1,30 @@
 // lib/patient/screens/call_overlay.dart
 // ═══════════════════════════════════════════════════════════
-//  BioPara — نظام مكالمات حقيقي (صوت + فيديو) مثل WhatsApp
-//  يعتمد على Jitsi Meet للصوت/الفيديو الفعلي عبر WebRTC
+//  BioPara — شاشة إشارة المكالمة (رنين / واردة / نشطة)
+//
+//  منطق الوسائط:
+//    • Mobile (Android/iOS): عند القبول → pushReplacement إلى CallScreen
+//      → ZegoUIKitPrebuiltCall يتكفل بـ room/streams/UI كاملاً
+//      → onCallEnd callback يُرسل Supabase call_end عند الإغلاق
+//    • Desktop (Windows):    ZegoExpressEngine مباشرة
+//      → createEngineWithProfile → loginRoom → startPublishingStream
+//      → onRoomStreamUpdate(Add) → startPlayingStream للصوت الوارد
+//      → onRoomStreamUpdate(Delete) → stopPlayingStream + إنهاء المكالمة تلقائياً
 // ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart'; // HapticFeedback
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:zego_express_engine/zego_express_engine.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'dart:async';
 
-import 'call_bridge.dart' as call_bridge;
-import 'jitsi_call_screen.dart';
+import '../../core/config/app_config.dart';
+import '../../core/services/zego_call_service.dart';
+import 'call_screen.dart';
 
 enum CallMode { outgoing, incoming, active }
 
@@ -37,35 +50,60 @@ class CallOverlay extends StatefulWidget {
   State<CallOverlay> createState() => _CallOverlayState();
 }
 
-class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStateMixin {
+class _CallOverlayState extends State<CallOverlay>
+    with SingleTickerProviderStateMixin {
   late CallMode _mode;
   bool _isMuted = false;
   bool _isVideoOff = false;
-  bool _jitsiStarted = false;
+  bool _isSpeakerMuted = false;
 
-  // Timer for active call duration
+  // ── Ringing ─────────────────────────────────────────────
+  final _ringtonePlayer = FlutterRingtonePlayer();
+  Timer? _ringTimer;
+
+
+  // ── Zego desktop state ───────────────────────────────────
+  bool _inZegoRoom = false;
+  bool _zegoEngineCreatedByUs = false;
+  // Tracks active remote stream IDs so we can stop them on leave
+  // and detect when the remote party has disconnected.
+  final Set<String> _remoteStreamIds = {};
+
+  // Sanitized Zego IDs — computed once in initState
+  late final String _zegoRoomId;
+  late final String _zegoUserId;
+  late final String _zegoStreamId;
+
+  // ── Call UI timers ───────────────────────────────────────
   Timer? _durationTimer;
   int _durationSecs = 0;
-
-  // Polling timer — fallback in case realtime misses the event
   Timer? _pollTimer;
-
-  // Timeout for unanswered outgoing calls (60 seconds)
   Timer? _ringTimeout;
 
-  // Animation controller for pulsing calling avatar
   late AnimationController _pulseController;
 
-  // Supabase instance and real-time subscription
   final _supabase = Supabase.instance.client;
   RealtimeChannel? _channel;
 
   bool _disposed = false;
 
+  // ─────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
     _mode = widget.initialMode;
+
+    // Sanitize IDs: Zego only allows [a-zA-Z0-9_-]
+    _zegoRoomId = widget.callId.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+    // ⚠️ FIX: Always use the hardcoded adminUserId for the admin stream so
+    // the patient side can deterministically resolve it.
+    // If this overlay is shown on the patient side (incoming from admin),
+    // the patient's own userId is used — but in practice CallOverlay is only
+    // used for the admin (Windows) and the patient fallback overlay.
+    // Using currentUser?.id here would produce a different streamID every
+    // session and cause a permanent stream mismatch.
+    _zegoUserId = ZegoCallService.adminUserId; // always 'biopara_admin'
+    _zegoStreamId = '${_zegoRoomId}_$_zegoUserId';
 
     _pulseController = AnimationController(
       vsync: this,
@@ -74,10 +112,14 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
     if (_mode == CallMode.active) {
       _startDurationTimer();
-      _launchJitsi();
+      _onCallActive();
     }
 
-    // ── Auto-cancel outgoing calls after 60s with no answer ──
+    // ── Start ringing immediately ─────────────────────────
+    if (_mode == CallMode.incoming || _mode == CallMode.outgoing) {
+      _startRinging();
+    }
+
     if (_mode == CallMode.outgoing) {
       _ringTimeout = Timer(const Duration(seconds: 60), () {
         if (mounted && !_disposed && _mode == CallMode.outgoing) {
@@ -86,7 +128,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
       });
     }
 
-    // ── Realtime: listen for call state changes ──
     _channel = _supabase
         .channel('call_state_${widget.callId}')
         .onPostgresChanges(
@@ -102,26 +143,24 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
         );
     _channel?.subscribe();
 
-    // ── Polling fallback (every 2s) — handles missed realtime events ──
     if (_mode != CallMode.active) {
-      _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) => _pollCallStatus());
+      _pollTimer =
+          Timer.periodic(const Duration(seconds: 2), (_) => _pollCallStatus());
     }
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Handle incoming call event (realtime or poll)
-  // ────────────────────────────────────────────────────────────
+  // ── Supabase Signaling ───────────────────────────────────
+
   void _handleCallEvent(Map<String, dynamic> msg) {
     if (_disposed || !mounted) return;
     final type = msg['message_type'] as String? ?? '';
 
-    // Check call_id from metadata (primary) or content (fallback)
     final rawMeta = msg['metadata'];
-    final metadata = rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{};
+    final metadata =
+        rawMeta is Map<String, dynamic> ? rawMeta : <String, dynamic>{};
     final callIdFromMeta = metadata['call_id'] as String? ?? '';
     final content = msg['content'] as String? ?? '';
 
-    // Only process events for THIS call
     if (callIdFromMeta != widget.callId && content != widget.callId) return;
 
     if (type == 'call_accept' && _mode != CallMode.active) {
@@ -129,18 +168,16 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
       _ringTimeout?.cancel();
       setState(() => _mode = CallMode.active);
       _startDurationTimer();
-      _launchJitsi();
-    } else if (type == 'call_decline' || type == 'call_cancel' || type == 'call_end') {
+      _onCallActive();
+    } else if (type == 'call_decline' ||
+        type == 'call_cancel' ||
+        type == 'call_end') {
       _pollTimer?.cancel();
       _ringTimeout?.cancel();
-      _endJitsi();
       _exit();
     }
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Poll Supabase for latest call status (fallback)
-  // ────────────────────────────────────────────────────────────
   Future<void> _pollCallStatus() async {
     if (_disposed || !mounted || _mode == CallMode.active) return;
     try {
@@ -148,16 +185,17 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
           .from('messages')
           .select('message_type, content, metadata')
           .eq('conversation_id', widget.conversationId)
-          .inFilter('message_type', ['call_accept', 'call_decline', 'call_cancel', 'call_end'])
+          .inFilter('message_type',
+              ['call_accept', 'call_decline', 'call_cancel', 'call_end'])
           .order('created_at', ascending: false)
           .limit(5);
 
       if (rows.isEmpty) return;
 
-      // Find the event matching our callId (check metadata.call_id or content)
       for (final row in rows) {
         final meta = row['metadata'];
-        final metaMap = meta is Map<String, dynamic> ? meta : <String, dynamic>{};
+        final metaMap =
+            meta is Map<String, dynamic> ? meta : <String, dynamic>{};
         final callIdFromMeta = metaMap['call_id'] as String? ?? '';
         final content = row['content'] as String? ?? '';
         if (callIdFromMeta == widget.callId || content == widget.callId) {
@@ -168,61 +206,42 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     } catch (_) {}
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Jitsi Meet — real audio/video via JS bridge
-  // ────────────────────────────────────────────────────────────
-  // اسم غرفة Jitsi — مشتق من callId، متطابق عند الطرفين (مريض/مسؤول)
-  String get _roomName => 'biopara-${widget.callId.replaceAll('-', '')}';
+  // ── Ringing ───────────────────────────────────────────────
 
-  void _launchJitsi() {
-    // على غير المتصفح (Windows/موبايل) الوسائط تُعرض عبر JitsiCallScreen
-    // المضمّنة في build()، فلا حاجة لجسر الـ JS هنا.
-    if (!kIsWeb || _jitsiStarted) return;
-    _jitsiStarted = true;
-
-    // Register JS callback for when Jitsi ends
-    call_bridge.setJitsiCallEndedCallback(() {
-      if (mounted && !_disposed) _endCall();
+  /// Plays the device system ringtone (incoming) or notification tone (outgoing)
+  /// on a loop, and triggers periodic haptic feedback on Android.
+  /// On Windows this silently does nothing (platform not supported).
+  void _startRinging() {
+    if (ZegoCallService.isSupportedPlatform) {
+      // Android / iOS: use the native system ringtone
+      if (_mode == CallMode.incoming) {
+        _ringtonePlayer.playRingtone(looping: true, asAlarm: false);
+      } else {
+        // Outgoing: softer repeated notification tone
+        _ringtonePlayer.playNotification(looping: true);
+      }
+    }
+    // Immediate first vibration pulse then repeat every 3 s.
+    // HapticFeedback.vibrate() is silently ignored on platforms that
+    // don't support it (e.g. Windows), so no platform guard needed.
+    HapticFeedback.vibrate();
+    _ringTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted && (_mode == CallMode.incoming || _mode == CallMode.outgoing)) {
+        HapticFeedback.vibrate();
+      }
     });
+  }
 
-    final displayName = widget.name;
-    final isVideo = widget.isVideo;
-
-    try {
-      call_bridge.startJitsiCall(_roomName, displayName, isVideo);
-    } catch (e) {
-      debugPrint('⚠️ Jitsi launch error: $e');
+  /// Stops both the ringtone and the haptic timer.
+  /// Safe to call multiple times.
+  void _stopRinging() {
+    _ringTimer?.cancel();
+    _ringTimer = null;
+    if (ZegoCallService.isSupportedPlatform) {
+      _ringtonePlayer.stop();
     }
   }
 
-  void _endJitsi() {
-    if (!kIsWeb || !_jitsiStarted) return;
-    try {
-      call_bridge.endJitsiCall();
-    } catch (_) {}
-    _jitsiStarted = false;
-  }
-
-  void _toggleJitsiMute() {
-    if (!kIsWeb) return;
-    final newMuted = !_isMuted;
-    setState(() => _isMuted = newMuted);
-    try {
-      call_bridge.muteJitsiAudio(newMuted);
-    } catch (_) {}
-  }
-
-  void _toggleJitsiVideo() {
-    if (!kIsWeb) return;
-    try {
-      call_bridge.toggleJitsiVideo();
-    } catch (_) {}
-    setState(() => _isVideoOff = !_isVideoOff);
-  }
-
-  // ────────────────────────────────────────────────────────────
-  // Timers
-  // ────────────────────────────────────────────────────────────
   void _startDurationTimer() {
     _durationTimer?.cancel();
     _durationSecs = 0;
@@ -231,12 +250,275 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     });
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Cleanup
-  // ────────────────────────────────────────────────────────────
+  // ── Zego Media Management (Desktop) ─────────────────────
+
+  /// Routes to the correct media backend when the call becomes active.
+  ///
+  /// Mobile → CallScreen (ZegoUIKitPrebuiltCall handles everything).
+  /// Desktop → ZegoExpressEngine directly (raw room + stream management).
+  void _onCallActive() {
+    _stopRinging(); // stop before transitioning — covers accept + auto-accept
+    if (!mounted || _disposed) return;
+
+    if (ZegoCallService.isSupportedPlatform) {
+      // ── Mobile path ────────────────────────────────────────
+      // Delegate to an async helper so we can properly await
+      // permission requests before navigating to CallScreen.
+      _activateMobilePath();
+    } else {
+      // ── Desktop path ───────────────────────────────────────
+
+      _joinZegoRoom();
+    }
+  }
+
+  /// Async helper for the mobile path of [_onCallActive].
+  /// Awaits microphone (and camera) permission requests BEFORE navigating
+  /// to [CallScreen], so ZegoExpressEngine can open the audio device
+  /// immediately upon loginRoom + startPublishingStream.
+  Future<void> _activateMobilePath() async {
+    if (!mounted || _disposed) return;
+
+    final user = _supabase.auth.currentUser;
+    final capturedConvId = widget.conversationId;
+    final capturedCallId = widget.callId;
+    final capturedIsVideo = widget.isVideo;
+
+    // ── Android: request permissions BEFORE navigating to CallScreen ────
+    // Must be awaited so the OS dialog is dismissed before ZegoExpressEngine
+    // tries to open the microphone device. Without this, loginRoom +
+    // startPublishingStream silently fail on Android 13+ → no audio.
+    final micStatus = await Permission.microphone.request();
+    debugPrint('🔑 [Patient] Microphone: $micStatus');
+    if (capturedIsVideo) {
+      final camStatus = await Permission.camera.request();
+      debugPrint('🔑 [Patient] Camera: $camStatus');
+    }
+    if (!micStatus.isGranted) {
+      debugPrint(
+        '⚠️ [Patient] Mic DENIED — call will have no audio. '
+        'Go to Settings → App Info → Permissions → Microphone.',
+      );
+    }
+
+    if (!mounted || _disposed) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => CallScreen(
+          callID: capturedCallId,
+          userID: user?.id ?? 'user',
+          userName:
+              user?.userMetadata?['full_name'] as String? ?? 'BioPara مريض',
+          isVideoCall: capturedIsVideo,
+          conversationId: capturedConvId,
+          onCallEnd: () async {},
+        ),
+      ),
+    );
+  }
+
+  Future<void> _joinZegoRoom() async {
+
+    if (_inZegoRoom || _disposed) return;
+
+    final appID = int.tryParse(AppConfig.zegoAppId) ?? 0;
+    final appSign = AppConfig.zegoAppSign;
+    if (appID == 0 || appSign.isEmpty) {
+      debugPrint('⛔ CallOverlay: Zego AppID/AppSign missing — check .env');
+      return;
+    }
+
+    // ── Request mic (+ camera for video) permissions ─────────
+    // On Windows this checks the OS-level privacy setting.
+    // If denied: guide user to Windows Settings → Privacy → Microphone.
+    final permsToRequest = [
+      Permission.microphone,
+      if (widget.isVideo) Permission.camera,
+    ];
+    final statuses = await permsToRequest.request();
+    statuses.forEach((perm, status) {
+      debugPrint('🔑 Permission $perm → $status');
+    });
+    final micGranted = statuses[Permission.microphone]?.isGranted ?? false;
+    if (!micGranted) {
+      debugPrint(
+        '⚠️ Microphone permission not granted. '
+        'On Windows: Settings → Privacy & Security → Microphone → '
+        'enable "Let desktop apps access your microphone".',
+      );
+      // Continue anyway — Zego may still capture audio if OS allows it
+    }
+
+    try {
+      // Desktop: ZegoCallService never creates the engine, so we do it here.
+      if (!ZegoCallService.isSupportedPlatform && !kIsWeb) {
+        await ZegoExpressEngine.createEngineWithProfile(
+          ZegoEngineProfile(
+            appID,
+            ZegoScenario.StandardVideoCall,
+            appSign: appSign,
+          ),
+        );
+        _zegoEngineCreatedByUs = true;
+        debugPrint('🔧 ZegoExpressEngine created (desktop)');
+      }
+
+      // ── Register callbacks BEFORE loginRoom ──────────────────
+      // Room state — useful for debugging connection issues
+      ZegoExpressEngine.onRoomStateUpdate =
+          (roomID, state, errorCode, extendedData) {
+        debugPrint('🏠 Zego room state: $state (err=$errorCode)');
+      };
+
+      // User presence — secondary signal (requires isUserStatusNotify = true)
+      ZegoExpressEngine.onRoomUserUpdate =
+          (roomID, updateType, userList) {
+        debugPrint(
+          '👤 Zego users $updateType in $roomID: '
+          '${userList.map((u) => u.userID).join(", ")}',
+        );
+      };
+
+      // Publisher state — tells us if our mic stream is actually going out
+      ZegoExpressEngine.onPublisherStateUpdate =
+          (streamID, state, errorCode, extendedData) {
+        debugPrint(
+          '📤 Publisher [$streamID]: state=$state, err=$errorCode'
+          '${errorCode != 0 ? " ← CHECK FIREWALL/UDP" : ""}',
+        );
+      };
+
+      // Player state — tells us if we're actually receiving the remote stream
+      ZegoExpressEngine.onPlayerStateUpdate =
+          (streamID, state, errorCode, extendedData) {
+        debugPrint(
+          '📥 Player [$streamID]: state=$state, err=$errorCode'
+          '${errorCode != 0 ? " ← STREAM NOT RECEIVED" : ""}',
+        );
+      };
+
+      // Stream update — primary audio trigger
+      // Add:    startPlayingStream for incoming audio
+      // Delete: stopPlayingStream + auto-end when remote party hangs up
+      ZegoExpressEngine.onRoomStreamUpdate =
+          (roomID, updateType, streamList, extendedData) {
+        if (_disposed) return;
+        debugPrint(
+          '📡 onRoomStreamUpdate [$roomID]: $updateType '
+          '→ ${streamList.map((s) => s.streamID).join(", ")}',
+        );
+
+        if (updateType == ZegoUpdateType.Add) {
+          for (final stream in streamList) {
+            // Skip our own publishing stream
+            if (stream.streamID == _zegoStreamId) continue;
+            _remoteStreamIds.add(stream.streamID);
+            // Pull remote audio — no canvas needed for audio-only
+            ZegoExpressEngine.instance.startPlayingStream(stream.streamID);
+            // Explicitly force audio unmuted (belt-and-suspenders)
+            ZegoExpressEngine.instance
+                .mutePlayStreamAudio(stream.streamID, false);
+            debugPrint('▶️ startPlayingStream + unmuted: ${stream.streamID}');
+          }
+        } else {
+          // ZegoUpdateType.Delete — remote party left or stream stopped
+          for (final stream in streamList) {
+            _remoteStreamIds.remove(stream.streamID);
+            ZegoExpressEngine.instance.stopPlayingStream(stream.streamID);
+            debugPrint('⏹️ stopPlayingStream: ${stream.streamID}');
+          }
+          // All remote streams gone → remote party hung up
+          if (_remoteStreamIds.isEmpty && _inZegoRoom && !_disposed) {
+            _onRemotePartyLeft();
+          }
+        }
+      };
+
+      // ── Login to the Zego room ───────────────────────────────
+      final rawUserName =
+          _supabase.auth.currentUser?.userMetadata?['full_name'] as String? ??
+              ZegoCallService.adminUserName;
+      final zegoUser = ZegoUser(_zegoUserId, rawUserName);
+      // ZegoRoomConfig(maxMemberCount, isUserStatusNotify, token)
+      // isUserStatusNotify = true so onRoomUserUpdate fires
+      final roomConfig = ZegoRoomConfig(0, true, '');
+
+      final loginResult = await ZegoExpressEngine.instance
+          .loginRoom(_zegoRoomId, zegoUser, config: roomConfig);
+      if (loginResult.errorCode != 0) {
+        debugPrint(
+          '❌ Zego loginRoom failed — err=${loginResult.errorCode}. '
+          'Check AppID/AppSign and network.',
+        );
+        return;
+      }
+      _inZegoRoom = true;
+      debugPrint('✅ Zego loginRoom OK — room=$_zegoRoomId');
+
+      // ── Start publishing our audio stream ────────────────────
+      // Explicitly unmute before publishing
+      await ZegoExpressEngine.instance.muteMicrophone(false);
+      // Disable camera for audio-only calls; enable for video calls
+      await ZegoExpressEngine.instance
+          .enableCamera(widget.isVideo && !_isVideoOff);
+      // Begin capturing mic + publishing to the room
+      await ZegoExpressEngine.instance.startPublishingStream(_zegoStreamId);
+      debugPrint('📡 startPublishingStream: $_zegoStreamId');
+    } catch (e) {
+      debugPrint('⚠️ CallOverlay _joinZegoRoom error: $e');
+    }
+  }
+
+  /// Called when the remote party's stream disappears from the Zego room.
+  /// Stops the timer and closes the overlay on the Windows side.
+  void _onRemotePartyLeft() {
+    debugPrint('👋 Remote party left — ending call UI');
+    // Defer to avoid calling Navigator from inside a Zego SDK callback
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _disposed) return;
+      _exit();
+    });
+  }
+
+  Future<void> _leaveZegoRoom() async {
+    if (!_inZegoRoom) return;
+    _inZegoRoom = false;
+
+    // Clear all callbacks immediately to prevent calls into a destroyed state
+    ZegoExpressEngine.onRoomStreamUpdate = null;
+    ZegoExpressEngine.onRoomStateUpdate = null;
+    ZegoExpressEngine.onRoomUserUpdate = null;
+    ZegoExpressEngine.onPublisherStateUpdate = null;
+    ZegoExpressEngine.onPlayerStateUpdate = null;
+
+    try {
+      // Stop playing every tracked remote stream
+      for (final streamId in List<String>.from(_remoteStreamIds)) {
+        await ZegoExpressEngine.instance.stopPlayingStream(streamId);
+      }
+      _remoteStreamIds.clear();
+
+      await ZegoExpressEngine.instance.stopPublishingStream();
+      await ZegoExpressEngine.instance.logoutRoom();
+
+      if (_zegoEngineCreatedByUs) {
+        await ZegoExpressEngine.destroyEngine();
+        _zegoEngineCreatedByUs = false;
+        debugPrint('🗑️ ZegoExpressEngine destroyed');
+      }
+      debugPrint('🔒 Zego room left cleanly');
+    } catch (e) {
+      debugPrint('⚠️ CallOverlay _leaveZegoRoom error: $e');
+    }
+  }
+
+  // ── Lifecycle ────────────────────────────────────────────
+
   void _cleanup() {
     if (_disposed) return;
     _disposed = true;
+    _stopRinging(); // covers cancel, decline, end, dispose, remote-hang-up
+    _leaveZegoRoom(); // fire-and-forget — UI is already gone
     _durationTimer?.cancel();
     _pollTimer?.cancel();
     _ringTimeout?.cancel();
@@ -244,7 +526,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     _pulseController.dispose();
     _channel?.unsubscribe();
     _channel = null;
-    _endJitsi();
   }
 
   void _exit() {
@@ -260,9 +541,7 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     super.dispose();
   }
 
-  // ────────────────────────────────────────────────────────────
-  // Actions
-  // ────────────────────────────────────────────────────────────
+  // ── Supabase Call Actions ────────────────────────────────
 
   Future<void> _cancelCall() async {
     _pollTimer?.cancel();
@@ -288,7 +567,8 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'receiver',
-        'content': widget.isVideo ? 'مكالمة فيديو مرفوضة' : 'مكالمة صوتية مرفوضة',
+        'content':
+            widget.isVideo ? 'مكالمة فيديو مرفوضة' : 'مكالمة صوتية مرفوضة',
         'message_type': 'call_decline',
         'status': 'declined',
         'metadata': {'call_id': widget.callId, 'call_status': 'declined'},
@@ -305,7 +585,8 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'receiver',
-        'content': widget.isVideo ? 'قُبلت مكالمة الفيديو' : 'قُبلت المكالمة الصوتية',
+        'content':
+            widget.isVideo ? 'قُبلت مكالمة الفيديو' : 'قُبلت المكالمة الصوتية',
         'message_type': 'call_accept',
         'status': 'accepted',
         'metadata': {'call_id': widget.callId, 'call_status': 'accepted'},
@@ -314,23 +595,27 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
       if (mounted) {
         setState(() => _mode = CallMode.active);
         _startDurationTimer();
-        _launchJitsi();
+        _onCallActive();
       }
     } catch (e) {
       debugPrint('Accept call error: $e');
     }
   }
 
+  /// Admin (Windows) presses the red End Call button.
+  /// Leaves the Zego room, sends call_end to Supabase, closes overlay.
   Future<void> _endCall() async {
     _pollTimer?.cancel();
-    _endJitsi();
+    // Leave Zego room first to stop audio immediately
+    await _leaveZegoRoom();
     final dur = _fmt(Duration(seconds: _durationSecs));
     try {
       await _supabase.from('messages').insert({
         'id': const Uuid().v4(),
         'conversation_id': widget.conversationId,
         'sender_id': _supabase.auth.currentUser?.id ?? 'user',
-        'content': widget.isVideo ? 'انتهت مكالمة الفيديو' : 'انتهت المكالمة الصوتية',
+        'content':
+            widget.isVideo ? 'انتهت مكالمة الفيديو' : 'انتهت المكالمة الصوتية',
         'message_type': 'call_end',
         'status': 'ended',
         'metadata': {
@@ -339,12 +624,8 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
           'call_duration': dur,
         },
       });
-      // تحديث رسالة الـ call_invite الأصلية لتمييزها كمنتهية
       await _supabase.from('messages').update({
-        'metadata': {
-          'call_status': 'ended',
-          'call_duration': dur,
-        }
+        'metadata': {'call_status': 'ended', 'call_duration': dur},
       }).eq('id', widget.callId);
     } catch (e) {
       debugPrint('End call error: $e');
@@ -352,44 +633,52 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
     _exit();
   }
 
+  // ── Media Controls ───────────────────────────────────────
+
+  void _toggleMute() {
+    setState(() => _isMuted = !_isMuted);
+    if (_inZegoRoom) {
+      ZegoExpressEngine.instance.muteMicrophone(_isMuted);
+    }
+  }
+
+  void _toggleVideo() {
+    setState(() => _isVideoOff = !_isVideoOff);
+    if (_inZegoRoom) {
+      ZegoExpressEngine.instance.enableCamera(!_isVideoOff);
+    }
+  }
+
+  void _toggleSpeaker() {
+    setState(() => _isSpeakerMuted = !_isSpeakerMuted);
+    for (final streamId in _remoteStreamIds) {
+      ZegoExpressEngine.instance.mutePlayStreamAudio(streamId, _isSpeakerMuted);
+    }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────
+
   String _fmt(Duration d) =>
       '${d.inMinutes.toString().padLeft(2, '0')}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
 
-  // ────────────────────────────────────────────────────────────
-  // Build
-  // ────────────────────────────────────────────────────────────
+  // ── Build ────────────────────────────────────────────────
+
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF1E2D20);
     const primaryMid = Color(0xFF2D4A2E);
     const accent = Color(0xFF4CAF78);
 
-    // ── المكالمة النشطة على غير المتصفح (Windows/Desktop + الموبايل) ──
-    // نعرض غرفة Jitsi الحقيقية داخل WebView. الإنهاء يمر عبر _endCall
-    // الذي يكتب call_end في Supabase ثم يغلق هذه الشاشة.
-    if (!kIsWeb && _mode == CallMode.active) {
-      return JitsiCallScreen(
-        room: _roomName,
-        displayName: widget.name,
-        isVideo: widget.isVideo,
-        onHangup: _endCall,
-      );
-    }
-
     return Scaffold(
       backgroundColor: primary,
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              primary,
-              primaryMid,
-              const Color(0xFF1A2E1A),
-            ],
+            colors: [primary, primaryMid, Color(0xFF1A2E1A)],
           ),
         ),
         child: SafeArea(
@@ -397,9 +686,10 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
             children: [
               const SizedBox(height: 56),
 
-              // ── Call Status Badge ──────────────────────────────
+              // ── Call Type Badge ──────────────────────────
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                   color: _mode == CallMode.active
                       ? accent.withValues(alpha: 0.2)
@@ -416,15 +706,20 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      widget.isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-                      color: _mode == CallMode.active ? accent : Colors.white60,
+                      widget.isVideo
+                          ? Icons.videocam_rounded
+                          : Icons.call_rounded,
+                      color:
+                          _mode == CallMode.active ? accent : Colors.white60,
                       size: 14,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       widget.isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
                       style: GoogleFonts.tajawal(
-                        color: _mode == CallMode.active ? accent : Colors.white60,
+                        color: _mode == CallMode.active
+                            ? accent
+                            : Colors.white60,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -435,7 +730,7 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
               const SizedBox(height: 40),
 
-              // ── Avatar Pulsing ──────────────────────────────────
+              // ── Pulsing Avatar ───────────────────────────
               AnimatedBuilder(
                 animation: _pulseController,
                 builder: (context, child) {
@@ -452,7 +747,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                   return Stack(
                     alignment: Alignment.center,
                     children: [
-                      // Outer glow ring
                       if (_mode != CallMode.active)
                         Transform.scale(
                           scale: scale * 1.25,
@@ -462,13 +756,13 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: accent.withValues(alpha: glowOpacity * 0.5),
+                                color: accent
+                                    .withValues(alpha: glowOpacity * 0.5),
                                 width: 2,
                               ),
                             ),
                           ),
                         ),
-                      // Main avatar
                       Transform.scale(
                         scale: scale,
                         child: Container(
@@ -479,7 +773,8 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                             color: Colors.white.withValues(alpha: 0.12),
                             boxShadow: [
                               BoxShadow(
-                                color: accent.withValues(alpha: glowOpacity),
+                                color:
+                                    accent.withValues(alpha: glowOpacity),
                                 blurRadius: glowRadius,
                                 spreadRadius: 4,
                               ),
@@ -487,7 +782,9 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                           ),
                           child: Center(
                             child: Text(
-                              widget.name.isNotEmpty ? widget.name[0].toUpperCase() : '?',
+                              widget.name.isNotEmpty
+                                  ? widget.name[0].toUpperCase()
+                                  : '?',
                               style: TextStyle(
                                 fontSize: 50,
                                 color: Colors.white,
@@ -503,7 +800,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                           ),
                         ),
                       ),
-                      // Active call: green ring
                       if (_mode == CallMode.active)
                         Container(
                           width: 128,
@@ -520,7 +816,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
               const SizedBox(height: 28),
 
-              // ── Name ────────────────────────────────────────────
               Text(
                 widget.name,
                 style: GoogleFonts.cairo(
@@ -533,7 +828,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
 
               const SizedBox(height: 8),
 
-              // ── Status / Timer ──────────────────────────────────
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),
                 child: Text(
@@ -541,71 +835,43 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
                   _mode == CallMode.outgoing
                       ? 'جاري الاتصال...'
                       : _mode == CallMode.incoming
-                          ? (widget.isVideo ? 'مكالمة فيديو واردة...' : 'مكالمة صوتية واردة...')
+                          ? (widget.isVideo
+                              ? 'مكالمة فيديو واردة...'
+                              : 'مكالمة صوتية واردة...')
                           : _fmt(Duration(seconds: _durationSecs)),
                   style: GoogleFonts.tajawal(
                     fontSize: 16,
-                    color: _mode == CallMode.active
-                        ? accent
-                        : Colors.white54,
+                    color:
+                        _mode == CallMode.active ? accent : Colors.white54,
                     fontWeight: FontWeight.w500,
                     letterSpacing: _mode == CallMode.active ? 2.0 : 0.0,
                   ),
                 ),
               ),
 
-              // ── Signal quality dots (cosmetic) ──────────────────
               if (_mode == CallMode.active)
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(4, (i) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      width: 4,
-                      height: 4 + i * 2.0,
-                      decoration: BoxDecoration(
-                        color: accent.withValues(alpha: 0.6 + i * 0.1),
-                        borderRadius: BorderRadius.circular(2),
+                    children: List.generate(
+                      4,
+                      (i) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        width: 4,
+                        height: 4 + i * 2.0,
+                        decoration: BoxDecoration(
+                          color:
+                              accent.withValues(alpha: 0.6 + i * 0.1),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
-                    )),
+                    ),
                   ),
                 ),
 
               const Spacer(),
 
-              // ── Info banner for Jitsi (active call) ─────────────
-              if (_mode == CallMode.active && kIsWeb)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 32),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: accent.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.open_in_new, color: accent, size: 14),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'تم فتح نافذة المكالمة — تحدث في نافذة Jitsi المفتوحة',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.tajawal(
-                            color: accent,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              // ── Control buttons ──────────────────────────────────
               Padding(
                 padding: const EdgeInsets.only(bottom: 56),
                 child: _buildControls(accent),
@@ -618,7 +884,6 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
   }
 
   Widget _buildControls(Color accent) {
-    // OUTGOING: cancel
     if (_mode == CallMode.outgoing) {
       return Column(
         children: [
@@ -639,74 +904,74 @@ class _CallOverlayState extends State<CallOverlay> with SingleTickerProviderStat
       );
     }
 
-    // INCOMING: accept + decline
     if (_mode == CallMode.incoming) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Column(
-            children: [
-              _CircleBtn(
-                icon: widget.isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-                label: 'قبول',
-                color: const Color(0xFF43A047),
-                size: 72,
-                iconSize: 32,
-                onTap: _acceptCall,
-              ),
-            ],
+          _CircleBtn(
+            icon: widget.isVideo
+                ? Icons.videocam_rounded
+                : Icons.call_rounded,
+            label: 'قبول',
+            color: const Color(0xFF43A047),
+            size: 72,
+            iconSize: 32,
+            onTap: _acceptCall,
           ),
-          Column(
-            children: [
-              _CircleBtn(
-                icon: Icons.call_end_rounded,
-                label: 'رفض',
-                color: const Color(0xFFE53935),
-                size: 72,
-                iconSize: 32,
-                onTap: _declineCall,
-              ),
-            ],
+          _CircleBtn(
+            icon: Icons.call_end_rounded,
+            label: 'رفض',
+            color: const Color(0xFFE53935),
+            size: 72,
+            iconSize: 32,
+            onTap: _declineCall,
           ),
         ],
       );
     }
 
-    // ACTIVE CALL: mute + end + speaker/video
-    return Column(
+    // ACTIVE CALL controls
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _CircleBtn(
-              icon: _isMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
-              label: _isMuted ? 'رفع الكتم' : 'كتم',
-              isActive: _isMuted,
-              onTap: _toggleJitsiMute,
-            ),
-            _CircleBtn(
-              icon: Icons.call_end_rounded,
-              label: 'إنهاء',
-              color: const Color(0xFFE53935),
-              size: 72,
-              iconSize: 32,
-              onTap: _endCall,
-            ),
-            if (widget.isVideo)
-              _CircleBtn(
-                icon: _isVideoOff ? Icons.videocam_off_rounded : Icons.videocam_rounded,
-                label: _isVideoOff ? 'تشغيل كاميرا' : 'إيقاف كاميرا',
-                isActive: _isVideoOff,
-                onTap: _toggleJitsiVideo,
-              ),
-          ],
+        _CircleBtn(
+          icon: _isMuted ? Icons.mic_off_rounded : Icons.mic_rounded,
+          label: _isMuted ? 'رفع الكتم' : 'كتم',
+          isActive: _isMuted,
+          onTap: _toggleMute,
         ),
+        _CircleBtn(
+          icon: Icons.call_end_rounded,
+          label: 'إنهاء',
+          color: const Color(0xFFE53935),
+          size: 72,
+          iconSize: 32,
+          onTap: _endCall,
+        ),
+        if (widget.isVideo)
+          _CircleBtn(
+            icon: _isVideoOff
+                ? Icons.videocam_off_rounded
+                : Icons.videocam_rounded,
+            label: _isVideoOff ? 'تشغيل كاميرا' : 'إيقاف كاميرا',
+            isActive: _isVideoOff,
+            onTap: _toggleVideo,
+          )
+        else
+          _CircleBtn(
+            icon: _isSpeakerMuted
+                ? Icons.volume_off_rounded
+                : Icons.volume_up_rounded,
+            label: _isSpeakerMuted ? 'صوت مكتوم' : 'سماعة',
+            isActive: !_isSpeakerMuted,
+            onTap: _toggleSpeaker,
+          ),
       ],
     );
   }
 }
 
-// ─── Reusable Circle Button ─────────────────────────────────
+// ─── Reusable Circle Button ──────────────────────────────────
 class _CircleBtn extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -729,8 +994,8 @@ class _CircleBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const activeColor = Color(0xFF4CAF78);
-    final bgColor = color ?? (isActive ? activeColor : Colors.white.withValues(alpha: 0.12));
-    final iconColor = color != null ? Colors.white : (isActive ? Colors.white : Colors.white);
+    final bgColor = color ??
+        (isActive ? activeColor : Colors.white.withValues(alpha: 0.12));
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -765,7 +1030,7 @@ class _CircleBtn extends StatelessWidget {
                   ),
               ],
             ),
-            child: Icon(icon, color: iconColor, size: iconSize),
+            child: Icon(icon, color: Colors.white, size: iconSize),
           ),
         ),
         const SizedBox(height: 8),

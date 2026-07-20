@@ -93,44 +93,59 @@ void main() async {
 
   await AppConfig.tryLoadDotEnvForLocalDev();
 
-  // ── Firebase init (needed for push call notifications) ──
-  await _initializeFirebase();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  // ── Backend Initializations with Timeout ──
+  debugPrint('🚀 Starting Admin backend initialization...');
   try {
-    await Supabase.initialize(
-      url: AppConfig.supabaseUrl,
-      anonKey: AppConfig.supabaseAnonKey,
-    );
-    debugPrint('✅ Supabase initialized (Admin App)');
-    
-    // ── Check Database Schema (debug only) ───────────────────
-    if (kDebugMode) await debugCheckSchema();
-    // ──────────────────────────────────────────────────────────
+    final List<Future<dynamic>> initFutures = [
+      _initializeFirebase().then((_) {
+        try {
+          FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+        } catch (e) {
+          debugPrint('⚠️ Error registering Firebase background message handler: $e');
+        }
+      }),
+      Supabase.initialize(
+        url: AppConfig.supabaseUrl,
+        anonKey: AppConfig.supabaseAnonKey,
+      ).then((_) {
+        debugPrint('✅ Supabase initialized (Admin App)');
+        if (kDebugMode) {
+          debugCheckSchema().catchError((err) {
+            debugPrint('⚠️ Schema check failed: $err');
+          });
+        }
+      }),
+    ];
+
+    if (ZegoCallService.isSupportedPlatform) {
+      initFutures.add(
+        ZegoCallService.instance.onUserLogin(
+          ZegoCallService.adminUserId,
+          ZegoCallService.adminUserName,
+          isAdminMode: true,
+        ).then((_) {
+          // الاستماع لتغييرات المصادقة (logout فقط)
+          Supabase.instance.client.auth.onAuthStateChange.listen((event) async {
+            if (event.event == AuthChangeEvent.signedOut) {
+              await ZegoCallService.instance.onUserLogout();
+            }
+          });
+        }),
+      );
+    }
+
+    await Future.wait(initFutures).timeout(const Duration(seconds: 3));
+    debugPrint('✅ All Admin backend services initialized successfully or timed out.');
   } catch (e) {
-    debugPrint('❌ Supabase init error: $e');
+    debugPrint('⚠️ Admin backend initialization timed out or encountered an error: $e');
   }
 
-  // ✅ ZegoCallService: الأدمن يسجّل بالـ adminUserId الثابت (Android/iOS فقط)
-  // على Windows/Desktop لا نهيّئ Zego (غير مدعوم ويسبب كراش) — تُستعمل Jitsi.
-  // حاسم: يجب أن يتطابق مع targetId الذي يستهدفه المريض في chat_screen
-  if (ZegoCallService.isSupportedPlatform) {
-    await ZegoCallService.instance.onUserLogin(
-      ZegoCallService.adminUserId,    // 'biopara_admin' — ثابت ومتطابق مع جهة المريض
-      ZegoCallService.adminUserName,  // 'المستشار الروحاني'
-    );
-
-    // الاستماع لتغييرات المصادقة (logout فقط)
-    Supabase.instance.client.auth.onAuthStateChange.listen((event) async {
-      if (event.event == AuthChangeEvent.signedOut) {
-        await ZegoCallService.instance.onUserLogout();
-      }
-    });
+  // تتبّع منصة الأدمن — يعمل على جميع المنصات.
+  try {
+    AdminPresenceService.instance.startTracking();
+  } catch (e) {
+    debugPrint('⚠️ Error starting AdminPresence tracking: $e');
   }
-
-  // تتبّع منصة الأدمن (mobile/windows) لتوجيه المكالمات الهجين —
-  // يعمل على جميع المنصات بما فيها Windows.
-  AdminPresenceService.instance.startTracking();
 
   runApp(
     EasyLocalization(

@@ -52,18 +52,29 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppConfig.tryLoadDotEnvForLocalDev();
-  await _initializeFirebase();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await initializeDateFormatting('ar', null);
 
+  // ── Backend Initializations with Timeout ──
+  debugPrint('🚀 Starting Default app backend initialization...');
   try {
-    await Supabase.initialize(
-      url: AppConfig.supabaseUrl,
-      anonKey: AppConfig.supabaseAnonKey,
-    );
-    debugPrint('✅ Supabase initialized successfully.');
+    final List<Future<dynamic>> initFutures = [
+      _initializeFirebase().then((_) {
+        try {
+          FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+        } catch (e) {
+          debugPrint('⚠️ Error registering Firebase background message handler: $e');
+        }
+      }),
+      initializeDateFormatting('ar', null),
+      Supabase.initialize(
+        url: AppConfig.supabaseUrl,
+        anonKey: AppConfig.supabaseAnonKey,
+      ).then((_) => debugPrint('✅ Supabase initialized successfully.')),
+    ];
+
+    await Future.wait(initFutures).timeout(const Duration(seconds: 3));
+    debugPrint('✅ All Default app backend services initialized successfully or timed out.');
   } catch (e) {
-    debugPrint('❌ Supabase init error: $e');
+    debugPrint('⚠️ Default app backend initialization timed out or encountered an error: $e');
   }
 
   runApp(const ProviderScope(child: BioParaSpiritualApp()));

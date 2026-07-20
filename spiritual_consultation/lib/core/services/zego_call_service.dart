@@ -4,6 +4,7 @@
 //  مسؤول عن: تهيئة خدمة الدعوات، ربط المستخدم، الـ IDs الموحدة
 // ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform;
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
@@ -23,9 +24,7 @@ class ZegoCallService {
   static const String adminUserId = 'biopara_admin';
   static const String adminUserName = 'المستشار الروحاني';
 
-  /// Zego (المكالمات الأصلية) مدعوم فقط على Android/iOS.
-  /// على Windows/Desktop/Web يجب عدم تهيئته (يسبب أعطالاً عند الإقلاع)،
-  /// وتُستعمل مكالمات Jitsi عبر WebView بدلاً منه (انظر CallOverlay).
+  /// Zego مدعوم فقط على Android/iOS — لا يعمل على Windows/Desktop/Web.
   static bool get isSupportedPlatform =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
@@ -34,11 +33,37 @@ class ZegoCallService {
   bool _initialized = false;
 
   /// تُستدعى **مرة وحدة** بعد تسجيل دخول المستخدم بنجاح.
-  /// [userId]   = معرّف فريد للمستخدم (Supabase auth uid للمريض، أو adminUserId للأدمن).
-  /// [userName] = الاسم المعروض للطرف الآخر.
-  Future<void> onUserLogin(String userId, String userName) async {
+  /// [userId]      = معرّف فريد للمستخدم (Supabase auth uid للمريض، أو adminUserId للأدمن).
+  /// [userName]    = الاسم المعروض للطرف الآخر.
+  /// [isAdminMode] = true للأدمن (يُفعّل ZegoUIKitPrebuiltCallInvitationService).
+  ///                 false للمريض — يتجاهل PrebuiltService تمامًا لأن
+  ///                 call_screen_mobile.dart يستخدم ZegoExpressEngine مباشرةً.
+  ///
+  /// ⚠️ WHY this matters:
+  ///   ZegoUIKitPrebuiltCallInvitationService internally re-registers
+  ///   ZegoExpressEngine.onRoomStreamUpdate / onPublisherStateUpdate /
+  ///   onPlayerStateUpdate — overwriting the callbacks set by
+  ///   call_screen_mobile.dart, which causes remote streams to be silently
+  ///   dropped and the mic to stay muted. NEVER call this with isAdminMode=false
+  ///   on a device that also uses the raw engine directly.
+  Future<void> onUserLogin(
+    String userId,
+    String userName, {
+    bool isAdminMode = false,
+  }) async {
     // تنظيف الـ userID (Zego كيقبل غير alphanumeric + بعض الرموز)
     final safeUserId = userId.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '_');
+
+    // ⚠️ FIX: Patient app uses ZegoExpressEngine directly in call_screen_mobile.
+    // Do NOT initialize ZegoUIKitPrebuiltCallInvitationService for the patient —
+    // it would hijack the engine callbacks and silence the audio streams.
+    if (!isAdminMode) {
+      debugPrint(
+        'ℹ️ ZegoCallService: Patient mode — skipping PrebuiltCallInvitationService '
+        '(patient uses ZegoExpressEngine directly). userID=$safeUserId',
+      );
+      return;
+    }
 
     if (_initialized) {
       debugPrint('ℹ️ ZegoCallService: مسجّل مسبقاً — تجاهل');
@@ -67,8 +92,6 @@ class ZegoCallService {
 
         // حاسم: يضمن وصول الدعوة وإظهار شاشة "مكالمة واردة" (قبول/رفض)
         // عند الطرف الآخر حتى لو كان التطبيق في الخلفية أو مُغلقاً.
-        // بدون هذا السطر تتصل المكالمة بلا أن تظهر شاشة القبول/الرفض.
-        notifyWhenAppRunningInBackgroundOrQuit: true,
 
         // ── إعداد الإشعارات ──
         notificationConfig: ZegoCallInvitationNotificationConfig(
@@ -122,12 +145,12 @@ class ZegoCallService {
             defaultAction.call();
           },
         ),
-      );
+      ).timeout(const Duration(seconds: 3));
 
       _initialized = true;
       debugPrint('✅ ZegoCallService: تم التسجيل بنجاح — userID=$safeUserId');
     } catch (e) {
-      debugPrint('⚠️ ZegoCallService: خطأ في التسجيل — $e');
+      debugPrint('⚠️ ZegoCallService: خطأ في التسجيل أو انتهت المهلة — $e');
     }
   }
 

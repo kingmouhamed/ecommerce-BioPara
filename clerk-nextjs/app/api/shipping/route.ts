@@ -21,13 +21,14 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
+    // `action` selects the shipping operation; each branch validates its own schema
     const { action, ...data } = body;
 
     let result;
 
     switch (action) {
       case 'get_rates':
-        // Validate shipping request
+        // Validates weight + dimensions + destination against shippingRateRequestSchema (Zod)
         const validation = validateSchema(shippingRateRequestSchema, data);
 
         if (!validation.success) {
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'create_shipment':
-        // Validate shipment creation request
+        // Minimal validation — rate and request objects are passed through to the shipping carrier API
         const shipmentValidation = validateSchema(z.object({
           rate: z.any(),
           request: z.any(),
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'track_shipment':
-        // Validate tracking request
+        // Requires both tracking_number and carrier to query the correct carrier API
         const trackingValidation = validateSchema(z.object({
           tracking_number: z.string(),
           carrier: z.string(),
@@ -115,6 +116,7 @@ export async function GET(request: NextRequest) {
     const shippingService = ShippingService.getInstance();
     let rates = [];
 
+    // Route to the correct rate calculator based on destination country
     if (country === 'domestic') {
       rates = await shippingService.calculateDomesticRates(weight, { length, width, height });
     } else {

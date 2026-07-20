@@ -1,13 +1,8 @@
 // lib/admin/widgets/admin_call_listener.dart
 // ═══════════════════════════════════════════════════════════
 //  BioPara — مستمع المكالمات العام لتطبيق المسؤول (Windows/سطح المكتب)
-//
-//  يلتقط أي دعوة مكالمة (call_invite) واردة من المرضى عبر Supabase،
-//  مهما كانت الشاشة الحالية (Dashboard, Products, Reports...)، ويعرض
-//  CallOverlay (شاشة قبول/رفض) فوق كل شيء.
-//
-//  لا يعمل على الموبايل: هناك ZegoCloud يتكفّل بالاستقبال العام أصلاً،
-//  وشاشة المحادثة تتكفّل بحالة Jitsi النادرة. هذا يمنع ازدواج العرض.
+//  يلتقط دعوات call_invite عبر Supabase ويعرض CallOverlay للقبول/الرفض.
+//  على الموبايل: ZegoCloud يتكفّل بالاستقبال مباشرةً.
 // ═══════════════════════════════════════════════════════════
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

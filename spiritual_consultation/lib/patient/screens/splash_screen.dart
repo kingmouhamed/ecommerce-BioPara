@@ -101,29 +101,45 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 2800));
-    if (!mounted) return;
+    try {
+      await Future.delayed(const Duration(milliseconds: 2800));
+      if (!mounted) return;
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
-    final prefs = await SharedPreferences.getInstance();
-    final seenOnboarding = prefs.getBool('seen_onboarding') ?? false;
+      bool seenOnboarding = false;
+      try {
+        final prefs = await SharedPreferences.getInstance().timeout(const Duration(seconds: 2));
+        seenOnboarding = prefs.getBool('seen_onboarding') ?? false;
+      } catch (e) {
+        debugPrint('⚠️ SplashScreen: Error or timeout loading SharedPreferences: $e');
+      }
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    // أوقف كل المتحركات قبل الانتقال
-    _pulseCtrl.stop();
-    _rotateCtrl.stop();
-    _introCtrl.stop();
+      // أوقف كل المتحركات قبل الانتقال
+      _pulseCtrl.stop();
+      _rotateCtrl.stop();
+      _introCtrl.stop();
 
-    // انتقال بسيط بدون FadeTransition مخصص (يتجنب _dependents.isEmpty)
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => seenOnboarding
-            ? const PatientAuthWrapper()
-            : const OnboardingScreen(),
-      ),
-    );
+      // انتقال بسيط بدون FadeTransition مخصص (يتجنب _dependents.isEmpty)
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => seenOnboarding
+              ? const PatientAuthWrapper()
+              : const OnboardingScreen(),
+        ),
+      );
+    } catch (e) {
+      debugPrint('⚠️ SplashScreen critical navigation error: $e');
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const OnboardingScreen(),
+          ),
+        );
+      }
+    }
   }
 
   @override

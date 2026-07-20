@@ -89,16 +89,19 @@ export async function POST(request: NextRequest) {
   try {
     // Parse request body
     const body = await request.json();
+    // `action` routes the request to the correct cart operation; rest of body is passed as `data`
     const { action, ...data } = body;
 
     let result;
 
+    // Single POST endpoint handles all cart mutations via an explicit `action` field
     switch (action) {
       case 'add_item':
         result = await addCartItem(data);
         break;
 
       case 'update_item':
+        // Quantity <= 0 triggers deletion inside updateCartItem
         result = await updateCartItem(data);
         break;
 
@@ -107,6 +110,7 @@ export async function POST(request: NextRequest) {
         break;
 
       case 'clear_cart':
+        // Used after checkout to reset the cart
         result = await clearCart(data);
         break;
 
@@ -155,7 +159,7 @@ async function addCartItem(data: any) {
         .from('carts')
         .insert({
           user_id: userId,
-          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // TTL: cart expires after 30 days of inactivity
         })
         .select()
         .single();
@@ -184,7 +188,7 @@ async function addCartItem(data: any) {
     return { success: false, error: 'Insufficient stock' };
   }
 
-  // Add or update cart item
+  // Upsert: inserts if (cart_id, product_id) pair is new; updates quantity if it already exists
   const { data: cartItem, error } = await supabaseAdmin
     .from('cart_items')
     .upsert({
@@ -194,7 +198,7 @@ async function addCartItem(data: any) {
       unit_price: product.price,
     }, {
       onConflict: 'cart_id,product_id',
-      ignoreDuplicates: false,
+      ignoreDuplicates: false, // always overwrite quantity on conflict
     })
     .select(`
       *,
@@ -250,6 +254,7 @@ async function updateCartItem(data: any) {
     return { success: false, error: 'Cart not found' };
   }
 
+  // Treat quantity <= 0 as a remove request rather than an invalid value
   if (quantity <= 0) {
     const { error } = await supabaseAdmin
       .from('cart_items')

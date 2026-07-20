@@ -13,8 +13,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:swipe_to/swipe_to.dart';
-import 'package:zego_uikit/zego_uikit.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+// zego_uikit / zego_uikit_prebuilt_call removed — call button now uses
+// _startCall() with Supabase signaling (compatible with Windows admin).
 import 'package:audio_waveforms/audio_waveforms.dart' hide PlayerState;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:record/record.dart';
@@ -23,8 +23,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/providers/shop_provider.dart';
-import '../../core/services/zego_call_service.dart';
-import '../../core/services/admin_presence_service.dart';
+// zego_call_service not needed here — signaling goes via _startCall() + Supabase
 
 import 'call_overlay.dart';
 import 'booking_screen.dart';
@@ -90,9 +89,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   RealtimeChannel? _incomingCallSub;
   final List<String> _processedCallIds = [];
 
-  // منصة الأدمن النشطة (للتوجيه الهجين): 'mobile' → Zego | غير ذلك → Jitsi
-  String _adminPlatform = 'mobile';
-
   @override
   void initState() {
     super.initState();
@@ -101,7 +97,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _recorderCtrl = RecorderController();
     }
     _loadStarredMessages();
-    _loadAdminPlatform();
     OfflineQueueService.syncQueue();
 
     _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
@@ -172,12 +167,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   bool _isAdmin() => ref.read(profileProvider).value?.isAdmin ?? false;
-
-  // تحميل منصة الأدمن النشطة لتوجيه نوع المكالمة (Zego / Jitsi)
-  Future<void> _loadAdminPlatform() async {
-    final p = await AdminPresenceService.getActiveAdminPlatform();
-    if (mounted) setState(() => _adminPlatform = p);
-  }
 
   @override
   void dispose() {
@@ -440,6 +429,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _startCall(bool isVideo, {bool isJoin = false, String? callId}) async {
     final activeCallId = callId ?? const Uuid().v4();
     if (!isJoin) {
+      // Insert call_invite into Supabase — this is what AdminCallListener
+      // on Windows listens for. ZegoSendCallInvitationButton was removed
+      // because it uses Zego push signaling which the Windows admin never receives.
+      final callerName = _supabase.auth.currentUser
+              ?.userMetadata?['full_name'] as String? ??
+          'مريض';
       await _sendMessage(
         customId: activeCallId,
         type: MessageType.callInvite,
@@ -450,6 +445,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           'call_type': isVideo ? 'video' : 'voice',
           'call_status': 'active',
           'call_started_at': DateTime.now().toIso8601String(),
+          'caller_name': callerName, // shown in admin incoming call overlay
         },
       );
     }
@@ -572,29 +568,47 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       title: InkWell(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen())),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.expertName,
-                style: GoogleFonts.cairo(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(
+              widget.expertName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.cairo(
+                  fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              child: Text(subtitle,
+              child: Text(
+                subtitle,
                 key: ValueKey(subtitle),
-                style: GoogleFonts.tajawal(fontSize: 12,
-                    color: presence.isTyping ? _kGold : (isOnline ? Colors.greenAccent.shade100 : Colors.white70))),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.tajawal(
+                    fontSize: 12,
+                    color: presence.isTyping
+                        ? _kGold
+                        : (isOnline ? Colors.greenAccent.shade100 : Colors.white70)),
+              ),
             ),
           ],
         ),
       ),
       actions: [
         if (!_isSearching) ...[
-          IconButton(icon: const Icon(Icons.search_rounded), onPressed: () => setState(() => _isSearching = true)),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.search_rounded, size: 22),
+            onPressed: () => setState(() => _isSearching = true),
+          ),
           _buildCallButton(isVideo: true),
           _buildCallButton(isVideo: false),
         ],
         Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.more_vert_rounded, size: 24),
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.more_vert_rounded, size: 22),
             onPressed: () => Scaffold.of(context).openEndDrawer(),
           ),
         ),
@@ -607,46 +621,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   Widget _buildCallButton({required bool isVideo}) {
-    // ── التوجيه الهجين حسب منصة الأدمن النشطة ──
-    // الأدمن على Windows/سطح المكتب → Jitsi (CallOverlay) عبر Supabase.
-    // الأدمن على الموبايل + المريض على الموبايل → ZegoCloud الأصلي.
-    final adminOnMobile = _adminPlatform == 'mobile';
-    final patientCanZego = ZegoCallService.isSupportedPlatform;
-
-    if (!adminOnMobile || !patientCanZego) {
-      // Jitsi fallback (الأدمن على Windows، أو المريض على ويب/سطح مكتب)
-      return IconButton(
-        icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-            color: Colors.white, size: 20),
-        tooltip: isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
-        onPressed: () => _startCall(isVideo),
-      );
-    }
-
-    // الأدمن على الموبايل → دعوة ZegoCloud الأصلية للأدمن الثابت
-    return ZegoSendCallInvitationButton(
-      isVideoCall: isVideo,
-      invitees: [ZegoUIKitUser(
-        id: ZegoCallService.adminUserId,     // 'biopara_admin' — متطابق مع main_admin
-        name: ZegoCallService.adminUserName,
-      )],
-      resourceID: 'biopara_calls',
-      timeoutSeconds: 30,
-      iconSize: const Size(40, 40),
-      buttonSize: const Size(40, 40),
-      onPressed: (code, message, errorInvitees) {
-        if (errorInvitees.isNotEmpty && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('تعذر الاتصال — المستشار غير متصل عبر الهاتف',
-                style: GoogleFonts.tajawal()),
-            backgroundColor: Colors.red,
-          ));
-        }
-      },
-      icon: ButtonIcon(
-        icon: Icon(isVideo ? Icons.videocam_rounded : Icons.call_rounded,
-            color: Colors.white, size: 20),
+    // Uses Supabase signaling (_startCall) so that the Windows admin
+    // (AdminCallListener) receives the call_invite from the messages table.
+    // Previously used ZegoSendCallInvitationButton which only works with
+    // ZegoUIKitPrebuiltCallInvitationService — not our raw ZegoExpressEngine setup.
+    return IconButton(
+      visualDensity: VisualDensity.compact,
+      icon: Icon(
+        isVideo ? Icons.videocam_rounded : Icons.call_rounded,
+        color: Colors.white,
+        size: 20,
       ),
+      tooltip: isVideo ? 'مكالمة فيديو' : 'مكالمة صوتية',
+      onPressed: () => _startCall(isVideo),
     );
   }
 

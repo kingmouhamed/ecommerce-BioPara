@@ -382,7 +382,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
       if (finalMetadata.isNotEmpty) 'metadata': finalMetadata,
 
-      if (replyToId != null) 'reply_to_id': replyToId,
+      'reply_to_id': ?replyToId,
 
     };
 
@@ -1225,9 +1225,7 @@ class _AdminChatScreenState extends ConsumerState<AdminChatScreen> {
 
                   onPressed: _generateSessionReport),
 
-          // ── أزرار المكالمة (موحّدة عبر Jitsi + Supabase) ──
-          // تعمل على Windows / Desktop / الموبايل / المتصفح بنفس الطريقة:
-          // إدراج call_invite في Supabase ثم فتح CallOverlay → غرفة Jitsi.
+          // ── أزرار المكالمة ──
           IconButton(
             icon: const Icon(Icons.call_rounded),
             tooltip: 'مكالمة صوتية',
