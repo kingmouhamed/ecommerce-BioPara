@@ -30,10 +30,6 @@ Widget buildMobileCallScreen(
   String callID,
   String userID,
   String userName,
-        },
-      ),
-    ),
-=======
   bool isVideoCall, {
   String conversationId = '',
   Future<void> Function()? onCallEnd,
@@ -45,7 +41,6 @@ Widget buildMobileCallScreen(
     isVideoCall: isVideoCall,
     conversationId: conversationId,
     onCallEnd: onCallEnd,
->>>>>>> Stashed changes
   );
 }
 
